@@ -1,6 +1,6 @@
 package smartspace.data;
 
-public class UserEntity implements SmartSpaceEntity<String> {
+public class UserEntity implements SmartspaceEntity<String> {
 private String userSmartspace;
 private String userEmail;
 private String username;
@@ -16,8 +16,7 @@ public  UserEntity() {
 
 public UserEntity(String userEmail, String userSmartspace, String username, String avatar,
 		UserRole role, long points) {
-	
-	
+	super();
 	this.userSmartspace = userSmartspace;
 	this.userEmail = userEmail;
 	this.username = username;

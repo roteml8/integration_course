@@ -3,39 +3,34 @@ package smartspace.data;
 import java.util.Date;
 import java.util.Map;
 
-public class ActionEntity implements SmartSpaceEntity<String> {
+public class ActionEntity implements SmartspaceEntity<String> {
 	private String actionSmartspace;
-	private String actionid;
+	private String actionId;
 	private String elementSmartspcae;
-	private String elementid;
+	private String elementId;
 	private String playerSmartspace;
-	private String  playerEmail;
-    private String actionType;
-    private Date creationTimestamp;
-    private Map<String,Object> moreAttributes;
-    
-    
-    public ActionEntity() {
-    	
-    	
-		
+	private String playerEmail;
+	private String actionType;
+	private Date creationTimestamp;
+	private Map<String, Object> moreAttributes;
+
+	public ActionEntity() {
+
 	}
-     
-    
-	public ActionEntity(String actionid, String elementSmartspcae, String actionType,
-			Date creationTimestamp, String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
-		
-		
-		this.actionid = actionid;
+
+	public ActionEntity(String actionid, String elementSmartspcae, String actionType, Date creationTimestamp,
+			String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
+
+		super();
+		this.actionId = actionid;
 		this.elementSmartspcae = elementSmartspcae;
-		
+
 		this.playerSmartspace = playerSmartspace;
 		this.playerEmail = playerEmail;
 		this.actionType = actionType;
 		this.creationTimestamp = creationTimestamp;
 		this.moreAttributes = moreAttributes;
 	}
-
 
 	public String getActionSmartspace() {
 		return actionSmartspace;
@@ -46,11 +41,11 @@ public class ActionEntity implements SmartSpaceEntity<String> {
 	}
 
 	public String getActionid() {
-		return actionid;
+		return actionId;
 	}
 
 	public void setActionid(String actionid) {
-		this.actionid = actionid;
+		this.actionId = actionid;
 	}
 
 	public String getElementSmartspcae() {
@@ -62,11 +57,11 @@ public class ActionEntity implements SmartSpaceEntity<String> {
 	}
 
 	public String getElementid() {
-		return elementid;
+		return elementId;
 	}
 
 	public void setElementid(String elementid) {
-		this.elementid = elementid;
+		this.elementId = elementid;
 	}
 
 	public String getPlayerSmartspace() {
@@ -111,12 +106,12 @@ public class ActionEntity implements SmartSpaceEntity<String> {
 
 	@Override
 	public String getKey() {
-		return this.actionid;
+		return this.actionId;
 	}
 
 	@Override
 	public void setKey(String key) {
-this.actionid=key;		
+		this.actionId = key;
 	}
 
 }

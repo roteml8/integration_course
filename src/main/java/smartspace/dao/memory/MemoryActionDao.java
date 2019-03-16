@@ -28,7 +28,7 @@ public class MemoryActionDao implements ActionDao{
 	}
 
 	@Override
-	public List<ActionEntity> readAll(List<ActionEntity> listActionEntity) {
+	public List<ActionEntity> readAll() {
      return this.actionEntitys;		
 	}
 

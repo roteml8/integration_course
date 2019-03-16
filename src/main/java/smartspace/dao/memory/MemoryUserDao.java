@@ -43,7 +43,7 @@ public class MemoryUserDao implements UserDao<String> {
 	}
 
 	@Override
-	public List<UserEntity> readAll(List<UserEntity> listUserEntity) {
+	public List<UserEntity> readAll() {
 		return this.userEntitys;
 	}
 

@@ -7,8 +7,8 @@ import smartspace.data.ElementEntity;
 
 public interface ElementDao<ElementKey> {
 	public ElementEntity create (ElementEntity elementEntity);
-	public Optional<ElementEntity> readById(String elementkey);
-	public List<ElementEntity> readAll(List<ElementEntity> listElementEntity);
+	public Optional<ElementEntity> readById(String elementKey);
+	public List<ElementEntity> readAll();
 	public void update (ElementEntity elementEntity);
 	public void deleteByKey(ElementKey elementKey);
 	public void delete(ElementEntity elementEntity);

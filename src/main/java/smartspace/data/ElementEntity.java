@@ -3,15 +3,15 @@ package smartspace.data;
 import java.util.Date;
 import java.util.Map;
 
-public class ElementEntity implements SmartSpaceEntity<String>{
+public class ElementEntity implements SmartspaceEntity<String>{
 
-	private String elementSmartSpace;
-	private String elementid;
+	private String elementSmartspace;
+	private String elementId;
 	private Location location;
 	private String name;
 	private String type;
 	private boolean expired;
-	private String creatorSmartSpace;
+	private String creatorSmartspace;
 	private String creatorEmail;
 	private Date creationTimestap;
 
@@ -23,9 +23,9 @@ public class ElementEntity implements SmartSpaceEntity<String>{
 	
 	
 	public ElementEntity(String name, String type, Location loaction, Date creationTimestap,
-			String creatorEmail, String elementSmartSpace, boolean expired, Map<String, Object> moreAtrributes) {
-		
-		this.elementSmartSpace = elementSmartSpace;
+			String creatorEmail, String elementSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
+		super();
+		this.elementSmartspace = elementSmartspace;
 		
 		this.location = loaction;
 		this.name = name;
@@ -35,6 +35,8 @@ public class ElementEntity implements SmartSpaceEntity<String>{
 		this.creatorEmail = creatorEmail;
 		this.creationTimestap = creationTimestap;
 		this.moreAtrributes = moreAtrributes;
+		
+		//check what to do with elementId
 	}
 
 	public ElementEntity() {
@@ -43,28 +45,28 @@ public class ElementEntity implements SmartSpaceEntity<String>{
 
 	@Override
 	public String getKey() {
-		return this.elementid;
+		return this.elementId;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.elementid = key;
+		this.elementId = key;
 	}
 
 	public String getElementSmartSpace() {
-		return elementSmartSpace;
+		return elementSmartspace;
 	}
 
 	public void setElementSmartSpace(String elementSmartSpace) {
-		this.elementSmartSpace = elementSmartSpace;
+		this.elementSmartspace = elementSmartSpace;
 	}
 
 	public String getElementid() {
-		return elementid;
+		return elementId;
 	}
 
 	public void setElementid(String elementid) {
-		this.elementid = elementid;
+		this.elementId = elementid;
 	}
 
 	public Location getLocation() {
@@ -100,11 +102,11 @@ public class ElementEntity implements SmartSpaceEntity<String>{
 	}
 
 	public String getCreatorSmartSpace() {
-		return creatorSmartSpace;
+		return creatorSmartspace;
 	}
 
 	public void setCreatorSmartSpace(String creatorSmartSpace) {
-		this.creatorSmartSpace = creatorSmartSpace;
+		this.creatorSmartspace = creatorSmartSpace;
 	}
 
 	public String getCreatorEmail() {

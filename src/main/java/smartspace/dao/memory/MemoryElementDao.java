@@ -43,7 +43,7 @@ public class MemoryElementDao implements ElementDao<String> {
 	}
 
 	@Override
-	public List<ElementEntity> readAll(List<ElementEntity> listElementEntity) {
+	public List<ElementEntity> readAll() {
 		return this.elementEntitys;
 
 		

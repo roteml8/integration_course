@@ -1,6 +1,6 @@
 package smartspace.data;
 
-public interface SmartSpaceEntity<K> {
+public interface SmartspaceEntity<K> {
 	public K getKey();
 	public void setKey (K key);
 }
