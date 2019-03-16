@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.stereotype.Repository;
+
 import smartspace.dao.*;
 import smartspace.data.*;
 
+
+@Repository
 public class MemoryUserDao implements UserDao<String> {
 
 	private List<UserEntity> userEntitys;

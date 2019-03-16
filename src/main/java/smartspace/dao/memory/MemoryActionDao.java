@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.stereotype.Repository;
+
 import smartspace.dao.ActionDao;
 import smartspace.data.ActionEntity;
 
+@Repository
 public class MemoryActionDao implements ActionDao{
 	
 	
