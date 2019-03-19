@@ -14,6 +14,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 
 	public UserEntity(String userEmail, String userSmartspace, String username, String avatar, UserRole role,
 			long points) {
+
 		super();
 		this.userSmartspace = userSmartspace;
 		this.userEmail = userEmail;

@@ -3,7 +3,9 @@ package smartspace.data;
 import java.util.Date;
 import java.util.Map;
 
-public class ElementEntity implements SmartspaceEntity<String>{
+public class ElementEntity implements SmartspaceEntity<String> {
+
+
 
 	private String elementSmartspace;
 	private String elementId;
@@ -17,30 +19,22 @@ public class ElementEntity implements SmartspaceEntity<String>{
 
 	private Map<String, Object> moreAtrributes;
 
+	public ElementEntity(String name, String type, Location loaction, Date creationTimestap, String creatorEmail,
+			String elementSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
 
-	
-	
-	
-	
-	public ElementEntity(String name, String type, Location loaction, Date creationTimestap,
-			String creatorEmail, String elementSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
 		super();
-		this.elementSmartspace = elementSmartspace;
-		
+		this.elementSmartspace = creatorSmartspace;
 		this.location = loaction;
 		this.name = name;
 		this.type = type;
 		this.expired = expired;
-		
 		this.creatorEmail = creatorEmail;
 		this.creationTimestap = creationTimestap;
 		this.moreAtrributes = moreAtrributes;
-		
-		//check what to do with elementId
 	}
 
 	public ElementEntity() {
-		
+
 	}
 
 	@Override
@@ -133,5 +127,71 @@ public class ElementEntity implements SmartspaceEntity<String>{
 		this.moreAtrributes = moreAtrributes;
 	}
 
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ElementEntity other = (ElementEntity) obj;
+		if (creationTimestap == null) {
+			if (other.creationTimestap != null)
+				return false;
+		} else if (!creationTimestap.equals(other.creationTimestap))
+			return false;
+		if (creatorEmail == null) {
+			if (other.creatorEmail != null)
+				return false;
+		} else if (!creatorEmail.equals(other.creatorEmail))
+			return false;
+		if (creatorSmartspace == null) {
+			if (other.creatorSmartspace != null)
+				return false;
+		} else if (!creatorSmartspace.equals(other.creatorSmartspace))
+			return false;
+		if (elementId == null) {
+			if (other.elementId != null)
+				return false;
+		} else if (!elementId.equals(other.elementId))
+			return false;
+		if (elementSmartspace == null) {
+			if (other.elementSmartspace != null)
+				return false;
+		} else if (!elementSmartspace.equals(other.elementSmartspace))
+			return false;
+		if (expired != other.expired)
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (moreAtrributes == null) {
+			if (other.moreAtrributes != null)
+				return false;
+		} else if (!moreAtrributes.equals(other.moreAtrributes))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "ElementEntity [elementSmartspace=" + elementSmartspace + ", elementId=" + elementId + ", location="
+				+ location + ", name=" + name + ", type=" + type + ", expired=" + expired + ", creatorSmartspace="
+				+ creatorSmartspace + ", creatorEmail=" + creatorEmail + ", creationTimestap=" + creationTimestap
+				+ ", moreAtrributes=" + moreAtrributes + "]";
+	}
 
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import smartspace.dao.ActionDao;
 import smartspace.data.ActionEntity;
-
 @Repository
 public class MemoryActionDao implements ActionDao{
 	
@@ -39,5 +38,6 @@ public class MemoryActionDao implements ActionDao{
 	public void deleteAll() {
 		this.actionEntitys.clear();		
 	}
+
 
 }

@@ -24,7 +24,6 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		super();
 		this.actionId = actionid;
 		this.elementSmartspcae = elementSmartspcae;
-
 		this.playerSmartspace = playerSmartspace;
 		this.playerEmail = playerEmail;
 		this.actionType = actionType;
@@ -56,11 +55,11 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.elementSmartspcae = elementSmartspcae;
 	}
 
-	public String getElementid() {
+	public String getElementId() {
 		return elementId;
 	}
 
-	public void setElementid(String elementid) {
+	public void setElementId(String elementid) {
 		this.elementId = elementid;
 	}
 
@@ -106,12 +105,20 @@ public class ActionEntity implements SmartspaceEntity<String> {
 
 	@Override
 	public String getKey() {
-		return this.actionId;
+		return this.elementId;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.actionId = key;
+		this.elementId = key;
+	}
+
+	@Override
+	public String toString() {
+		return "ActionEntity [actionSmartspace=" + actionSmartspace + ", actionId=" + actionId + ", elementSmartspcae="
+				+ elementSmartspcae + ", elementId=" + elementId + ", playerSmartspace=" + playerSmartspace
+				+ ", playerEmail=" + playerEmail + ", actionType=" + actionType + ", creationTimestamp="
+				+ creationTimestamp + ", moreAttributes=" + moreAttributes + "]";
 	}
 
 }

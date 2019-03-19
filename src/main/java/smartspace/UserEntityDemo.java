@@ -10,53 +10,57 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import smartspace.dao.UserDao;
-import smartspace.data.*;
+
+import smartspace.data.UserEntity;
+import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
 
 @Component
-public class UserEntityDemo implements CommandLineRunner {
+
+public class UserEntityDemo implements CommandLineRunner{
 	private EntityFactory factory;
 	private UserDao<String> dao;
-
-	public UserEntityDemo() {
+	
+	public UserEntityDemo()
+	{
+		
 	}
-
+	
 	@Autowired
 	public UserEntityDemo(EntityFactory factory, UserDao<String> dao) {
 		this.factory = factory;
 		this.dao = dao;
 	}
-
+	
+	
 	@Override
 	public void run(String... args) throws Exception {
-
-		UserEntity user1 = this.factory.createNewUser("bla@google.co.il", "trello", "bla", "wolf", UserRole.MANAGER, 0);
-
-		System.err.println("key before storing: " + user1.getKey());
-
+		UserEntity user1 = this.factory.createNewUser("tom@gmail.com", "Trello","tomboukai","wolf",UserRole.MANAGER,0);
+		System.err.println("\n"+"Data before storing: " + user1.getUsername() + ", " + user1.getKey()); //ADD toString to see all data
+		
 		user1 = this.dao.create(user1);
-		System.err.println("key after storing: " + user1.getKey());
-
+		System.err.println("Data after storing: " + user1.getUsername() + ", "+ user1.getKey() );
+		
 		UserEntity update = new UserEntity();
-		update.setRole(UserRole.PLAYER);
+		update.setUsername("Oded");
 		update.setKey(user1.getKey());
+		
 		this.dao.update(update);
-
-		Optional<UserEntity> messageOp = this.dao.readById(user1.getKey());
+		Optional<UserEntity> messageOp = this.dao.readById(user1.getKey()); 
 		if (messageOp.isPresent()) {
 			user1 = messageOp.get();
-		} else {
-			throw new RuntimeException("message was lost after update");
+		}else {
+			throw new RuntimeException("Data was lost after update");
 		}
-		System.err.println("message after update: " + user1.getUsername());
-
+		System.err.println("Data after update: " + user1.getUsername() +", " + user1.getKey() );
+		
 		this.dao.deleteAll();
 		if (this.dao.readAll().isEmpty()) {
-			System.err.println("messages deleted successfully");
-		} else {
-			throw new RuntimeException("some messages were not deleted");
+			System.err.println("Data deleted successfully"+"\n");
+		}else {
+			throw new RuntimeException("Some data were not deleted");
 		}
-
+		
 	}
 
 }
