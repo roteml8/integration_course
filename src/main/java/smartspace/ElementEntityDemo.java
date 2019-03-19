@@ -18,6 +18,8 @@ import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
 import smartspace.data.*;
 
+
+
 @Component
 public class ElementEntityDemo implements CommandLineRunner{
 		private EntityFactory factory;
