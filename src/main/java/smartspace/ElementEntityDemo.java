@@ -69,6 +69,7 @@ public class ElementEntityDemo implements CommandLineRunner{
 			
 			
 			System.err.println("Data after storing: " + element1.getCreatorEmail() + ", "+ element1.getName()+", " + element1.getKey() + "details = "+element1.getMoreAtrributes());
+			// Note for Push Test - Rotem 
 			
 			ElementEntity update = new ElementEntity();
 			update.setName("Archive");
