@@ -14,18 +14,17 @@ import smartspace.data.*;
 @Repository
 public class MemoryElementDao implements ElementDao<String> {
 
-	
-	
 	private List<ElementEntity> elementEntitys;
 	private AtomicLong nextId;
-	
+
 	public MemoryElementDao() {
 		this.elementEntitys = Collections.synchronizedList(new ArrayList<>());
 		this.nextId = new AtomicLong(1);
 	}
+
 	@Override
 	public ElementEntity create(ElementEntity elementEntity) {
-		elementEntity.setKey(nextId.getAndIncrement()+"");
+		elementEntity.setKey(nextId.getAndIncrement() + "");
 		this.elementEntitys.add(elementEntity);
 		return elementEntity;
 	}
@@ -40,7 +39,7 @@ public class MemoryElementDao implements ElementDao<String> {
 		}
 		if (target != null) {
 			return Optional.of(target);
-		}else {
+		} else {
 			return Optional.empty();
 		}
 	}
@@ -49,7 +48,6 @@ public class MemoryElementDao implements ElementDao<String> {
 	public List<ElementEntity> readAll() {
 		return this.elementEntitys;
 
-		
 	}
 
 	@Override
@@ -63,7 +61,7 @@ public class MemoryElementDao implements ElementDao<String> {
 			if (elementEntity.getCreatorEmail() != null) {
 				existing.setCreatorEmail(elementEntity.getCreatorEmail());
 			}
-			if (elementEntity.getCreatorSmartSpace()!= null) {
+			if (elementEntity.getCreatorSmartSpace() != null) {
 				existing.setCreatorSmartSpace(elementEntity.getCreatorSmartSpace());
 			}
 			if (elementEntity.getElementid() != null) {
@@ -72,50 +70,49 @@ public class MemoryElementDao implements ElementDao<String> {
 			if (elementEntity.getName() != null) {
 				existing.setName(elementEntity.getName());
 			}
-			if(elementEntity.getElementSmartSpace()!=null)
-			{
+			if (elementEntity.getElementSmartSpace() != null) {
 				existing.setElementSmartSpace(elementEntity.getElementSmartSpace());
-				
+
 			}
-			if(elementEntity.getLocation()!=null) {
+			if (elementEntity.getLocation() != null) {
 				existing.setLocation(elementEntity.getLocation());
-				
+
 			}
-			if(elementEntity.getType()!=null) {
+			if (elementEntity.getType() != null) {
 				existing.setType(elementEntity.getType());
-				
+
 			}
-			if(elementEntity.getMoreAtrributes()!=null) {
+			if (elementEntity.getMoreAtrributes() != null) {
 				existing.setMoreAtrributes(elementEntity.getMoreAtrributes());
-				
+
 			}
 		}
-		
+
 	}
+
 	@Override
 	public void deleteByKey(String elementKey) {
-		for (int i=0;i<elementEntitys.size();i++)
-			if (elementEntitys.get(i).getKey().equals(elementKey))
-			{
+		for (int i = 0; i < elementEntitys.size(); i++)
+			if (elementEntitys.get(i).getKey().equals(elementKey)) {
 				this.elementEntitys.remove(i);
 				break;
 			}
 	}
+
 	@Override
 	public void delete(ElementEntity elementEntity) {
-		for (int i=0;i<elementEntitys.size();i++)
-			if (elementEntitys.get(i).equals(elementEntity))
-			{
+		for (int i = 0; i < elementEntitys.size(); i++)
+			if (elementEntitys.get(i).equals(elementEntity)) {
 				this.elementEntitys.remove(i);
 				break;
-				
+
 			}
 	}
+
 	@Override
 	public void deleteAll() {
 		this.elementEntitys.clear();
-		
-	}
 
+	}
 
 }

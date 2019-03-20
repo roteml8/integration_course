@@ -18,18 +18,18 @@ public class EntityFactoryImpl implements EntityFactory {
 	}
 
 	@Override
-	public ElementEntity createNewElement(String name, String type, Location loaction, Date creationTimestap,
-			String creatorEmail, String elementSmartSpace, boolean expired, Map<String, Object> moreAtrributes) {
+	public ElementEntity createNewElement(String name, String type, Location loaction, Date creationTimeStamp,
+			String creatorEmail, String creatorSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
 
-		return new ElementEntity(name, type, loaction, creationTimestap, creatorEmail, elementSmartSpace, expired,
+		return new ElementEntity(name, type, loaction, creationTimeStamp, creatorEmail, creatorSmartspace, expired,
 				moreAtrributes);
 	}
 
 	@Override
-	public ActionEntity createNewAction(String actionid, String elementSmartspcae, String actionType,
+	public ActionEntity createNewAction(String elementId, String elementSmartspcae, String actionType,
 			Date creationTimestamp, String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
 
-		return new ActionEntity(actionid, elementSmartspcae, actionType, creationTimestamp, playerEmail,
+		return new ActionEntity(elementId, elementSmartspcae, actionType, creationTimestamp, playerEmail,
 			playerSmartspace, moreAttributes);
 	}
 	

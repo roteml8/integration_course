@@ -6,7 +6,7 @@ import java.util.Map;
 public class ActionEntity implements SmartspaceEntity<String> {
 	private String actionSmartspace;
 	private String actionId;
-	private String elementSmartspcae;
+	private String elementSmartspace;
 	private String elementId;
 	private String playerSmartspace;
 	private String playerEmail;
@@ -18,12 +18,12 @@ public class ActionEntity implements SmartspaceEntity<String> {
 
 	}
 
-	public ActionEntity(String actionid, String elementSmartspcae, String actionType, Date creationTimestamp,
+	public ActionEntity(String elementId, String elementSmartspace, String actionType, Date creationTimestamp,
 			String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
 
 		super();
-		this.actionId = actionid;
-		this.elementSmartspcae = elementSmartspcae;
+		this.elementId = elementId;
+		this.elementSmartspace = elementSmartspace;
 		this.playerSmartspace = playerSmartspace;
 		this.playerEmail = playerEmail;
 		this.actionType = actionType;
@@ -39,20 +39,20 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.actionSmartspace = actionSmartspace;
 	}
 
-	public String getActionid() {
+	public String getActionId() {
 		return actionId;
 	}
 
-	public void setActionid(String actionid) {
+	public void setActionId(String actionid) {
 		this.actionId = actionid;
 	}
 
-	public String getElementSmartspcae() {
-		return elementSmartspcae;
+	public String getElementSmartspace() {
+		return elementSmartspace;
 	}
 
-	public void setElementSmartspcae(String elementSmartspcae) {
-		this.elementSmartspcae = elementSmartspcae;
+	public void setElementSmartspace(String elementSmartspcae) {
+		this.elementSmartspace = elementSmartspcae;
 	}
 
 	public String getElementId() {
@@ -105,18 +105,18 @@ public class ActionEntity implements SmartspaceEntity<String> {
 
 	@Override
 	public String getKey() {
-		return this.elementId;
+		return this.actionId;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.elementId = key;
+		this.actionId = key;
 	}
 
 	@Override
 	public String toString() {
 		return "ActionEntity [actionSmartspace=" + actionSmartspace + ", actionId=" + actionId + ", elementSmartspcae="
-				+ elementSmartspcae + ", elementId=" + elementId + ", playerSmartspace=" + playerSmartspace
+				+ elementSmartspace + ", elementId=" + elementId + ", playerSmartspace=" + playerSmartspace
 				+ ", playerEmail=" + playerEmail + ", actionType=" + actionType + ", creationTimestamp="
 				+ creationTimestamp + ", moreAttributes=" + moreAttributes + "]";
 	}
