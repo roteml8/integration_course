@@ -91,7 +91,7 @@ public class ActionDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new action
-		// AND Delete all action
+		// AND Delete all the ActionEntity in the dao
 		// AND read all
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("title", "hello");

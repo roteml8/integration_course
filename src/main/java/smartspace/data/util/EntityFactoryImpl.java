@@ -30,9 +30,7 @@ public class EntityFactoryImpl implements EntityFactory {
 			Date creationTimestamp, String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
 
 		return new ActionEntity(elementId, elementSmartspcae, actionType, creationTimestamp, playerEmail,
-			playerSmartspace, moreAttributes);
+				playerSmartspace, moreAttributes);
 	}
-	
-	
 
 }
