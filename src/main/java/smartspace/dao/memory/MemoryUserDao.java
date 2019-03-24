@@ -15,19 +15,19 @@ import smartspace.data.*;
 
 @Repository
 public class MemoryUserDao implements UserDao<String> {
+	public static String smartspace = "2019B.Amitz4.SmartSpace"; 
 	private List<UserEntity> userEntitys;
-	//private AtomicLong nextId;
   
 	
 	public MemoryUserDao() {
 		this.userEntitys = Collections.synchronizedList(new ArrayList<>());
-	//	this.nextId = new AtomicLong(1);
 	}	
 	
 	@Override
-	public UserEntity create(UserEntity userEntity) {
-		//userEntity.setKey(nextId.getAndIncrement() + "");
-		userEntity.setKey(userEntity.getUserEmail());
+	public UserEntity create(UserEntity userEntity) throws Exception {
+		if (userEntity.getUserEmail() == null)
+			throw new NullPointerException("User has no email address, can't add to dao!");
+		userEntity.setKey(smartspace+"#"+userEntity.getUserEmail());
 		this.userEntitys.add(userEntity);
 		return userEntity;
 	}
@@ -56,7 +56,7 @@ public class MemoryUserDao implements UserDao<String> {
 	public void update(UserEntity userEntity) {
 		synchronized (this.userEntitys) {
 			UserEntity existing = this.readById(userEntity.getKey())
-					.orElseThrow(() -> new RuntimeException("not message to update"));
+					.orElseThrow(() -> new RuntimeException("User Entity is not in dao, can't update!"));
 			if (userEntity.getAvatar() != null) {
 				existing.setAvatar(userEntity.getAvatar());
 			}

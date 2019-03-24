@@ -1,6 +1,7 @@
 package smartspace.data;
 
 public class UserEntity implements SmartspaceEntity<String> {
+
 	private String userSmartspace;
 	private String userEmail;
 	private String username;
@@ -9,19 +10,23 @@ public class UserEntity implements SmartspaceEntity<String> {
 	private long points;
 
 	public UserEntity() {
-
 	}
 
 	public UserEntity(String userEmail, String userSmartspace, String username, String avatar, UserRole role,
 			long points) {
 
 		super();
-		this.userSmartspace = userSmartspace;
 		this.userEmail = userEmail;
+		this.userSmartspace = userSmartspace;
 		this.username = username;
 		this.avatar = avatar;
 		this.role = role;
 		this.points = points;
+	}
+	
+	public UserEntity (String userEmail) {
+		super();
+		this.userEmail = userEmail;
 	}
 
 	public String getUserSmartspace() {
@@ -74,12 +79,14 @@ public class UserEntity implements SmartspaceEntity<String> {
 
 	@Override
 	public String getKey() {
-		return this.userEmail;
+		return this.userSmartspace+"#"+this.userEmail;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.userEmail = key;
+		String[] parts = key.split("#");
+		this.userSmartspace = parts[0];
+		this.userEmail = parts[1];
 	}
 
 }
