@@ -12,10 +12,10 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	private Location location;
 	private String name;
 	private String type;
-	private boolean expired;
+	private boolean expired; 
 	private String creatorSmartspace;
 	private String creatorEmail;
-	private Date creationTimestap;
+	private Date creationTimestap; 
 
 	private Map<String, Object> moreAtrributes;
 

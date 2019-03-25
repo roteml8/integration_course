@@ -7,6 +7,7 @@ private double y;
 public Location() {
 
 }
+
 public double getX() {
 	return x;
 }
