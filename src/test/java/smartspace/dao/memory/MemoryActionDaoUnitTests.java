@@ -15,6 +15,7 @@ import smartspace.data.ActionEntity;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = { "spring.profiles.active=default" })
+
 public class MemoryActionDaoUnitTests {
 
 	@Test
@@ -34,6 +35,7 @@ public class MemoryActionDaoUnitTests {
 		assertThat(Integer.valueOf(rvAction.getKey())).isNotNull().isGreaterThan(0);
 
 		dao.deleteAll();
+		
 
 	}
 
