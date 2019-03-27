@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import smartspace.data.ElementEntity;
-import smartspace.data.UserEntity;
-import smartspace.data.UserRole;
 
 public class MemoryElementDaoUpdateUnitTests {
 

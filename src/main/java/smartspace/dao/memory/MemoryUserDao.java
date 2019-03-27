@@ -1,19 +1,16 @@
 package smartspace.dao.memory;
 
-import java.util.ArrayList;
+import java.util.ArrayList;  
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.springframework.stereotype.Repository;
-
+ 
 import smartspace.dao.*;
 import smartspace.data.*;
 
-@Repository
+//@Repository
 public class MemoryUserDao implements UserDao<String> {
 	public static String smartspace = "2019B.Amitz4.SmartSpace"; 
 	private List<UserEntity> userEntitys;

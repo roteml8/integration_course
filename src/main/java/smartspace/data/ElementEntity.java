@@ -1,8 +1,23 @@
 package smartspace.data;
 
+
 import java.util.Date;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import smartspace.dao.rdb1.MapToJsonConverter;
+@Entity
+@Table(name="ELEMENTS")
 public class ElementEntity implements SmartspaceEntity<String> {
 
 
@@ -37,7 +52,15 @@ public class ElementEntity implements SmartspaceEntity<String> {
 
 	}
 
+
+
+	public ElementEntity(String string) {
+		this.name=string;
+	}
+
 	@Override
+	@Id
+	@Column(name="ID")
 	public String getKey() {
 		return this.elementId;
 	}
@@ -54,7 +77,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setElementSmartSpace(String elementSmartSpace) {
 		this.elementSmartspace = elementSmartSpace;
 	}
-
+     
 	public String getElementid() {
 		return elementId;
 	}
@@ -62,7 +85,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setElementid(String elementid) {
 		this.elementId = elementid;
 	}
-
+	@Embedded
 	public Location getLocation() {
 		return location;
 	}
@@ -70,7 +93,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -86,7 +109,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setType(String type) {
 		this.type = type;
 	}
-
+   
 	public boolean isExpired() {
 		return expired;
 	}
@@ -110,7 +133,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setCreatorEmail(String creatorEmail) {
 		this.creatorEmail = creatorEmail;
 	}
-
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationTimeDate() {
 		return creationTimestap;
 	}
@@ -118,7 +141,8 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setCreationTimeDate(Date creationTimeDate) {
 		this.creationTimestap = creationTimeDate;
 	}
-
+	@Lob
+	@Convert(converter=MapToJsonConverter.class)
 	public Map<String, Object> getMoreAtrributes() {
 		return moreAtrributes;
 	}

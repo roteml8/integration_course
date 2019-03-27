@@ -121,7 +121,7 @@ public class UserDaoIntegrationTests {
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
 		UserEntity user = this.factory.createNewUser(userEmail,MemoryUserDao.smartspace, userName, userAvatar, userRole, userPoints);
-		UserEntity userInDB = this.dao.create(user);		
+		
 	
 		// AND change the user details and update in the dao
 		user.setUsername("rot");

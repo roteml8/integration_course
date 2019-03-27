@@ -1,17 +1,16 @@
 package smartspace.dao.memory;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.stereotype.Repository;
 
 import smartspace.dao.*;
 import smartspace.data.*;
 
-@Repository
+//@Repository
 public class MemoryElementDao implements ElementDao<String> {
 
 	private List<ElementEntity> elementEntitys;
