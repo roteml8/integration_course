@@ -82,8 +82,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.elementId = elementid;
 	}
 
-	// @Embedded //TODO need to fix this , right now we cant't save the Location to the DB 
-	@Transient 
+	@Embedded
 	public Location getLocation() {
 		return location;
 	}
