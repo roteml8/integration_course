@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import smartspace.dao.memory.MemoryActionDao;
@@ -14,6 +15,7 @@ import smartspace.data.ActionEntity;
 import smartspace.data.util.EntityFactory;
 
 @Component
+@Profile("production")
 public class ActionEntityDemo implements CommandLineRunner {
 	private EntityFactory factory;
 	private MemoryActionDao dao;

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import smartspace.dao.UserDao;
@@ -16,7 +17,7 @@ import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
 
 @Component
-
+@Profile("production")
 public class UserEntityDemo implements CommandLineRunner{
 	private EntityFactory factory;
 	private UserDao<String> dao;

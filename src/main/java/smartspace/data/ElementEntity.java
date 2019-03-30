@@ -3,19 +3,32 @@ package smartspace.data;
 import java.util.Date;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import smartspace.dao.rdb.MapToJsonConverter;
+
+@Entity
+@Table(name = "ELEMENTS")
 public class ElementEntity implements SmartspaceEntity<String> {
-
-
 
 	private String elementSmartspace;
 	private String elementId;
 	private Location location;
 	private String name;
 	private String type;
-	private boolean expired; 
+	private boolean expired;
 	private String creatorSmartspace;
 	private String creatorEmail;
-	private Date creationTimestap; 
+	private Date creationTimestap;
 
 	private Map<String, Object> moreAtrributes;
 
@@ -37,7 +50,13 @@ public class ElementEntity implements SmartspaceEntity<String> {
 
 	}
 
+	public ElementEntity(String string) {
+		this.name = string;
+	}
+
 	@Override
+	@Id
+	@Column(name = "ID")
 	public String getKey() {
 		return this.elementId;
 	}
@@ -63,6 +82,8 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.elementId = elementid;
 	}
 
+	// @Embedded //TODO need to fix this , right now we cant't save the Location to the DB 
+	@Transient 
 	public Location getLocation() {
 		return location;
 	}
@@ -111,6 +132,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.creatorEmail = creatorEmail;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationTimeDate() {
 		return creationTimestap;
 	}
@@ -119,6 +141,8 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.creationTimestap = creationTimeDate;
 	}
 
+	@Lob
+	@Convert(converter = MapToJsonConverter.class)
 	public Map<String, Object> getMoreAtrributes() {
 		return moreAtrributes;
 	}
@@ -126,8 +150,6 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public void setMoreAtrributes(Map<String, Object> moreAtrributes) {
 		this.moreAtrributes = moreAtrributes;
 	}
-
-	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -185,7 +207,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ElementEntity [elementSmartspace=" + elementSmartspace + ", elementId=" + elementId + ", location="

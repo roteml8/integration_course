@@ -1,5 +1,15 @@
 package smartspace.data;
 
+import javax.persistence.Column; 
+ 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ACTIONS")
 public class UserEntity implements SmartspaceEntity<String> {
 
 	private String userSmartspace;
@@ -60,7 +70,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
-
+	@Enumerated(EnumType.STRING)
 	public UserRole getRole() {
 		return role;
 	}
@@ -78,6 +88,8 @@ public class UserEntity implements SmartspaceEntity<String> {
 	}
 
 	@Override
+	@Id
+	@Column(name="ID")
 	public String getKey() {
 		return this.userSmartspace+"#"+this.userEmail;
 	}

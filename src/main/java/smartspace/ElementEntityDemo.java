@@ -8,19 +8,20 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import smartspace.dao.UserDao;
+
 import smartspace.dao.memory.MemoryElementDao;
 import smartspace.data.ElementEntity;
-import smartspace.data.UserEntity;
-import smartspace.data.UserRole;
+
 import smartspace.data.util.EntityFactory;
 import smartspace.data.*;
 
 
 
 @Component
+@Profile("production")
 public class ElementEntityDemo implements CommandLineRunner{
 		private EntityFactory factory;
 		private MemoryElementDao dao;
@@ -75,7 +76,7 @@ public class ElementEntityDemo implements CommandLineRunner{
 			update.setName("Archive");
 			update.setKey(element1.getKey());
 			
-			this.dao.update(update);
+			//this.dao.update(update);
 			Optional<ElementEntity> messageOp = this.dao.readById(element1.getKey()); 
 			if (messageOp.isPresent()) {
 				element1 = messageOp.get();
