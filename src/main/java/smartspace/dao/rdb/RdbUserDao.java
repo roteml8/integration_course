@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,8 @@ import smartspace.data.UserEntity;
 
 @Repository
 public class RdbUserDao implements UserDao<String> {
-	public static String smartspace = "2019B.Amitz4.SmartSpace"; // TODO find a better way to save to have smartspace , probably somehow with the application.properties
+
+	private String smartspace;
 	private UserCrud userCrud;
 
 	@Autowired
@@ -21,6 +23,16 @@ public class RdbUserDao implements UserDao<String> {
 		super();
 		this.userCrud = userCrud;
 
+	}
+	
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.smartspace = smartspace;
+	}
+	
+	public String getSmartspace()
+	{
+		return this.smartspace;
 	}
 
 	@Override

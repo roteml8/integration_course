@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,9 +26,11 @@ import smartspace.data.util.EntityFactory;
 @SpringBootTest
 @TestPropertySource(properties = { "spring.profiles.active=default" })
 public class UserDaoIntegrationTests {
+	
 
 	private UserDao<String> dao;
 	private EntityFactory factory;
+	private String smartspace;
 
 	@Autowired
 	public void setDao(UserDao<String> dao) {
@@ -37,6 +40,11 @@ public class UserDaoIntegrationTests {
 	@Autowired
 	public void setFactory(EntityFactory factory) {
 		this.factory = factory;
+	}
+	
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.smartspace = smartspace;
 	}
 
 	@Before
@@ -66,12 +74,13 @@ public class UserDaoIntegrationTests {
 
 		// WHEN creating a user
 		// AND adding the user to the dao
+		String userSmartspace = smartspace;
 		String userEmail = "missroteml@gmail.com";
 		String userName = "rotemlevi";
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, RdbUserDao.smartspace, userName, userAvatar,
+		UserEntity user = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar,
 				userRole, userPoints);
 
 		UserEntity userInDB = this.dao.create(user);
@@ -93,7 +102,7 @@ public class UserDaoIntegrationTests {
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, RdbUserDao.smartspace, userName, userAvatar,
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar,
 				userRole, userPoints);
 
 		UserEntity userInDB = this.dao.create(user);
@@ -120,7 +129,7 @@ public class UserDaoIntegrationTests {
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, RdbUserDao.smartspace, userName, userAvatar,
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar,
 				userRole, userPoints);
 		UserEntity userInDB = this.dao.create(user);
 
