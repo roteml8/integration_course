@@ -4,10 +4,10 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Location {
-private Double x;
-private Double y;
+private double x;
+private double y;
 
-public Location(Double x, Double y) {
+public Location(double x, double y) {
 	super();
 	this.x = x;
 	this.y = y;
@@ -17,16 +17,16 @@ public Location() {
 
 }
 
-public Double getX() {
+public double getX() {
 	return x;
 }
-public void setX(Double x) {
+public void setX(double x) {
 	this.x = x;
 }
-public Double getY() {
+public double getY() {
 	return y;
 }
-public void setY(Double y) {
+public void setY(double y) {
 	this.y = y;
 }
 

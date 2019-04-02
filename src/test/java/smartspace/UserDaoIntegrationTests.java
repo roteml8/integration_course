@@ -3,6 +3,7 @@ package smartspace;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import smartspace.dao.UserDao;
-import smartspace.dao.rdb.RdbUserDao;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;

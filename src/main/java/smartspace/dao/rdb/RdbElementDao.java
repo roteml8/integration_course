@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import smartspace.data.ElementEntity;
 @Repository
 public class RdbElementDao implements ElementDao<String> {
 
+	private String smartspace;
 	private ElementCrud elementCrud;
 	// TODO remove this
 	private AtomicLong nextId;
@@ -27,6 +29,11 @@ public class RdbElementDao implements ElementDao<String> {
 		// TODO remove this
 		this.nextId = new AtomicLong(100);
 	}
+	
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.smartspace = smartspace;
+	}
 
 	@Override
 	@Transactional
@@ -35,12 +42,12 @@ public class RdbElementDao implements ElementDao<String> {
 
 		// TODO replace this with id stored in db
 		elementEntity.setKey(nextId.getAndIncrement() + "");
-
+		elementEntity.setElementSmartSpace(smartspace);
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
 			return rv;
 		} else {
-			throw new RuntimeException("message already exists with key: " + elementEntity.getKey());
+			throw new RuntimeException("elementEntity already exists with key: " + elementEntity.getKey());
 		}
 	}
 

@@ -1,5 +1,9 @@
 package smartspace;
-import static org.assertj.core.api.Assertions.assertThat;    
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -15,30 +19,38 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import smartspace.dao.ElementDao;
- 
 import smartspace.data.ElementEntity;
-
+import smartspace.data.Location;
+import smartspace.data.Task;
+import smartspace.data.util.EntityFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = {"spring.profiles.active=default"})
-public class RdbElementIntegretionTest {
-	private ElementDao <String>elementDao;
-	
+@TestPropertySource(properties = { "spring.profiles.active=default" })
+public class ElementIntegretionTest {
+	private ElementDao<String> dao;
+
+	private EntityFactory factory;
+
+	@Autowired
+	public void setDao(ElementDao<String> dao) {
+		this.dao = dao;
+	}
+
+	@Autowired
+	public void setFactory(EntityFactory factory) {
+		this.factory = factory;
+	}
 
 	@Autowired
 	public void setUserDao(ElementDao<String> elementDao) {
-		this.elementDao = elementDao;
+		this.dao = elementDao;
 	}
-
-
 
 	@After
 	public void teardown() {
-		this.elementDao.deleteAll();
+		this.dao.deleteAll();
 	}
-
-
 
 	@Test
 	public void testCreateUpdateAndRead() throws Exception{
@@ -47,7 +59,14 @@ public class RdbElementIntegretionTest {
 		// WHEN Create in DB new Message with name "Test"
 		// AND Update message details
 		// AND Read message from database
-		ElementEntity newElement = this.elementDao.create(new ElementEntity("xz"));
+		Map<String, Object> details = new HashMap<>();
+		Task task = new Task ("clean house","clean your house today",5,"17/3/2019",30);
+		details.put("title", task);
+		Location location = new Location ();
+		location.setX(1.0);
+		location.setY(2.0);
+	
+		ElementEntity newElement = this.dao.create(this.factory.createNewElement("Column", "column",location,new Date(),"tomboukai@gmail.com","columnToDoList",false,details));
 		
 		Map<String, Object> updatedDetails = new TreeMap<>();
 		updatedDetails.put("x", "y");
@@ -59,9 +78,9 @@ public class RdbElementIntegretionTest {
 		
 		update.setName("updated test");
 		
-		this.elementDao.update(update);
+		this.dao.update(update);
 		
-		Optional<ElementEntity> rv = this.elementDao.readById(newElement.getKey());
+		Optional<ElementEntity> rv = this.dao.readById(newElement.getKey());
 		
 		ObjectMapper jackson = new ObjectMapper();
 		Map<String, Object>jacksonDetail = 

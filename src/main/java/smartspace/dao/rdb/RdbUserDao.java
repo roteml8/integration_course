@@ -48,7 +48,7 @@ public class RdbUserDao implements UserDao<String> {
 			UserEntity rv = this.userCrud.save(userEntity);
 			return rv;
 		} else {
-			throw new RuntimeException("message already exists with key: " + userEntity.getKey());
+			throw new RuntimeException("userEntity already exists with key: " + userEntity.getKey());
 		}
 
 	}

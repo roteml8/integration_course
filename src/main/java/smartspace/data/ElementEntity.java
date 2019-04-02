@@ -33,7 +33,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	private Map<String, Object> moreAtrributes;
 
 	public ElementEntity(String name, String type, Location loaction, Date creationTimestap, String creatorEmail,
-			String elementSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
+			String creatorSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
 
 		super();
 		this.elementSmartspace = creatorSmartspace;
@@ -47,11 +47,6 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	}
 
 	public ElementEntity() {
-
-	}
-
-	public ElementEntity(String string) {
-		this.name = string;
 	}
 
 	@Override
