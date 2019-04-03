@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ACTIONS")
+@Table(name="USER")
 public class UserEntity implements SmartspaceEntity<String> {
 
 	private String userSmartspace;
