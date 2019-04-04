@@ -29,7 +29,7 @@ public class RdbElementDao implements ElementDao<String> {
 		// TODO remove this
 		this.nextId = new AtomicLong(100);
 	}
-	
+
 	@Value("${name.of.Smartspace:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;

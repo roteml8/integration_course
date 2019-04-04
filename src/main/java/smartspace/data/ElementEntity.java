@@ -30,10 +30,10 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	private String creatorEmail;
 	private Date creationTimestap;
 
-	private Map<String, Object> moreAtrributes;
+	private Map<String, Object> moreAttributes;
 
 	public ElementEntity(String name, String type, Location loaction, Date creationTimestap, String creatorEmail,
-			String creatorSmartspace, boolean expired, Map<String, Object> moreAtrributes) {
+			String creatorSmartspace, boolean expired, Map<String, Object> moreAttributes) {
 
 		super();
 		this.elementSmartspace = creatorSmartspace;
@@ -43,7 +43,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.expired = expired;
 		this.creatorEmail = creatorEmail;
 		this.creationTimestap = creationTimestap;
-		this.moreAtrributes = moreAtrributes;
+		this.moreAttributes = moreAttributes;
 	}
 
 	public ElementEntity() {
@@ -138,11 +138,11 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	@Lob
 	@Convert(converter = MapToJsonConverter.class)
 	public Map<String, Object> getMoreAttributes() {
-		return moreAtrributes;
+		return moreAttributes;
 	}
 
-	public void setMoreAttributes(Map<String, Object> moreAtrributes) {
-		this.moreAtrributes = moreAtrributes;
+	public void setMoreAttributes(Map<String, Object> moreAttributes) {
+		this.moreAttributes = moreAttributes;
 	}
 
 	@Override
@@ -184,10 +184,10 @@ public class ElementEntity implements SmartspaceEntity<String> {
 				return false;
 		} else if (!location.equals(other.location))
 			return false;
-		if (moreAtrributes == null) {
-			if (other.moreAtrributes != null)
+		if (moreAttributes == null) {
+			if (other.moreAttributes != null)
 				return false;
-		} else if (!moreAtrributes.equals(other.moreAtrributes))
+		} else if (!moreAttributes.equals(other.moreAttributes))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -207,7 +207,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		return "ElementEntity [elementSmartspace=" + elementSmartspace + ", elementId=" + elementId + ", location="
 				+ location + ", name=" + name + ", type=" + type + ", expired=" + expired + ", creatorSmartspace="
 				+ creatorSmartspace + ", creatorEmail=" + creatorEmail + ", creationTimestap=" + creationTimestap
-				+ ", moreAtrributes=" + moreAtrributes + "]";
+				+ ", moreAtrributes=" + moreAttributes + "]";
 	}
 
 }
