@@ -1,15 +1,16 @@
 package smartspace.data;
 
-import javax.persistence.Column; 
- 
+import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
-@Table(name="USER")
+@Table(name = "USER")
 public class UserEntity implements SmartspaceEntity<String> {
 
 	private String userSmartspace;
@@ -17,7 +18,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 	private String username;
 	private String avatar;
 	private UserRole role;
-	private long points;
+	private long points = Long.MIN_VALUE;
 
 	public UserEntity() {
 	}
@@ -33,12 +34,13 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.role = role;
 		this.points = points;
 	}
-	
-	public UserEntity (String userEmail) {
+
+	public UserEntity(String userEmail) {
 		super();
 		this.userEmail = userEmail;
 	}
 
+	@Transient
 	public String getUserSmartspace() {
 		return userSmartspace;
 	}
@@ -47,6 +49,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.userSmartspace = userSmartspace;
 	}
 
+	@Transient
 	public String getUserEmail() {
 		return userEmail;
 	}
@@ -70,6 +73,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public UserRole getRole() {
 		return role;
@@ -89,9 +93,9 @@ public class UserEntity implements SmartspaceEntity<String> {
 
 	@Override
 	@Id
-	@Column(name="ID")
+	@Column(name = "ID")
 	public String getKey() {
-		return this.userSmartspace+"#"+this.userEmail;
+		return this.userSmartspace + "#" + this.userEmail;
 	}
 
 	@Override

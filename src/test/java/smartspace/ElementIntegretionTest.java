@@ -94,7 +94,7 @@ public class ElementIntegretionTest {
 		assertThat(rv)
 			.isPresent()
 			.get()
-			.extracting("name", "moreAtrributes")
+			.extracting("name", "moreAttributes")
 			.containsExactly("updated test", jacksonDetail);
 	}
 

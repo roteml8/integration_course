@@ -207,7 +207,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		return "ElementEntity [elementSmartspace=" + elementSmartspace + ", elementId=" + elementId + ", location="
 				+ location + ", name=" + name + ", type=" + type + ", expired=" + expired + ", creatorSmartspace="
 				+ creatorSmartspace + ", creatorEmail=" + creatorEmail + ", creationTimestap=" + creationTimestap
-				+ ", moreAtrributes=" + moreAttributes + "]";
+				+ ", moreAttributes=" + moreAttributes + "]";
 	}
 
 }

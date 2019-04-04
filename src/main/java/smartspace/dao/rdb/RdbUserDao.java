@@ -24,14 +24,13 @@ public class RdbUserDao implements UserDao<String> {
 		this.userCrud = userCrud;
 
 	}
-	
+
 	@Value("${name.of.Smartspace:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}
-	
-	public String getSmartspace()
-	{
+
+	public String getSmartspace() {
 		return this.smartspace;
 	}
 
@@ -94,11 +93,9 @@ public class RdbUserDao implements UserDao<String> {
 		if (userEntity.getUserSmartspace() != null) {
 			existing.setUserSmartspace(userEntity.getUserSmartspace());
 		}
-		// if (userEntity.getPoints()) {
-		existing.setPoints(userEntity.getPoints());
-		// TODO not good , if we don't want to update points it still overwrite the
-		// points attribute
-		// }
+		if (userEntity.getPoints() != Long.MIN_VALUE) {
+			existing.setPoints(userEntity.getPoints());
+		}
 
 		// SQL: UPDATE
 		this.userCrud.save(existing);

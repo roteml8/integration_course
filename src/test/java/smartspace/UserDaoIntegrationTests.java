@@ -2,8 +2,6 @@ package smartspace;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +24,6 @@ import smartspace.data.util.EntityFactory;
 @SpringBootTest
 @TestPropertySource(properties = { "spring.profiles.active=default" })
 public class UserDaoIntegrationTests {
-	
 
 	private UserDao<String> dao;
 	private EntityFactory factory;
@@ -41,7 +38,7 @@ public class UserDaoIntegrationTests {
 	public void setFactory(EntityFactory factory) {
 		this.factory = factory;
 	}
-	
+
 	@Value("${name.of.Smartspace:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
@@ -58,7 +55,7 @@ public class UserDaoIntegrationTests {
 	}
 
 	@Test(expected = Exception.class)
-	public void testCreateWithNullAction() throws Exception {
+	public void testCreateWithNull() throws Exception {
 		// GIVEN nothing
 
 		// WHEN I create null user
@@ -80,8 +77,8 @@ public class UserDaoIntegrationTests {
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar,
-				userRole, userPoints);
+		UserEntity user = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar, userRole,
+				userPoints);
 
 		UserEntity userInDB = this.dao.create(user);
 
@@ -102,8 +99,7 @@ public class UserDaoIntegrationTests {
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar,
-				userRole, userPoints);
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar, userRole, userPoints);
 
 		UserEntity userInDB = this.dao.create(user);
 
@@ -120,30 +116,151 @@ public class UserDaoIntegrationTests {
 	}
 
 	@Test
-	public void testCreateUpdateRead() throws Exception {
+	public void testCreateUpdateReadPointsUpdated() throws Exception {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it to dao
 		String userEmail = "missroteml@gmail.com";
-		String userName = "rotemlevi";
-		String userAvatar = "cat";
-		UserRole userRole = UserRole.PLAYER;
-		long userPoints = 100;
-		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar,
-				userRole, userPoints);
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		UserEntity userInDB = this.dao.create(user);
 
-		// AND change the user details and update in the dao
-		user.setKey(userInDB.getKey());
-		user.setUsername("rot");
-		user.setAvatar("kitten");
-		user.setPoints(34);
-		this.dao.update(user);
+		// AND change the user details (username , avater, pooints) and update in the
+		// dao
+		UserEntity update = new UserEntity();
+		update.setKey(userInDB.getKey());
+		update.setUsername("rot");
+		update.setAvatar("kitten");
+		update.setPoints(34);
+		this.dao.update(update);
 
 		// AND read the user from the dao
-		Optional<UserEntity> userFromDB = this.dao.readById(user.getKey());
+		Optional<UserEntity> userFromDB = this.dao.readById(update.getKey());
 
-		// THEN the returned object is the updated user
+		// THEN the returned object is the updated user merged with user at the fields
+		// update didn't
+		// change (role)
+		assertThat(userFromDB.get()).isNotNull().extracting("userEmail", "username", "avatar", "role", "points")
+				.containsExactly(update.getUserEmail(), update.getUsername(), update.getAvatar(), user.getRole(),
+						update.getPoints());
+	}
+
+	@Test
+	public void testCreateUpdateReadPointsNotUpdated() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new user and add it to dao
+		String userEmail = "missroteml@gmail.com";
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		UserEntity userInDB = this.dao.create(user);
+
+		// AND change the user details (username , avater) and update in the dao
+		UserEntity update = new UserEntity();
+		update.setKey(userInDB.getKey());
+		update.setUsername("rot");
+		update.setAvatar("kitten");
+		this.dao.update(update);
+
+		// AND read the user from the dao
+		Optional<UserEntity> userFromDB = this.dao.readById(update.getKey());
+
+		// THEN the returned object is the updated user merged with user at the fields
+		// update didn't
+		// change (role, points and userSmartspace)
+		assertThat(userFromDB.get()).isNotNull()
+				.extracting("userEmail", "username", "avatar", "role", "points", "userSmartspace")
+				.containsExactly(update.getUserEmail(), update.getUsername(), update.getAvatar(), user.getRole(),
+						user.getPoints(), user.getUserSmartspace());
+	}
+
+	@Test
+	public void testCreateReadById() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new user and add it to dao
+		String userEmail = "missroteml@gmail.com";
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		UserEntity userInDB = this.dao.create(user);
+
+		// AND read the user from the dao
+		Optional<UserEntity> userFromDB = this.dao.readById(userInDB.getKey());
+
+		// THEN the userFromDB have the same fields as the new user
 		assertThat(userFromDB.get()).isNotNull().isEqualToComparingFieldByField(user);
+	}
+
+	@Test
+	public void testCreateReadByIdWithBadID() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new user and add it to dao
+		String userEmail = "missroteml@gmail.com";
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		UserEntity userInDB = this.dao.create(user);
+
+		// AND try to readById with a bad id
+		Optional<UserEntity> userFromDB = this.dao.readById(userInDB.getKey() + "bad");
+
+		// THEN readById returns null
+		assertThat(userFromDB.isPresent()).isFalse();
+	}
+
+	@Test(expected = Exception.class)
+	public void testCreateTheSameUserTwice() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new user and add it twice to dao
+		String userEmail = "missroteml@gmail.com";
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		UserEntity userInDB = this.dao.create(user);
+		UserEntity userInDB2 = this.dao.create(user);
+
+		// THEN create method throws excetpion
+
+	}
+
+	@Test(expected = Exception.class)
+	public void testCreateTwoUserWithTheSameKey() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create two new users with the same email and smartspace and add them
+		// to the dao
+		String userEmail = "missroteml@gmail.com";
+		String username = "rotemlevi";
+		String avatar = "cat";
+		UserRole role = UserRole.PLAYER;
+		long points = 100;
+		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		UserEntity userInDB = this.dao.create(user);
+
+		String userEmail2 = "missroteml@gmail.com";
+		String username2 = "rvi";
+		String avatar2 = "at";
+		UserRole role2 = UserRole.MANAGER;
+		long points2 = 130;
+		UserEntity user2 = this.factory.createNewUser(userEmail2, smartspace, username2, avatar2, role2, points2);
+		UserEntity userInDB2 = this.dao.create(user);
+
+		// THEN create method throws excetpion
+
 	}
 }
