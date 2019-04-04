@@ -74,7 +74,7 @@ public class ElementIntegretionTest {
 		
 		ElementEntity update = new ElementEntity();
 		update.setKey(newElement.getKey());
-		update.setMoreAtrributes(updatedDetails);
+		update.setMoreAttributes(updatedDetails);
 		
 		update.setName("updated test");
 		

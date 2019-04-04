@@ -137,11 +137,11 @@ public class ElementEntity implements SmartspaceEntity<String> {
 
 	@Lob
 	@Convert(converter = MapToJsonConverter.class)
-	public Map<String, Object> getMoreAtrributes() {
+	public Map<String, Object> getMoreAttributes() {
 		return moreAtrributes;
 	}
 
-	public void setMoreAtrributes(Map<String, Object> moreAtrributes) {
+	public void setMoreAttributes(Map<String, Object> moreAtrributes) {
 		this.moreAtrributes = moreAtrributes;
 	}
 

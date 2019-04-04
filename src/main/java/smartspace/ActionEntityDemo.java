@@ -14,7 +14,7 @@ import smartspace.dao.memory.MemoryActionDao;
 import smartspace.data.ActionEntity;
 import smartspace.data.util.EntityFactory;
 
-@Component
+//@Component
 @Profile("production")
 public class ActionEntityDemo implements CommandLineRunner {
 	private EntityFactory factory;

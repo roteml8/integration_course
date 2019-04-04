@@ -16,7 +16,7 @@ import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
 
-@Component
+//@Component
 @Profile("production")
 public class UserEntityDemo implements CommandLineRunner{
 	private EntityFactory factory;

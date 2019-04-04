@@ -81,8 +81,8 @@ public class MemoryElementDao implements ElementDao<String> {
 				existing.setType(elementEntity.getType());
 
 			}
-			if (elementEntity.getMoreAtrributes() != null) {
-				existing.setMoreAtrributes(elementEntity.getMoreAtrributes());
+			if (elementEntity.getMoreAttributes() != null) {
+				existing.setMoreAttributes(elementEntity.getMoreAttributes());
 
 			}
 		}

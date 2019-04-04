@@ -100,8 +100,8 @@ public class RdbElementDao implements ElementDao<String> {
 		if (elementEntity.getType() != null) {
 			existing.setType(elementEntity.getType());
 		}
-		if (elementEntity.getMoreAtrributes() != null) {
-			existing.setMoreAtrributes(elementEntity.getMoreAtrributes());
+		if (elementEntity.getMoreAttributes() != null) {
+			existing.setMoreAttributes(elementEntity.getMoreAttributes());
 
 		}
 		// SQL: UPDATE
