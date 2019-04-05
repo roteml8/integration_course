@@ -51,10 +51,10 @@ public class ActionDaoIntegrationTests {
 	public void testCreateWithNullAction() throws Exception {
 		// GIVEN nothing
 
-		// WHEN I create null message
+		// WHEN I create a null action
 		this.dao.create(null);
 
-		// THEN create method throws excetpion
+		// THEN create method throws exception
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ActionDaoIntegrationTests {
 		// GIVEN dao is initialized and clean
 
 		// WHEN I create an action
-		// AND we get the message by key
+		// AND we get the action by key
 		String elementId = "123";
 		String elementSmartspace = "columnToDoList";
 		String actionType = "AddMission";

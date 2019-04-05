@@ -46,7 +46,8 @@ public class RdbElementDao implements ElementDao<String> {
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
 			return rv;
-		} else {
+		}
+		else {
 			throw new RuntimeException("elementEntity already exists with key: " + elementEntity.getKey());
 		}
 	}
@@ -76,7 +77,7 @@ public class RdbElementDao implements ElementDao<String> {
 	@Transactional
 	public void update(ElementEntity elementEntity) {
 		ElementEntity existing = this.readById(elementEntity.getKey())
-				.orElseThrow(() -> new RuntimeException("not message to update"));
+				.orElseThrow(() -> new RuntimeException("no element entity to update"));
 
 		if (elementEntity.getCreatorEmail() != null) {
 			existing.setCreatorEmail(elementEntity.getCreatorEmail());

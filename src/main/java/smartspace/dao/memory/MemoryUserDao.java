@@ -21,9 +21,7 @@ public class MemoryUserDao implements UserDao<String> {
 	}	
 	
 	@Override
-	public UserEntity create(UserEntity userEntity) throws Exception {
-		if (userEntity.getUserEmail() == null)
-			throw new NullPointerException("User has no email address, can't add to dao!");
+	public UserEntity create(UserEntity userEntity)  {
 		userEntity.setKey(smartspace+"#"+userEntity.getUserEmail());
 		this.userEntitys.add(userEntity);
 		return userEntity;
@@ -71,6 +69,10 @@ public class MemoryUserDao implements UserDao<String> {
 
 			if (userEntity.getUserSmartspace() != null) {
 				existing.setUserSmartspace(userEntity.getUserSmartspace());
+			}
+			
+			if (userEntity.getPoints() != Long.MIN_VALUE) {
+				existing.setPoints(userEntity.getPoints());
 			}
 		}
 	}

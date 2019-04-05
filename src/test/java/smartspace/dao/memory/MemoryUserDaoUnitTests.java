@@ -40,23 +40,24 @@ public class MemoryUserDaoUnitTests {
 		dao.deleteAll();
 		
 	}
-	
-	@Test(expected = Exception.class)
-	public void testCreateUserEntityNoEmail() throws Exception{
-		
-		// GIVEN a dao is available 
-		MemoryUserDao dao = new MemoryUserDao();
-		
-		// WHEN creating a new user entity with no email
-		// AND invoking create method on the dao 
-		
-		UserEntity userEntity = new UserEntity();
-		
-		// THEN create method throws exception 
-		
-		UserEntity rvUser = dao.create(userEntity);
-		dao.deleteAll();
-	}
+
+//  Note: this test is not relevant because we assume Create is always invoked with a user with email
+//	@Test(expected = Exception.class)
+//	public void testCreateUserEntityNoEmail() throws Exception{
+//		
+//		// GIVEN a dao is available 
+//		MemoryUserDao dao = new MemoryUserDao();
+//		
+//		// WHEN creating a new user entity with no email
+//		// AND invoking create method on the dao 
+//		
+//		UserEntity userEntity = new UserEntity();
+//		
+//		// THEN create method throws exception 
+//		
+//		UserEntity rvUser = dao.create(userEntity);
+//		dao.deleteAll();
+//	}
 	
 
 	@Test

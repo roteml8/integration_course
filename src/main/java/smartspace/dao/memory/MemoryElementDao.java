@@ -53,7 +53,7 @@ public class MemoryElementDao implements ElementDao<String> {
 	public void update(ElementEntity elementEntity) {
 		synchronized (this.elementEntitys) {
 			ElementEntity existing = this.readById(elementEntity.getKey())
-					.orElseThrow(() -> new RuntimeException("not message to update"));
+					.orElseThrow(() -> new RuntimeException("Element Entity is not in dao, can't update!"));
 			if (elementEntity.getCreationTimeDate() != null) {
 				existing.setCreationTimeDate(elementEntity.getCreationTimeDate());
 			}

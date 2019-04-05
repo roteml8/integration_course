@@ -49,7 +49,8 @@ public class RdbActionDao implements ActionDao {
 		if (!this.actionCrud.existsById(action.getKey())) {
 			ActionEntity rv = this.actionCrud.save(action);
 			return rv;
-		}else {
+		}
+		else {
 			throw new RuntimeException("action already exists with key: " + action.getKey());
 		}
 	

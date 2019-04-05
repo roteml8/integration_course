@@ -35,22 +35,23 @@ public class ActionEntityDemo implements CommandLineRunner {
 		Map<String, Object> details = new HashMap<>();
 		details.put("title", "word");
 
-		ActionEntity action1 = this.factory.createNewAction("123", "columnToDoList", "AddMission", new Date(),
-				"tomboukai@gmail.com", "tomboukai", details);
+	ActionEntity action1 = this.factory.createNewAction("123", "columnToDoList", "AddMission", new Date(),
+			"tomboukai@gmail.com", "tomboukai", details);
 
-		System.err.println("\n" + "Data before storing: " + action1.getActionType() + ", " + action1.getPlayerEmail()
-				+ ", " + action1.getElementId() + ", " + action1.getActionId()); // ADD toString to see all data
+	System.err.println("\n" + "Data before storing: " + action1.getActionType() + ", " + action1.getPlayerEmail()
+			+ ", " + action1.getElementId() + ", " + action1.getActionId()); // ADD toString to see all data
 
-		action1 = this.dao.create(action1);
-		System.err.println("Data after storing: " + action1.getActionType() + ", " + action1.getPlayerEmail() + ", "
-				+ action1.getElementId() + ", " + action1.getActionId()); // ADD toString to see all data
+	action1 = this.dao.create(action1);
+	System.err.println("Data after storing: " + action1.getActionType() + ", " + action1.getPlayerEmail() + ", "
+			+ action1.getElementId() + ", " + action1.getActionId()); // ADD toString to see all data
 
-		this.dao.deleteAll();
-		if (this.dao.readAll().isEmpty()) {
-			System.err.println("Data deleted successfully" + "\n");
-		} else {
-			throw new RuntimeException("some data were not deleted");
-		}
+	this.dao.deleteAll();
+	if (this.dao.readAll().isEmpty()) {
+		System.err.println("Data deleted successfully" + "\n");
+	} 
+	else {
+		throw new RuntimeException("some data were not deleted");
+	}
 
 	}
 

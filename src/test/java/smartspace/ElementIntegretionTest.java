@@ -56,9 +56,9 @@ public class ElementIntegretionTest {
 	public void testCreateUpdateAndRead() throws Exception{
 		// GIVEN messages table is empty
 		
-		// WHEN Create in DB new Message with name "Test"
-		// AND Update message details
-		// AND Read message from database
+		// WHEN Create in DB new Element with the name "Column" and the next attributes
+		// AND Update the element details
+		// AND Read the element from database
 		Map<String, Object> details = new HashMap<>();
 		Task task = new Task ("clean house","clean your house today",5,"17/3/2019",30);
 		details.put("title", task);
@@ -88,8 +88,8 @@ public class ElementIntegretionTest {
 				jackson.writeValueAsString(updatedDetails),
 				Map.class);
 		
-		// THEN the message exists
-		// AND the message name is "Test"
+		// THEN the element exists
+		// AND the element name is "updated test"
 		// AND the details are updated
 		assertThat(rv)
 			.isPresent()

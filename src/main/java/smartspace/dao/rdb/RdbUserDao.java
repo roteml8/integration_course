@@ -36,7 +36,7 @@ public class RdbUserDao implements UserDao<String> {
 
 	@Override
 	@Transactional
-	public UserEntity create(UserEntity userEntity) throws Exception {
+	public UserEntity create(UserEntity userEntity) {
 
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
@@ -46,7 +46,8 @@ public class RdbUserDao implements UserDao<String> {
 		if (!this.userCrud.existsById(userEntity.getKey())) {
 			UserEntity rv = this.userCrud.save(userEntity);
 			return rv;
-		} else {
+		} 
+		else {
 			throw new RuntimeException("userEntity already exists with key: " + userEntity.getKey());
 		}
 
@@ -76,7 +77,7 @@ public class RdbUserDao implements UserDao<String> {
 	@Transactional
 	public void update(UserEntity userEntity) {
 		UserEntity existing = this.readById(userEntity.getKey())
-				.orElseThrow(() -> new RuntimeException("not userEntity to update"));
+				.orElseThrow(() -> new RuntimeException("no userEntity to update"));
 
 		if (userEntity.getAvatar() != null) {
 			existing.setAvatar(userEntity.getAvatar());
