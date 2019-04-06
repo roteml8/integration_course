@@ -105,6 +105,15 @@ public class RdbElementDao implements ElementDao<String> {
 			existing.setMoreAttributes(elementEntity.getMoreAttributes());
 
 		}
+		if (elementEntity.isExpired() != false) { // NOT SURE!!! TODO
+			existing.setExpired(elementEntity.isExpired());
+
+		}
+//		if (elementEntity.getCreationTimeDate() != null) {
+//			existing.setCreationTimeDate(elementEntity.getCreationTimeDate());
+
+//		}
+			
 		// SQL: UPDATE
 		this.elementCrud.save(existing);
 	}

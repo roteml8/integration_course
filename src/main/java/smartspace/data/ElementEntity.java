@@ -25,24 +25,24 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	private Location location;
 	private String name;
 	private String type;
-	private boolean expired;
+	private boolean expired = false; //TODO NOT SURE!!! 
 	private String creatorSmartspace;
 	private String creatorEmail;
-	private Date creationTimestap;
+	private Date creationTimeStamp;
 
 	private Map<String, Object> moreAttributes;
 
-	public ElementEntity(String name, String type, Location loaction, Date creationTimestap, String creatorEmail,
+	public ElementEntity(String name, String type, Location loaction, Date creationTimeStamp, String creatorEmail,
 			String creatorSmartspace, boolean expired, Map<String, Object> moreAttributes) {
 
 		super();
-		this.elementSmartspace = creatorSmartspace;
+		this.creatorSmartspace = creatorSmartspace;
 		this.location = loaction;
 		this.name = name;
 		this.type = type;
 		this.expired = expired;
 		this.creatorEmail = creatorEmail;
-		this.creationTimestap = creationTimestap;
+		this.creationTimeStamp = creationTimeStamp;
 		this.moreAttributes = moreAttributes;
 	}
 
@@ -128,11 +128,11 @@ public class ElementEntity implements SmartspaceEntity<String> {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationTimeDate() {
-		return creationTimestap;
+		return creationTimeStamp;
 	}
 
 	public void setCreationTimeDate(Date creationTimeDate) {
-		this.creationTimestap = creationTimeDate;
+		this.creationTimeStamp = creationTimeDate;
 	}
 
 	@Lob
@@ -152,10 +152,10 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		if (getClass() != obj.getClass())
 			return false;
 		ElementEntity other = (ElementEntity) obj;
-		if (creationTimestap == null) {
-			if (other.creationTimestap != null)
+		if (creationTimeStamp == null) {
+			if (other.creationTimeStamp != null)
 				return false;
-		} else if (!creationTimestap.equals(other.creationTimestap))
+		} else if (!creationTimeStamp.equals(other.creationTimeStamp))
 			return false;
 		if (creatorEmail == null) {
 			if (other.creatorEmail != null)
@@ -206,7 +206,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	public String toString() {
 		return "ElementEntity [elementSmartspace=" + elementSmartspace + ", elementId=" + elementId + ", location="
 				+ location + ", name=" + name + ", type=" + type + ", expired=" + expired + ", creatorSmartspace="
-				+ creatorSmartspace + ", creatorEmail=" + creatorEmail + ", creationTimestap=" + creationTimestap
+				+ creatorSmartspace + ", creatorEmail=" + creatorEmail + ", creationTimestap=" + creationTimeStamp
 				+ ", moreAttributes=" + moreAttributes + "]";
 	}
 
