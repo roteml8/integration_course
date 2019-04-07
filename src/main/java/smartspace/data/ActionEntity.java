@@ -120,12 +120,14 @@ public class ActionEntity implements SmartspaceEntity<String> {
 	@Id
 	@Column(name="ID")
 	public String getKey() {
-		return this.actionId;
+		return this.actionSmartspace + "#" + this.actionId;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.actionId = key;
+		String[] parts = key.split("#");
+		this.actionSmartspace = parts[0];
+		this.actionId = parts[1];
 	}
 
 	@Override

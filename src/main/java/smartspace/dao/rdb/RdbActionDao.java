@@ -44,8 +44,7 @@ public class RdbActionDao implements ActionDao {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 		
 		// TODO replace this with id stored in db
-		action.setKey(nextId.getAndIncrement()+"");
-		action.setActionSmartspace(smartspace);	
+		action.setKey(smartspace + "#" + nextId.getAndIncrement());
 		if (!this.actionCrud.existsById(action.getKey())) {
 			ActionEntity rv = this.actionCrud.save(action);
 			return rv;

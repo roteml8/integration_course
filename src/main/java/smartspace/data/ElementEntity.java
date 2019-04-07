@@ -53,12 +53,14 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	@Id
 	@Column(name = "ID")
 	public String getKey() {
-		return this.elementId;
+		return this.elementSmartspace + "#" + this.elementId;
 	}
 
 	@Override
 	public void setKey(String key) {
-		this.elementId = key;
+		String[] parts = key.split("#");
+		this.elementSmartspace = parts[0];
+		this.elementId = parts[1];
 	}
 
 	public String getElementSmartSpace() {

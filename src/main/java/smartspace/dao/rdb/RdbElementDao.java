@@ -1,5 +1,5 @@
 package smartspace.dao.rdb;
-//YOTAM HAYA PO
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +41,7 @@ public class RdbElementDao implements ElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
-		elementEntity.setKey(nextId.getAndIncrement() + "");
-		elementEntity.setElementSmartSpace(smartspace);
+		elementEntity.setKey(smartspace + "#" + nextId.getAndIncrement());
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
 			return rv;
