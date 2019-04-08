@@ -19,15 +19,14 @@ public class RdbElementDao implements ElementDao<String> {
 	private String smartspace;
 	private ElementCrud elementCrud;
 	// TODO remove this
-	private AtomicLong nextId;
+	private GenericElementIdGeneratorCrud genericElementIdGeneratorCrud; 
 
 	@Autowired
-	public RdbElementDao(ElementCrud elementCrud) {
+	public RdbElementDao(ElementCrud elementCrud,
+			GenericElementIdGeneratorCrud genericElementIdGeneratorCrud) {
 		super();
 		this.elementCrud = elementCrud;
-
-		// TODO remove this
-		this.nextId = new AtomicLong(100);
+		this.genericElementIdGeneratorCrud = genericElementIdGeneratorCrud;
 	}
 
 	@Value("${name.of.Smartspace:smartspace}")
@@ -41,7 +40,12 @@ public class RdbElementDao implements ElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
-		elementEntity.setKey(smartspace + "#" + nextId.getAndIncrement());
+		GenericElementIdGenerator nextId = 
+				this.genericElementIdGeneratorCrud.save(new GenericElementIdGenerator());
+		 
+		elementEntity.setKey(smartspace + "#" + nextId.getId());
+		this.genericElementIdGeneratorCrud.delete(nextId);
+		
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
 			return rv;
