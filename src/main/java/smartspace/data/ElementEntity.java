@@ -25,7 +25,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 	private Location location;
 	private String name;
 	private String type;
-	private boolean expired = false; //TODO NOT SURE!!! 
+	private boolean expired;
 	private String creatorSmartspace;
 	private String creatorEmail;
 	private Date creationTimeStamp;
@@ -63,6 +63,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.elementId = parts[1];
 	}
 
+	@Transient
 	public String getElementSmartSpace() {
 		return elementSmartspace;
 	}
@@ -71,6 +72,7 @@ public class ElementEntity implements SmartspaceEntity<String> {
 		this.elementSmartspace = elementSmartSpace;
 	}
 
+	@Transient
 	public String getElementid() {
 		return elementId;
 	}

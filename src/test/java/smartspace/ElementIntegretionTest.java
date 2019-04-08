@@ -68,7 +68,7 @@ public class ElementIntegretionTest {
 	
 	@Test
 	public void testCreateWithValidElement() throws Exception {
-		// GIVEN dao is initialized and clean
+		// GIVEN nothing
 
 		// WHEN creating an element 
 		// AND adding the element to the dao
@@ -91,7 +91,9 @@ public class ElementIntegretionTest {
 					element.getCreationTimeDate(),element.getCreatorEmail(),
 					element.isExpired(),element.getCreatorSmartSpace(),
 					element.getMoreAttributes());
-//TODO		// AND elementInDB has a key that is...
+	// AND elementInDB has a key that is not null and is elementSmartspace+"#"+elementId (elementId > 0)
+		assertThat(elementInDB.getKey()).isNotNull().isEqualTo(element.getElementSmartSpace()+"#"+element.getElementid());
+		assertThat(elementInDB.getElementid()).isNotNull().isGreaterThan("0");
 
 	}
 	
@@ -121,17 +123,19 @@ public class ElementIntegretionTest {
 
 		// THEN the created user received a key != null which is .... 
 		// AND the dao contains nothing
-//TODO		assertThat(userInDB.getKey()).isNotNull().isEqualTo(user.getUserSmartspace() + "#" + user.getUserEmail());
+		// AND elementInDB has a key that is not null and is elementSmartspace+"#"+elementId (elementId > 0)
+		assertThat(elementInDB.getKey()).isNotNull().isEqualTo(element.getElementSmartSpace()+"#"+element.getElementid());
+		assertThat(elementInDB.getElementid()).isNotNull().isGreaterThan("0");
 		assertThat(list).isEmpty();
 
 	}
 
 	@Test
 	public void testCreateUpdateAndRead() throws Exception{
-		// GIVEN dao is initialized and clean
+		// GIVEN nothing
 		
-		// WHEN Create in DB new a new element 
-		// AND Update the element details
+		// WHEN Create in DB a new element 
+		// AND Update some element details
 		// AND Read the element from database
 		
 		Map<String, Object> details = new HashMap<>();
@@ -154,7 +158,6 @@ public class ElementIntegretionTest {
 		updatedElement.setName("updated test");
 		updatedElement.setType("testType");
 		updatedElement.setCreatorEmail("missroteml@gmail.com");
-		updatedElement.setCreationTimeDate(new Date());
 		updatedElement.setCreatorSmartSpace("testSmartspace");
 		updatedElement.setExpired(true);
 		updatedElement.setLocation(new Location(2.0,1.0));
@@ -162,12 +165,9 @@ public class ElementIntegretionTest {
 		this.dao.update(updatedElement);
 		
 		Optional<ElementEntity> rv = this.dao.readById(elementInDB.getKey());
-		
-
-		
+			
 		// THEN the element exists
-		// AND the element name is "updated test"
-		// AND all the details are updated
+		// AND all the changed details are updated
 		assertThat(rv)
 			.isPresent()
 			.get()
@@ -176,6 +176,206 @@ public class ElementIntegretionTest {
 					updatedElement.getCreatorEmail(),
 					updatedElement.isExpired(),updatedElement.getCreatorSmartSpace(),
 					updatedElement.getMoreAttributes());
+		// AND the elementInDB creationTimeStamp is the same (can't change)
+		assertThat(rv.get().getCreationTimeDate().compareTo(elementInDB.getCreationTimeDate()));
+	}
+	
+
+	@Test
+	public void testCreateReadById() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+
+		// AND read the element from the dao
+		Optional<ElementEntity> elementFromDB = this.dao.readById(elementInDB.getKey());
+
+		// THEN the elementFromDB has the same fields as the new element
+		assertThat(elementFromDB.get()).isNotNull().isEqualToComparingOnlyGivenFields(element, "name","type","location","creatorSmartspace","creatorEmail","expired","moreAttributes","elementId","elementSmartspace");
+		assertThat(elementFromDB.get().getCreationTimeDate().compareTo(element.getCreationTimeDate()));
+
+		
+	}
+
+	@Test
+	public void testCreateReadByIdWithBadID() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+
+		// AND try to readById with a none existing key
+		Optional<ElementEntity> elementFromDB = this.dao.readById("badID");
+
+		// THEN readById returns null
+		assertThat(elementFromDB.isPresent()).isFalse();
+	}
+	
+	@Test
+	public void testCreateDeleteByKeyRead() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+		
+		// AND delete from the dao by the created element ID
+		this.dao.deleteByKey(elementInDB.getKey());
+		
+		// AND read from the dao by the created element ID
+		Optional<ElementEntity> rv = this.dao.readById(elementInDB.getKey());
+		
+		//THEN the returned value is Null (dao contains no element with the specified key)
+		assertThat(rv.isPresent()).isFalse();
+	}
+	
+	public void testCreateDeleteRead() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+		
+		// AND delete the created element from the dao
+		this.dao.delete(elementInDB);
+		
+		// AND read from the dao by the created element ID
+			Optional<ElementEntity> rv = this.dao.readById(elementInDB.getKey());
+				
+		//THEN the returned value is Null (dao contains no element with the specified key)
+			assertThat(rv.isPresent()).isFalse();
+
+	}
+	
+	@Test(expected = Exception.class)
+	public void testCreateDeleteUpdate() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+		
+		// AND delete the created element from the dao
+		this.dao.delete(elementInDB);
+		
+		// AND update some of element's details
+		element.setCreatorSmartSpace("updatedSmartspace");
+		element.setName("updatedName");
+		
+		//THEN the update method throws an exception (element is not in the dao)
+		
+		this.dao.update(element);
+	}
+	
+	public void testCreateDeleteReadAll() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+		
+		// AND delete the created element from the dao
+		this.dao.delete(elementInDB);
+		
+		// AND read all from the dao
+		List<ElementEntity> list = this.dao.readAll();
+				
+		//THEN the returned list is empty
+		assertThat(list).isEmpty();
+	}
+	
+	public void testCreateTwoDeleteOneReadAll() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create two elements and add it to the dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB1 = this.dao.create(element);
+		ElementEntity elementInDB2 = this.dao.create(element);
+		
+		
+		// AND delete the first created element from the dao
+		this.dao.delete(elementInDB1);
+		
+		// AND read all from the dao
+		List<ElementEntity> list = this.dao.readAll();
+				
+		//THEN the returned list does not contain the deleted element 
+		assertThat(list).doesNotContain(elementInDB1);
+		//AND the returned list contains the undeleted element
+		assertThat(list).contains(elementInDB2);
 	}
 
 }
