@@ -16,16 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import smartspace.dao.ElementDao;
-import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
 import smartspace.data.Task;
-import smartspace.data.UserEntity;
-import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
 
 @RunWith(SpringRunner.class)
@@ -208,6 +202,33 @@ public class ElementIntegretionTest {
 
 		
 	}
+	
+	@Test
+	public void testCreateReadAll() throws Exception {
+		// GIVEN nothing
+
+		// WHEN I create a new element and add it to dao
+		String name = "Column1";
+		String type = "Column";
+		Location location = new Location(1.0,1.0);
+		Date creationTimeStamp = new Date();
+		String creatorEmail = "missroteml@gmail.com";
+		String creatorSmartspace = "2019B.Amitz4.SmartSpace";
+		boolean expired = false;
+		Map<String, Object> moreAttributes = new HashMap<>();
+		moreAttributes.put("test", new Boolean(true));
+		
+		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB = this.dao.create(element);
+
+		// AND read all from the dao
+		List<ElementEntity> list = this.dao.readAll();
+		// THEN the returned list contains only one element
+		assertThat(list).hasSize(1);
+
+
+		
+	}
 
 	@Test
 	public void testCreateReadByIdWithBadID() throws Exception {
@@ -262,6 +283,7 @@ public class ElementIntegretionTest {
 		assertThat(rv.isPresent()).isFalse();
 	}
 	
+	@Test
 	public void testCreateDeleteRead() throws Exception {
 		// GIVEN nothing
 
@@ -312,14 +334,17 @@ public class ElementIntegretionTest {
 		this.dao.delete(elementInDB);
 		
 		// AND update some of element's details
-		element.setCreatorSmartSpace("updatedSmartspace");
-		element.setName("updatedName");
+		ElementEntity updatedElement = new ElementEntity();
+		updatedElement.setKey(elementInDB.getKey());
+		updatedElement.setCreatorSmartSpace("updatedSmartspace");
+		updatedElement.setName("updatedName");
 		
 		//THEN the update method throws an exception (element is not in the dao)
 		
-		this.dao.update(element);
+		this.dao.update(updatedElement);
 	}
 	
+	@Test
 	public void testCreateDeleteReadAll() throws Exception {
 		// GIVEN nothing
 
@@ -347,6 +372,7 @@ public class ElementIntegretionTest {
 		assertThat(list).isEmpty();
 	}
 	
+	@Test
 	public void testCreateTwoDeleteOneReadAll() throws Exception {
 		// GIVEN nothing
 
@@ -372,10 +398,14 @@ public class ElementIntegretionTest {
 		// AND read all from the dao
 		List<ElementEntity> list = this.dao.readAll();
 				
-		//THEN the returned list does not contain the deleted element 
-		assertThat(list).doesNotContain(elementInDB1);
-		//AND the returned list contains the undeleted element
-		assertThat(list).contains(elementInDB2);
+		//THEN the returned list is of size 1 
+		assertThat(list).hasSize(1);
+		//AND the dao does not contain the deleted element
+		assertThat(dao.readById(elementInDB1.getKey()).isPresent()).isFalse();
+		//AND the dao contains the undeleted element
+		assertThat(dao.readById(elementInDB2.getKey()).isPresent());
+		//AND the two elements have different keys
+		assertThat(elementInDB1.getKey()).isNotEqualTo(elementInDB2.getKey());
 	}
 
 }

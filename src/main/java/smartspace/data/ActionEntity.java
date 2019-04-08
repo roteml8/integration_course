@@ -11,6 +11,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import smartspace.dao.rdb.MapToJsonConverter;
 @Entity
@@ -43,6 +44,7 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.moreAttributes = moreAttributes;
 	}
 
+	@Transient
 	public String getActionSmartspace() {
 		return actionSmartspace;
 	}
@@ -51,6 +53,7 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.actionSmartspace = actionSmartspace;
 	}
 
+	@Transient
 	public String getActionId() {
 		return actionId;
 	}
