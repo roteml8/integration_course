@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import org.junit.After;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +48,11 @@ public class ElementIntegretionTest {
 	@After
 	public void teardown() {
 		this.dao.deleteAll();
+	}
+	
+	@Before
+	public void setup() {
+		dao.deleteAll();
 	}
 	
 	@Test(expected = Exception.class)

@@ -16,11 +16,11 @@ public class RdbActionDao implements ActionDao {
 
 	private ActionCrud actionCrud;
 	private String smartspace;
-	private GenericActionIdGeneratorCrud genericActionIdGeneratorCrud; 
+	private GenericIdGeneratorCrud genericActionIdGeneratorCrud; 
 	
 	@Autowired
 	public  RdbActionDao(ActionCrud actionCrud,
-			GenericActionIdGeneratorCrud genericActionIdGeneratorCrud) {
+			GenericIdGeneratorCrud genericActionIdGeneratorCrud) {
 		super();
 	this.actionCrud=actionCrud;
 	this.genericActionIdGeneratorCrud = genericActionIdGeneratorCrud;
@@ -37,8 +37,8 @@ public class RdbActionDao implements ActionDao {
 	public ActionEntity create(ActionEntity action) {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
-		GenericActionIdGenerator nextId = 
-				this.genericActionIdGeneratorCrud.save(new GenericActionIdGenerator());
+		GenericIdGenerator nextId = 
+				this.genericActionIdGeneratorCrud.save(new GenericIdGenerator());
 
 		action.setKey(smartspace + "#" + nextId.getId());
 		this.genericActionIdGeneratorCrud.delete(nextId);

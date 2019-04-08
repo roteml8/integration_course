@@ -19,11 +19,11 @@ public class RdbElementDao implements ElementDao<String> {
 	private String smartspace;
 	private ElementCrud elementCrud;
 	// TODO remove this
-	private GenericElementIdGeneratorCrud genericElementIdGeneratorCrud; 
+	private GenericIdGeneratorCrud genericElementIdGeneratorCrud; 
 
 	@Autowired
 	public RdbElementDao(ElementCrud elementCrud,
-			GenericElementIdGeneratorCrud genericElementIdGeneratorCrud) {
+			GenericIdGeneratorCrud genericElementIdGeneratorCrud) {
 		super();
 		this.elementCrud = elementCrud;
 		this.genericElementIdGeneratorCrud = genericElementIdGeneratorCrud;
@@ -40,8 +40,8 @@ public class RdbElementDao implements ElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
-		GenericElementIdGenerator nextId = 
-				this.genericElementIdGeneratorCrud.save(new GenericElementIdGenerator());
+		GenericIdGenerator nextId = 
+				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());
 		 
 		elementEntity.setKey(smartspace + "#" + nextId.getId());
 		this.genericElementIdGeneratorCrud.delete(nextId);

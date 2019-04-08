@@ -6,10 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class GenericActionIdGenerator {
+public class GenericIdGenerator {
 	private Long id;
 	
-	public GenericActionIdGenerator() {
+	public GenericIdGenerator() {
 	}
 
 	@Id
