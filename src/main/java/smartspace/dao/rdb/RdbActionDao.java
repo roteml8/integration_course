@@ -1,6 +1,7 @@
 package smartspace.dao.rdb;
 import java.util.ArrayList; 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.ActionDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.ElementEntity;
 
 
 
@@ -77,6 +79,65 @@ public class RdbActionDao implements ActionDao {
 	public void deleteAll() {
 		// SQL: DELETE
 		this.actionCrud.deleteAll();
+	}
+
+	@Override
+	public void deleteByKey(String actionEntity) {
+		this.actionCrud.deleteById(actionEntity);		
+	}
+
+	@Override
+	public void delete(ActionEntity actionEntity) {
+		this.actionCrud.delete(actionEntity);
+		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<ActionEntity> readById(String actionEntity) {
+		// SQL: SELECT
+		return this.actionCrud.findById(actionEntity);
+	}
+
+	@Override
+	public void update(ActionEntity actionEntity) {
+		ActionEntity existing = this.readById(actionEntity.getKey())
+				.orElseThrow(() -> new RuntimeException("no element entity to update"));
+
+		if (actionEntity.getActionId() != null) {
+			existing.setActionId(actionEntity.getActionId());
+		}
+		if (actionEntity.getActionSmartspace() != null) {
+			existing.setActionSmartspace(actionEntity.getActionSmartspace());
+		}
+		if (actionEntity.getActionType() != null) {
+			existing.setActionType(actionEntity.getActionType());
+		}
+		if (actionEntity.getCreationTimestamp()!= null) {
+			existing.setCreationTimestamp(actionEntity.getCreationTimestamp());
+		}
+		if (actionEntity.getElementId() != null) {
+			existing.setElementId(actionEntity.getElementId() );
+		}
+		if (actionEntity.getElementSmartspace() != null) {
+			existing.setElementSmartspace(actionEntity.getElementSmartspace());
+
+		}
+		if (actionEntity.getKey() != null) {
+			existing.setKey(actionEntity.getKey());
+
+		}
+		if (actionEntity.getPlayerEmail() != null) {
+			existing.setPlayerEmail(actionEntity.getPlayerEmail() );
+
+		}
+		if (actionEntity.getPlayerSmartspace() != null) {
+			existing.setPlayerSmartspace(actionEntity.getPlayerSmartspace() );
+
+		}
+			
+		// SQL: UPDATE
+		this.actionCrud.save(existing);		
 	}
 
 }

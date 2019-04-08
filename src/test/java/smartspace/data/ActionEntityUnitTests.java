@@ -178,5 +178,22 @@ public class ActionEntityUnitTests {
 
 		ae.setMoreAttributes(null);
 	}
+	
+	@Test
+	public void testSetAndGetKey() throws Exception {
+		// GIVEN an actionEntity is available
+		// AND a string
+		
+		ActionEntity ae = new ActionEntity();
+		String expected = "KeyTest";
+
+		// WHEN we invoke setKey with the expected String
+		ae.setKey(expected);
+
+		// THEN the CreatorEmail will equals the expected String
+		assertThat(ae.getKey()).usingDefaultComparator().isEqualTo(expected);
+
+		ae.setKey(null);
+	}
 
 }

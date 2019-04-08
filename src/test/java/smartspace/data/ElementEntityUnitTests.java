@@ -163,9 +163,38 @@ public class ElementEntityUnitTests {
 		ee.setExpired(false);	
 		}
 	
+	@Test
+	public void testSetAndGetDate() throws Exception {
+		// GIVEN an elementEntity is available
+		// AND a Date
+		
+		ElementEntity ee = new ElementEntity();
+		Date expected = new Date();
+		// WHEN we invoke setCreationTimeDate with the expected Date
+		ee.setCreationTimeDate(expected);
+		// THEN the getCreationTimeDate will equals the expected Date
+		assertThat(ee.getCreationTimeDate()).usingDefaultComparator().isEqualTo(expected);
+
+		ee.setCreationTimeDate(null);	
+		}
 	
-	
-	
+
+	@Test
+	public void testSetAndGetMoreAttributes() throws Exception {
+		// GIVEN an elementEntity is available
+		// AND a Date
+
+		ElementEntity ee = new ElementEntity();
+		HashMap<String, Object>  expected = new HashMap<String, Object>();
+		// WHEN we invoke setMoreAttributes with the expected <String, Object> 
+		expected.put("amit", 1);
+		ee.setMoreAttributes(expected);
+		// THEN the getMoreAttributes will equals the expected <String, Object>
+		assertThat(ee.getMoreAttributes()).usingDefaultComparator().isEqualTo(expected);
+
+		expected.clear();
+		ee.setMoreAttributes(null);
+		}
 	
 	
 	
