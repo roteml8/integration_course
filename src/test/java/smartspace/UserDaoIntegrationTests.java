@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import smartspace.dao.UserDao;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
+import smartspace.infra.FakeUserGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -53,6 +56,22 @@ public class UserDaoIntegrationTests {
 	public void teardown() {
 		dao.deleteAll();
 	}
+	
+	public UserEntity fakeUserGenerator() {
+
+		String generatedString = RandomString.make();
+
+		String userSmartspace = smartspace;
+		String userEmail = generatedString + "missroteml@gmail.com";
+		String userName = generatedString + "rotemlevi";
+		String userAvatar = generatedString + "cat";
+		UserRole userRole = UserRole.values()[new Random().nextInt(UserRole.values().length)];
+		long userPoints = new Random().nextLong();
+		
+		UserEntity fakeUser = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar, userRole,
+				userPoints);
+		return fakeUser;
+	}
 
 	@Test(expected = Exception.class)
 	public void testCreateWithNull() throws Exception {
@@ -71,6 +90,7 @@ public class UserDaoIntegrationTests {
 
 		// WHEN creating a user
 		// AND adding the user to the dao
+		/*
 		String userSmartspace = smartspace;
 		String userEmail = "missroteml@gmail.com";
 		String userName = "rotemlevi";
@@ -79,6 +99,9 @@ public class UserDaoIntegrationTests {
 		long userPoints = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar, userRole,
 				userPoints);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
 
 		UserEntity userInDB = this.dao.create(user);
 
@@ -94,13 +117,16 @@ public class UserDaoIntegrationTests {
 		// WHEN I create a new user and add it to dao
 		// AND Delete all users
 		// AND read all users
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String userName = "rotemlevi";
 		String userAvatar = "cat";
 		UserRole userRole = UserRole.PLAYER;
 		long userPoints = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar, userRole, userPoints);
-
+*/
+		
+		UserEntity user = fakeUserGenerator();
 		UserEntity userInDB = this.dao.create(user);
 
 		this.dao.deleteAll();
@@ -120,12 +146,16 @@ public class UserDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it to dao
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND change the user details (username , avater, pooints) and update in the
@@ -153,12 +183,17 @@ public class UserDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it to dao
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
+
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND change the user details (username , avater) and update in the dao
@@ -185,12 +220,16 @@ public class UserDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it to dao
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND read the user from the dao
@@ -205,12 +244,19 @@ public class UserDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it to dao
+		
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		//UserEntity user = new FakeUserGenerator().getUser();
+		UserEntity user = fakeUserGenerator();
+		
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND try to readById with a bad id
@@ -225,12 +271,17 @@ public class UserDaoIntegrationTests {
 		// GIVEN nothing
 
 		// WHEN I create a new user and add it twice to dao
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
+		
 		UserEntity userInDB = this.dao.create(user);
 		UserEntity userInDB2 = this.dao.create(user);
 
@@ -244,20 +295,29 @@ public class UserDaoIntegrationTests {
 
 		// WHEN I create two new users with the same email and smartspace and add them
 		// to the dao
+		/*
 		String userEmail = "missroteml@gmail.com";
 		String username = "rotemlevi";
 		String avatar = "cat";
 		UserRole role = UserRole.PLAYER;
 		long points = 100;
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
+		*/
+		
+		UserEntity user = fakeUserGenerator();
 		UserEntity userInDB = this.dao.create(user);
 
+		/*
 		String userEmail2 = "missroteml@gmail.com";
 		String username2 = "rvi";
 		String avatar2 = "at";
 		UserRole role2 = UserRole.MANAGER;
 		long points2 = 130;
 		UserEntity user2 = this.factory.createNewUser(userEmail2, smartspace, username2, avatar2, role2, points2);
+		*/
+		
+		UserEntity user2 = fakeUserGenerator();
+		user2.setUserEmail(user.getUserEmail());
 		UserEntity userInDB2 = this.dao.create(user);
 
 		// THEN create method throws excetpion
