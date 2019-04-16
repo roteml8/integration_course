@@ -2,12 +2,11 @@ package smartspace.infra;
 
 import java.util.Random;
 
+
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
@@ -38,13 +37,13 @@ public class FakeUserGenerator implements UserGenerator {
 		String userEmail = generatedString + "missroteml@gmail.com";
 		String userName = generatedString + "rotemlevi";
 		String userAvatar = generatedString + "cat";
-		
+
 		UserRole userRole = UserRole.values()[new Random().nextInt(UserRole.values().length)];
-		//UserRole userRole = UserRole.PLAYER;
-		
+
 		long userPoints = new Random().nextLong();
 		UserEntity fakeUser = this.factory.createNewUser(userEmail, userSmartspace, userName, userAvatar, userRole,
 				userPoints);
+
 		return fakeUser;
 	}
 

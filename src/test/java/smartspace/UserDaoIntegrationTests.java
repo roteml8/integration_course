@@ -31,6 +31,7 @@ public class UserDaoIntegrationTests {
 	private UserDao<String> dao;
 	private EntityFactory factory;
 	private String smartspace;
+	private FakeUserGenerator generator;
 
 	@Autowired
 	public void setDao(UserDao<String> dao) {
@@ -40,6 +41,11 @@ public class UserDaoIntegrationTests {
 	@Autowired
 	public void setFactory(EntityFactory factory) {
 		this.factory = factory;
+	}
+	
+	@Autowired
+	public void setGenerator(FakeUserGenerator generator) {
+		this.generator = generator;
 	}
 
 	@Value("${name.of.Smartspace:smartspace}")
@@ -57,6 +63,7 @@ public class UserDaoIntegrationTests {
 		dao.deleteAll();
 	}
 	
+	/* not needed anymore, generator class is batter.
 	public UserEntity fakeUserGenerator() {
 
 		String generatedString = RandomString.make();
@@ -72,6 +79,7 @@ public class UserDaoIntegrationTests {
 				userPoints);
 		return fakeUser;
 	}
+	*/
 
 	@Test(expected = Exception.class)
 	public void testCreateWithNull() throws Exception {
@@ -101,8 +109,7 @@ public class UserDaoIntegrationTests {
 				userPoints);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
-
+		UserEntity user = generator.getUser();
 		UserEntity userInDB = this.dao.create(user);
 
 		// THEN the same user is in the dao
@@ -126,7 +133,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, userName, userAvatar, userRole, userPoints);
 */
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		UserEntity userInDB = this.dao.create(user);
 
 		this.dao.deleteAll();
@@ -155,7 +162,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND change the user details (username , avater, pooints) and update in the
@@ -192,7 +199,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 
 		UserEntity userInDB = this.dao.create(user);
 
@@ -229,7 +236,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		UserEntity userInDB = this.dao.create(user);
 
 		// AND read the user from the dao
@@ -255,7 +262,7 @@ public class UserDaoIntegrationTests {
 		*/
 		
 		//UserEntity user = new FakeUserGenerator().getUser();
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		
 		UserEntity userInDB = this.dao.create(user);
 
@@ -280,7 +287,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		
 		UserEntity userInDB = this.dao.create(user);
 		UserEntity userInDB2 = this.dao.create(user);
@@ -304,7 +311,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user = this.factory.createNewUser(userEmail, smartspace, username, avatar, role, points);
 		*/
 		
-		UserEntity user = fakeUserGenerator();
+		UserEntity user = generator.getUser();
 		UserEntity userInDB = this.dao.create(user);
 
 		/*
@@ -316,7 +323,7 @@ public class UserDaoIntegrationTests {
 		UserEntity user2 = this.factory.createNewUser(userEmail2, smartspace, username2, avatar2, role2, points2);
 		*/
 		
-		UserEntity user2 = fakeUserGenerator();
+		UserEntity user2 = generator.getUser();
 		user2.setUserEmail(user.getUserEmail());
 		UserEntity userInDB2 = this.dao.create(user);
 
