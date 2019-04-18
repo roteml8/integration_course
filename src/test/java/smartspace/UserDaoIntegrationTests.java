@@ -21,7 +21,7 @@ import smartspace.dao.UserDao;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.EntityFactory;
-import smartspace.infra.FakeUserGenerator;
+import smartspace.data.util.FakeUserGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

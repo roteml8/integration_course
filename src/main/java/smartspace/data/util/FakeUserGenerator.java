@@ -1,4 +1,4 @@
-package smartspace.infra;
+package smartspace.data.util;
 
 import java.util.Random;
 

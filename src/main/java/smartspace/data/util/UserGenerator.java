@@ -1,4 +1,5 @@
-package smartspace.infra;
+package smartspace.data.util;
+
 
 import smartspace.data.UserEntity;
 
