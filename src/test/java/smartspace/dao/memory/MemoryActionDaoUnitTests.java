@@ -32,10 +32,12 @@ public class MemoryActionDaoUnitTests {
 		// AND the rvAction has a key and the key > 0
 		assertThat(dao.readAll()).usingElementComparatorOnFields("actionId").contains(actionEntity);
 
-		assertThat(Integer.valueOf(rvAction.getKey())).isNotNull().isGreaterThan(0);
+		// AND the action key is not null and is smartspace+"#"+id and id > 0 and
+		assertThat(rvAction.getKey()).isNotNull()
+				.isEqualTo(rvAction.getActionSmartspace() + "#" + rvAction.getActionId());
+		assertThat(rvAction.getActionId()).isGreaterThan("0");
 
 		dao.deleteAll();
-		
 
 	}
 

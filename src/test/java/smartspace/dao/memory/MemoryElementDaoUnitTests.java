@@ -28,7 +28,7 @@ public class MemoryElementDaoUnitTests {
 				
 		// WHEN invoking readById on the dao with rvE key
 				
-		Optional<ElementEntity> result = dao.readById(rvE.getElementid());
+		Optional<ElementEntity> result = dao.readById(rvE.getKey());
 				
 		// THEN the method returns a element entity with elementEntity's key 
 		
@@ -135,7 +135,7 @@ public class MemoryElementDaoUnitTests {
 		
 		elementEntity.setName("table");
 		elementEntity.setExpired(true);
-		elementEntity.setKey("aaa");
+		elementEntity.setKey("smartbla#1337");
 		dao.update(rvE);
 				
 		// THEN the user entity with rvUser's key is updated in the dao 

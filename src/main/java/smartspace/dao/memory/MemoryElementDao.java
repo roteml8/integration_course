@@ -1,11 +1,12 @@
 package smartspace.dao.memory;
 
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Value;
 
 import smartspace.dao.*;
 import smartspace.data.*;
@@ -15,6 +16,12 @@ public class MemoryElementDao implements ElementDao<String> {
 
 	private List<ElementEntity> elementEntitys;
 	private AtomicLong nextId;
+	private String smartspace;
+
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.smartspace = smartspace;
+	}
 
 	public MemoryElementDao() {
 		this.elementEntitys = Collections.synchronizedList(new ArrayList<>());
@@ -23,7 +30,7 @@ public class MemoryElementDao implements ElementDao<String> {
 
 	@Override
 	public ElementEntity create(ElementEntity elementEntity) {
-		elementEntity.setKey(nextId.getAndIncrement() + "");
+		elementEntity.setKey(smartspace + "#" + nextId.getAndIncrement());
 		this.elementEntitys.add(elementEntity);
 		return elementEntity;
 	}

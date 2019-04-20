@@ -6,14 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
- 
+import org.springframework.beans.factory.annotation.Value;
+
 import smartspace.dao.*;
 import smartspace.data.*;
 
 //@Repository
 public class MemoryUserDao implements UserDao<String> {
-	public static String smartspace = "2019B.Amitz4.SmartSpace"; 
+	private String smartspace;
 	private List<UserEntity> userEntitys;
+	
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.smartspace = smartspace;
+	}
   
 	
 	public MemoryUserDao() {
