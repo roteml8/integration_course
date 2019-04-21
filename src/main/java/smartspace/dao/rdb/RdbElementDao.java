@@ -1,20 +1,24 @@
 package smartspace.dao.rdb;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import smartspace.dao.ElementDao;
+import smartspace.dao.EnhancedElementDao;
 import smartspace.data.ElementEntity;
+import smartspace.data.Location;
 
 @Repository
-public class RdbElementDao implements ElementDao<String> {
+public class RdbElementDao implements EnhancedElementDao<String> {
 
 	private String smartspace;
 	private ElementCrud elementCrud;
@@ -134,6 +138,65 @@ public class RdbElementDao implements ElementDao<String> {
 	public void deleteAll() {
 		// SQL: DELETE
 		this.elementCrud.deleteAll();
+	}
+
+	@Override
+	public List<ElementEntity> readAll(int size, int page) {
+		return this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+
+	}
+
+	@Override
+	public List<ElementEntity> readAll(String sortBy, int size, int page) {
+		return this.elementCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithNameContaining(String text, int size, int page) {
+		return this.elementCrud.findAllByNameLike("%" + text + "%", PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithLocation(Location location, int size, int page) {
+		return this.elementCrud.findAllByLocationLike(location, PageRequest.of(page, size));
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithTypeContaining(String text, int size, int page) {
+		return this.elementCrud.findAllByTypeLike("%" + text + "%", PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithExpired(boolean expired, int size, int page) {
+		return this.elementCrud.findAllByExpiredLike(expired, PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithCreatorEmailContaining(String text, int size, int page) {
+		return this.elementCrud.findAllByCreatorEmailLike("%" + text + "%", PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithCreatorSmartspaceContaining(String text, int size, int page) {
+		return this.elementCrud.findAllByCreatorSmartspaceLike("%" + text + "%", PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page) {
+		return this.elementCrud.findAllByCreationTimeStampLike(stamp, PageRequest.of(page, size));
+
+	}
+
+	@Override
+	public List<ElementEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
+		return this.elementCrud.findAllByMoreAttributesLike(moreAttributes, PageRequest.of(page, size));
+
 	}
 
 }
