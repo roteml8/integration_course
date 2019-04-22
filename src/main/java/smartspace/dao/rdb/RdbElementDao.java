@@ -141,59 +141,69 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readAll(int size, int page) {
 		return this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readAll(String sortBy, int size, int page) {
 		return this.elementCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithNameContaining(String text, int size, int page) {
 		return this.elementCrud.findAllByNameLike("%" + text + "%", PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithLocation(Location location, int size, int page) {
 		return this.elementCrud.findAllByLocationLike(location, PageRequest.of(page, size));
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithTypeContaining(String text, int size, int page) {
 		return this.elementCrud.findAllByTypeLike("%" + text + "%", PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithExpired(boolean expired, int size, int page) {
 		return this.elementCrud.findAllByExpiredLike(expired, PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithCreatorEmailContaining(String text, int size, int page) {
 		return this.elementCrud.findAllByCreatorEmailLike("%" + text + "%", PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithCreatorSmartspaceContaining(String text, int size, int page) {
 		return this.elementCrud.findAllByCreatorSmartspaceLike("%" + text + "%", PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page) {
 		return this.elementCrud.findAllByCreationTimeStampLike(stamp, PageRequest.of(page, size));
 
 	}
 
 	@Override
+	@Transactional
 	public List<ElementEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
 		return this.elementCrud.findAllByMoreAttributesLike(moreAttributes, PageRequest.of(page, size));
 
