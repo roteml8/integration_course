@@ -16,9 +16,9 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	public List<UserEntity> readUserWithAvaterContaining(String text, int size, int page);
 
 	public List<UserEntity> readUserWithRole(UserRole role, int size, int page);
-/*
-	//public List<UserEntity> readUserWithPointsLess(long points, int size, int page);
 
+	public List<UserEntity> readUserWithPoints(long points, int size, int page);
+	/*
 	//public List<UserEntity> readUserWithPointsMore(long points, int size, int page);
 */
 }

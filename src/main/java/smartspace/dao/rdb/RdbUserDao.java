@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedUserDao;
-import smartspace.dao.UserDao;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 
@@ -149,13 +148,14 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		return this.userCrud.findAllByRoleLike(role , PageRequest.of(page, size));
 	}
 
-	/*
+	
 	@Override
 	@Transactional(readOnly = true)
-	public List<UserEntity> readUserWithPointsLess(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLess(points , PageRequest.of(page, size));
+	public List<UserEntity> readUserWithPoints(long points, int size, int page) {
+		return this.userCrud.findAllByPointsLike(points , PageRequest.of(page, size));
 	}
-
+	
+	/*
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsMore(long points, int size, int page) {

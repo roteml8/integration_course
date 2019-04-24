@@ -42,7 +42,6 @@ public class ElementServiceImpl implements ElementService {
 				&& entity.getType().trim().isEmpty() == false;
 	}
 
-	//TODO return this code when enhanced element entity is done.
 	
 	  @Override 
 	  public List<ElementEntity> getUsingPagination(int size, int page) {
