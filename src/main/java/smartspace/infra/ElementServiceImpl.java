@@ -1,20 +1,22 @@
 package smartspace.infra;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import smartspace.dao.ElementDao;
+import smartspace.dao.EnhancedElementDao;
 import smartspace.data.ElementEntity;
 
 @Service
 public class ElementServiceImpl implements ElementService {
-	private ElementDao<String> dao;
+	private EnhancedElementDao<String> dao;
 	private int CreationCode = 42;
 
 	@Autowired
-	public void setDao(ElementDao<String> dao) {
+	public ElementServiceImpl(EnhancedElementDao<String> dao) {
+		super();
 		this.dao = dao;
 	}
 
@@ -41,8 +43,10 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	//TODO return this code when enhanced element entity is done.
-	/*
-	 * @Override public List<ElementEntity> getUsingPagination(int size, int page) {
-	 * return this.dao .readAll("key", size, page); }
-	 */
+	
+	  @Override 
+	  public List<ElementEntity> getUsingPagination(int size, int page) {
+		  	return this.dao.readAll("key", size, page);
+	  }
+	 
 }
