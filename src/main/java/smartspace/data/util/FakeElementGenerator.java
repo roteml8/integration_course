@@ -37,7 +37,7 @@ public class FakeElementGenerator implements ElementGenerator {
 		String generatedString = RandomString.make();
 		String name = "element" + generatedString;
 		String type = "type" + generatedString;
-		String creatorSmartspace = smartspace + generatedString;
+		String creatorSmartspace = smartspace;
 		String creatorEmail = "email" + generatedString;
 		Date creationTimeStamp = new Date();
 		Map<String,Object> moreAttributes = new HashMap<>();

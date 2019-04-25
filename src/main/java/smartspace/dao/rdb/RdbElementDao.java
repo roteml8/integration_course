@@ -44,7 +44,7 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
-		if(elementEntity.getKey() == null)
+		if(elementEntity.getCreatorSmartSpace().equals(smartspace))
 		{
 		GenericIdGenerator nextId = 
 				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());
