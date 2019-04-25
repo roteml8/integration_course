@@ -121,7 +121,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public List<UserEntity> readAll(String sortBy, int size, int page) {
 		return this.userCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithNameContaining(String text, int size, int page) {
@@ -134,8 +134,6 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		return this.userCrud.findAllByUserEmailLike("%" + text + "%", PageRequest.of(page, size));
 	}
 
-	
-
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithAvaterContaining(String text, int size, int page) {
@@ -145,22 +143,25 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithRole(UserRole role, int size, int page) {
-		return this.userCrud.findAllByRoleLike(role , PageRequest.of(page, size));
+		return this.userCrud.findAllByRoleLike(role, PageRequest.of(page, size));
 	}
 
-	
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPoints(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLike(points , PageRequest.of(page, size));
+		return this.userCrud.findAllByPointsLike(points, PageRequest.of(page, size));
 	}
-	
-	/*
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsMore(long points, int size, int page) {
-		return this.userCrud.findAllByPointsMore(points , PageRequest.of(page, size));
+		return this.userCrud.findAllByPointsGreaterThanEqual(points, PageRequest.of(page, size));
 	}
-*/
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserEntity> readUserWithPointsLess(long points, int size, int page) {
+		return this.userCrud.findAllByPointsLessThanEqual(points, PageRequest.of(page, size));
+	}
 
 }

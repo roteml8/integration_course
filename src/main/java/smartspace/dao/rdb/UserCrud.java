@@ -24,6 +24,9 @@ public interface UserCrud extends
 
 	public List<UserEntity> findAllByPointsLike(@Param("points") long points, Pageable pageable);
 
-//	public List<UserEntity> findAllByPointsMore(@Param("points") long points, Pageable pageable);
+	public List<UserEntity> findAllByPointsGreaterThanEqual(@Param("points") long points, Pageable pageable);
+	
+	public List<UserEntity> findAllByPointsLessThanEqual(@Param("points") long points, Pageable pageable);
+
 
 }

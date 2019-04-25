@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import smartspace.dao.EnhancedElementDao;
@@ -12,12 +13,18 @@ import smartspace.data.ElementEntity;
 @Service
 public class ElementServiceImpl implements ElementService {
 	private EnhancedElementDao<String> dao;
+	private String mySmartspace;
 	private int CreationCode = 42;
 
 	@Autowired
 	public ElementServiceImpl(EnhancedElementDao<String> dao) {
 		super();
 		this.dao = dao;
+	}
+	
+	@Value("${name.of.Smartspace:smartspace}")
+	public void setSmartspace(String smartspace) {
+		this.mySmartspace = smartspace;
 	}
 
 	@Override
@@ -36,10 +43,15 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	private boolean valiadate(ElementEntity entity) {
-		return entity.getCreatorEmail() != null && entity.getCreatorSmartSpace() != null && entity.getLocation() != null
-				&& entity.getMoreAttributes() != null && entity.getName() != null
-				&& entity.getName().trim().isEmpty() == false && entity.getType() != null
-				&& entity.getType().trim().isEmpty() == false;
+		return entity.getCreatorEmail() != null && 
+				entity.getCreatorSmartSpace() != null && 
+				entity.getCreatorSmartSpace().equals(mySmartspace) == false &&
+				entity.getLocation() != null && 
+				entity.getMoreAttributes() != null && 
+				entity.getName() != null &&
+				entity.getName().trim().isEmpty() == false &&
+				entity.getType() != null && 
+				entity.getType().trim().isEmpty() == false;
 	}
 
 	

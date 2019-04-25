@@ -44,11 +44,14 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
+		if(elementEntity.getKey() == null)
+		{
 		GenericIdGenerator nextId = 
 				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());
 		 
 		elementEntity.setKey(smartspace + "#" + nextId.getId());
 		this.genericElementIdGeneratorCrud.delete(nextId);
+		}
 		
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
