@@ -22,5 +22,14 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	public List<UserEntity> readUserWithPointsMore(long points, int size, int page);
 	
 	public List<UserEntity> readUserWithPointsLess(long points, int size, int page);
+	
+	
+	/**
+	 * Checks if the key belong's to an existing user with ADMIN credentials.
+	 * 
+	 * @param  key    the key of the user we want to check.
+	 * @return        true if the key belongs to a user with UserRole set to ADMIN , otherwise  false.
+	 */
+	public boolean isAdmin(Key key);
 
 }

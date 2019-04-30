@@ -164,4 +164,15 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		return this.userCrud.findAllByPointsLessThanEqual(points, PageRequest.of(page, size));
 	}
 
+	@Override
+	public boolean isAdmin(String key) {
+		UserEntity existing = this.readById(key).orElse(null);
+
+		// if the user is in the UserDao and it's UserRole is admin return true.
+		if (existing != null && existing.getRole() == UserRole.ADMIN)
+			return true;
+		else
+			return false;
+	}
+
 }
