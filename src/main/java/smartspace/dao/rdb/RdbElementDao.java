@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
+import smartspace.data.UserEntity;
+import smartspace.data.UserRole;
 
 @Repository
 public class RdbElementDao implements EnhancedElementDao<String> {

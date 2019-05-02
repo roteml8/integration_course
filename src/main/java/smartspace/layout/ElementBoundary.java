@@ -1,13 +1,14 @@
 package smartspace.layout;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
 
 public class ElementBoundary {
 	
-	private String key;
+	private Map<String,Object> key;
 	private Location location;
 	private String name;
 	private String type;
@@ -23,7 +24,9 @@ public class ElementBoundary {
 	
 	public ElementBoundary (ElementEntity entity) {
 		
-		this.key = entity.getKey();
+		this.key = new HashMap<>();
+		this.key.put("id", entity.getElementid());
+		this.key.put("smartspace", entity.getElementSmartSpace());
 		this.location = entity.getLocation();
 		this.name = entity.getName();
 		this.type = entity.getType();
@@ -36,11 +39,11 @@ public class ElementBoundary {
 
 
 	
-	public String getKey() {
+	public Map<String,Object> getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Map<String,Object> key) {
 		this.key = key;
 	}
 
@@ -111,7 +114,7 @@ public class ElementBoundary {
 	public ElementEntity convertToEntity() {
 		ElementEntity entity = new ElementEntity();
 		
-		entity.setKey(key);
+		entity.setKey(key.get("smartspace")+"#"+key.get("id"));
 		entity.setLocation(location);
 		entity.setName(name);
 		entity.setType(type);

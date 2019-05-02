@@ -28,6 +28,7 @@ public interface EnhancedElementDao<Key> extends ElementDao<Key> {
 	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page);
 	
 	public List<ElementEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page);
+	
 
 	
 
