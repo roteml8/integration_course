@@ -56,6 +56,13 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	}
 
 	@Override
+	@Transactional
+	public UserEntity importUser(UserEntity userEntity) {
+		UserEntity rv = this.userCrud.save(userEntity);
+		return rv;
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public Optional<UserEntity> readById(String userkey) {
 

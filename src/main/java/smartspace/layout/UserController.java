@@ -22,17 +22,18 @@ public class UserController {
 	}
 	
 	@RequestMapping(
-			path="/userdemo/{code}",
+			path="/userdemo/{adminSmartspace}/{adminEmail}",
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary newUser (
 			@RequestBody UserBoundary user, 
-			@PathVariable("code") int code) {
+			@PathVariable("adminSmartspace") String adminSmartspace,
+			@PathVariable("adminEmail") String adminEmail){
 		
 		return new UserBoundary(
 				this.userService
-					.newUser(user.convertToEntity(), code));
+					.newUser(user.convertToEntity(), adminSmartspace + "#" + adminEmail));
 	}
 				
 	@RequestMapping(

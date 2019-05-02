@@ -31,5 +31,7 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	 * @return        true if the key belongs to a user with UserRole set to ADMIN , otherwise  false.
 	 */
 	public boolean isAdmin(Key key);
-
+	
+	public UserEntity importUser (UserEntity userEntity);
+	
 }
