@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import smartspace.dao.EnhancedActionDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.UserEntity;
+
 import org.springframework.data.domain.Sort.Direction;
 
 
@@ -167,6 +169,13 @@ public class RdbActionDao implements EnhancedActionDao {
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
 		return this.actionCrud.findAllByMoreAttributesLike(moreAttributes, PageRequest.of(page, size));
+	}
+
+	@Override
+	@Transactional
+	public ActionEntity importAction(ActionEntity actionEntity) {
+		ActionEntity rv = this.actionCrud.save(actionEntity);
+		return rv;
 	}
 	
 	

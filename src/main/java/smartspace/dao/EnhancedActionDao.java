@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import smartspace.data.ActionEntity;
+import smartspace.data.UserEntity;
 public interface EnhancedActionDao extends ActionDao{
 	
 	
@@ -25,4 +26,8 @@ public interface EnhancedActionDao extends ActionDao{
 	
 	public List<ActionEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page);
 
+
+	public ActionEntity importAction (ActionEntity actionEntity);
+	
+	
 }

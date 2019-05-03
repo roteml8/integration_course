@@ -23,14 +23,14 @@ public class UserServicelmpl implements UserService {
 	}
 	
 	
-	public UserEntity newUser(UserEntity user, int code) {
+	public UserEntity newUser(UserEntity user, String adminKey) {
 		// validate code
-		if (code % 2 != 0) {
+		if (userDao.isAdmin(adminKey) == false) {
 			throw new RuntimeException("you are not allowed to create users");
 		}
 		
 		if (valiadate(user)) {
-			return this.userDao.create(user);
+			return this.userDao.importUser(user);
 		}else {
 			throw new RuntimeException("invalid user");
 		}
@@ -51,6 +51,11 @@ public class UserServicelmpl implements UserService {
 
 	public List<UserEntity> getUsingPagination(int size, int page) {
 		return this.userDao.readAll("key",size,page);
+	}
+
+	@Override
+	public void update(UserEntity userEntity) {
+		userDao.update(userEntity);
 	}
 
 	
