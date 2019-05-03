@@ -9,6 +9,8 @@ import smartspace.data.Location;
 
 public interface EnhancedElementDao<Key> extends ElementDao<Key> {
 	
+	public ElementEntity importElement(ElementEntity elementEntity);
+	
 	public List<ElementEntity> readAll(int size, int page);
 	
 	public List<ElementEntity> readAll(String sortBy, int size, int page);

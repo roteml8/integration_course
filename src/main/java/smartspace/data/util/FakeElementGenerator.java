@@ -1,6 +1,7 @@
 package smartspace.data.util;
 
 import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -17,6 +18,7 @@ import smartspace.data.Location;
 
 public class FakeElementGenerator implements ElementGenerator {
 	
+	public static int fakeIdCounter=1;
 	private EntityFactory factory;
 	private String smartspace;
 
@@ -37,7 +39,7 @@ public class FakeElementGenerator implements ElementGenerator {
 		String generatedString = RandomString.make();
 		String name = "element" + generatedString;
 		String type = "type" + generatedString;
-		String creatorSmartspace = smartspace;
+		String creatorSmartspace = smartspace ;
 		String creatorEmail = "email" + generatedString;
 		Date creationTimeStamp = new Date();
 		Map<String,Object> moreAttributes = new HashMap<>();
@@ -45,8 +47,11 @@ public class FakeElementGenerator implements ElementGenerator {
 		double y = new Random().nextDouble();
 		Location location = new Location(x,y);
 		boolean expired = new Random().nextBoolean();
+		String smartspace = "Smartspace"+generatedString;
 		
 		ElementEntity fakeElement = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		fakeElement.setElementSmartSpace(smartspace);
+		fakeElement.setElementid(String.valueOf(fakeIdCounter));
 		return fakeElement;
 	}
 

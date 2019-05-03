@@ -1,10 +1,7 @@
 package smartspace;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -13,18 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import smartspace.dao.EnhancedElementDao;
-import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
-import smartspace.data.UserEntity;
-import smartspace.data.util.EntityFactory;
 import smartspace.data.util.FakeElementGenerator;
-import smartspace.data.util.FakeUserGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
