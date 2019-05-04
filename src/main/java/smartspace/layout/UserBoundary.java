@@ -1,5 +1,9 @@
 package smartspace.layout;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 
@@ -10,6 +14,8 @@ public class UserBoundary {
 	private String avatar;
 	private UserRole role;
 	private long points;
+	private Map<String, Object> details;
+
 	
 	public UserBoundary(){
 		
@@ -65,6 +71,10 @@ public class UserBoundary {
 	public void setPoints(long points) {
 		this.points = points;
 	}
+	
+	public void setDetails(Map<String, Object> details) {
+		this.details = details;
+	}
 
 	public UserEntity convertToEntity() {
 		UserEntity entity = new UserEntity();
@@ -78,6 +88,14 @@ public class UserBoundary {
 		return entity;
 
 	}
-	
+
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

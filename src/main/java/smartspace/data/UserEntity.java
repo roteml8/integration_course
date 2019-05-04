@@ -1,5 +1,7 @@
 package smartspace.data;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
@@ -19,6 +21,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 	private String avatar;
 	private UserRole role;
 	private long points = Long.MIN_VALUE;
+	private Map<String, Object> details;
 
 	public UserEntity() {
 	}
@@ -103,6 +106,10 @@ public class UserEntity implements SmartspaceEntity<String> {
 		String[] parts = key.split("#");
 		this.userSmartspace = parts[0];
 		this.userEmail = parts[1];
+	}
+	
+	public void setDetails(Map<String, Object> details) {
+		this.details = details;
 	}
 
 }
