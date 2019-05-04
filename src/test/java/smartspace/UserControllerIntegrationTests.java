@@ -1,6 +1,7 @@
 package smartspace;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedUserDao;
+import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
+import smartspace.data.util.FakeElementGenerator;
+import smartspace.data.util.FakeUserGenerator;
 import smartspace.infra.UserService;
+import smartspace.layout.ElementBoundary;
 import smartspace.layout.UserBoundary;
 
 @RunWith(SpringRunner.class)
@@ -34,8 +39,14 @@ public class UserControllerIntegrationTests {
 	private String baseUrl;
 	private int port;
 	private RestTemplate restTemplate;
-	private EnhancedUserDao<Long> userDao;
+	private EnhancedUserDao<String> userDao;
 	private UserService userService;
+	private FakeUserGenerator generator;
+	
+	@Autowired
+	public void setGenerator(FakeUserGenerator generator) {
+		this.generator = generator;
+	}
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -43,7 +54,7 @@ public class UserControllerIntegrationTests {
 	}
 	
 	@Autowired
-	public void setUserDao(EnhancedUserDao<Long> userDao) {
+	public void setUserDao(EnhancedUserDao<String> userDao) {
 		this.userDao = userDao;
 	}
 	
@@ -52,10 +63,10 @@ public class UserControllerIntegrationTests {
 		this.port = port;
 		this.restTemplate = new RestTemplate();
 	}
-	
+
 	@PostConstruct
 	public void init() {
-		this.baseUrl = "http://localhost:" + port + "/messagedemo";
+		this.baseUrl = "http://localhost:" + port + "/smartspace/admin/users/";
 	}
 	
 	@After
@@ -66,25 +77,35 @@ public class UserControllerIntegrationTests {
 	
 	@Test
 	public void testPostNewUser() throws Exception{
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("tom@gmail.com");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
 		
-		Map<String, Object> details = new HashMap<>();
-		details.put("y", 10.0);
-		details.put("x", "10");
-		UserBoundary newUser = new UserBoundary();
-		newUser.setUsername("Demo1");
-		newUser.setAvatar("avatar");;
-		newUser.setRole(UserRole.ADMIN);
-		newUser.setPoints(111);
+		UserEntity e = new UserEntity();
+		e.setUserSmartspace("smartspace");
+		e.setUserEmail("t@gm.com");
+		e.setAvatar("avatar");
+		e.setPoints(111);
+		e.setRole(UserRole.ADMIN);
+		e.setUsername("Tom");
+		e.setKey("smartspace#t@gm.com");
+		UserBoundary newUser = new UserBoundary(e);
+
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser;
+		
 		this.restTemplate
 			.postForObject(
-					this.baseUrl + "/{code}", 
-					newUser, 
-					UserBoundary.class, 
-					1332);
+					this.baseUrl + "{adminSmartspace}/{adminEmail}", 
+					arr, 
+					UserBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","tom@gmail.com");
 		
 		assertThat(this.userDao
 			.readAll())
-			.hasSize(1);
+			.hasSize(2);
 	}
 	
 	@Test(expected=Exception.class)
@@ -101,15 +122,21 @@ public class UserControllerIntegrationTests {
 		newUser.setPoints(111);
 		this.restTemplate
 			.postForObject(
-					this.baseUrl + "/{code}", 
+					this.baseUrl +"{adminSmartspace}/{adminEmail}", 
 					newUser, 
 					UserBoundary.class, 
-					code);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com");
 	
 	}
 	
 	@Test
 	public void testGetAllUsersUsingPagination() throws Exception{
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
 		int size = 3;
 		IntStream.range(1, size + 1)
 			.mapToObj(i->new UserEntity("demo" + i))
@@ -118,16 +145,22 @@ public class UserControllerIntegrationTests {
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					10, 0);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
 		
 		assertThat(response)
-			.hasSize(size);
+			.hasSize(size+1);
 	}
 
 	@Test
 	public void testGetAllUsersUsingPaginationAndValidateContent() throws Exception{
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+	
 		int size = 3;
 		java.util.List<UserBoundary> all = 
 		IntStream.range(1, size + 1)
@@ -136,12 +169,14 @@ public class UserControllerIntegrationTests {
 			.map(UserBoundary::new)
 			.collect(Collectors.toList());
 		
+		all.add(0, new UserBoundary(admin));
+		
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					10, 0);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
 		
 		assertThat(response)
 			.usingElementComparatorOnFields("key")
@@ -153,39 +188,52 @@ public class UserControllerIntegrationTests {
 	public void testGetAllMessagesUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
 		// GIVEN the database contains 4 messages
 		int size = 4;
-		Map<String, Object> details = new HashMap<>();
-		details.put("y", 10.0);
-		details.put("x", "10");
-		String code = "1";
 		
-		java.util.List<UserBoundary> all = 
-		IntStream.range(1, size + 1)
-			.mapToObj(i->new UserEntity("demo" + i))
-			.peek(msg->msg.setUsername(msg.getUsername()))
-			.peek(msg->msg.setRole((Math.random() > 0.5)?UserRole.ADMIN:UserRole.MANAGER))
-			.peek(msg->msg.setDetails(details))
-			.map(msg->this.userService.newUser(msg, code))
-			.map(UserBoundary::new)
-			.collect(Collectors.toList());
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		List<UserBoundary> all = new ArrayList<>();
+		for (int i = 1; i<=size; i++)
+		{
+			UserEntity e = generator.getUser();
+			e.setUserSmartspace("Space"+i);
+			e.setUserEmail("t@g.co.il"+i);
+			UserEntity rv = this.userService.newUser(e, "2019B.Amitz4.SmartSpace#Email");
+			all.add(new UserBoundary(rv));
+		}
+		
+		all.add(0, new UserBoundary(admin));
 		
 		
+		// WHEN I GET messages of size 10 and page 0
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					10, 0);
-		
+					"2019B.Amitz4.SmartSpace","Email",0, 10);
+	
+		// THEN I receive the exact users to the database
 		assertThat(response)
-			.usingElementComparatorOnFields("userName", "userEmail", "key")
+			.usingElementComparatorOnFields("key")
 			.containsExactlyElementsOf(all);
 	}
 	
 	
 	@Test
 	public void testGetAllUsersUsingPaginationOfSecondPage() throws Exception{
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("tom@gmail.com");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+	
+		
 		List<UserEntity> all = 
-		IntStream.range(0,11)
+		IntStream.range(0,10)
 			.mapToObj(i->new UserEntity("user" + i))
 			.map(this.userDao::create)
 			.collect(Collectors.toList());
@@ -194,20 +242,20 @@ public class UserControllerIntegrationTests {
 		UserBoundary last =
 			all
 			.stream()
-			.skip(10)
+			.skip(9)
 			.limit(1)
 			.map(UserBoundary::new)
 			.findFirst()
 			.orElseThrow(()->new RuntimeException("no users after skipping"));
 		
-		// WHEN I GET messages of size 10 and page 1
+		// WHEN I GET messages of size 1 and page 2
 		UserBoundary[] result = this.restTemplate
 			.getForObject(
-					this.baseUrl + "?page={page}&size={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					1, 10);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
 		
-		// THEN the result contains a single message (last message)
+		// THEN the result contains a single user
 		assertThat(result)
 			.usingElementComparator((b1,b2)->b1.toString().compareTo(b2.toString()))
 			.containsExactly(last);
@@ -222,89 +270,15 @@ public class UserControllerIntegrationTests {
 		String[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={pp}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					String[].class, 
-					10, 1);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
 		
 		assertThat(result)
 			.isEmpty();
 		
 	}
 	
-	@Test
-	public void testUpdateMessage() throws Exception{
-		// GIVEN the database contains a message
-		UserEntity user = new UserEntity("test");
-		user.setDetails(new HashMap<>());
-		user = this.userDao
-			.create(user);
 		
-		Map<String, Object> newDetails = new HashMap<>();
-		newDetails.put("x", 10.0);
-		newDetails.put("y", "new details");
-		newDetails.put("expired", true);
-		
-		UserBoundary boundry = new UserBoundary();
-		boundry.setDetails(newDetails);
-		this.restTemplate
-			.put(this.baseUrl + "/{key}", 
-					boundry, 
-					user.getKey());
-		
-		assertThat(this.userDao.readById(user.getKey()))
-			.isNotNull()
-			.isPresent()
-			.get()
-			.extracting("key", "details")
-			.containsExactly(user.getKey(), newDetails);
-		
-	}
-	
-	@Test
-	public void testDeleteByKey() throws Exception{
-		String key = 
-		this.userDao
-			.create(new UserEntity("test"))
-			.getKey();
-		
-		// WHEN I delete using the message key
-		this.restTemplate
-			.delete(this.baseUrl + "/{key}", key);
-		
-		// THEN the database is empty
-		assertThat(this.userDao
-				.readAll())
-			.isEmpty();
-	}
-	
-	@Test
-	public void testDeleteByKeyWhileDatabseIsNotEmptyAtTheEnd() throws Exception{
-		List<UserEntity> all101Messages = 
-		IntStream.range(1, 102)
-			.mapToObj(i->new UserEntity("message #" + i))
-			.map(this.userDao::create)
-			.collect(Collectors.toList());
-		
-		UserEntity third = all101Messages.get(2);
-		
-		String thridKey = 
-				third
-				.getKey();
-		
-		this.restTemplate
-			.delete(this.baseUrl + "/{key}", thridKey);
-	
-		assertThat(this.userDao
-				.readAll())
-			.hasSize(100)
-			.usingElementComparatorOnFields("key")
-			.doesNotContain(third);
-	}
-	
-	
-	
-	
-	
-	
 	
 }

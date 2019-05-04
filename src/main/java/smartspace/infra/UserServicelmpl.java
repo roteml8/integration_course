@@ -25,7 +25,7 @@ public class UserServicelmpl implements UserService {
 	@Override
 	public UserEntity newUser(UserEntity user, String adminKey) {
 		// validate Admin status
-		if (userDao.isAdmin(adminKey) == true) {
+		if (userDao.isAdmin(adminKey) == false) {
 			throw new RuntimeException("Only admins are allowed to import users!");
 		}
 		
@@ -48,6 +48,52 @@ public class UserServicelmpl implements UserService {
 				user.getRole() != null &&
 				user.getKey() != null;
 	}
+	
+	/*
+	private boolean valiadate(UserEntity user) 
+	{
+	//	 if (user.getUserSmartspace() == null)
+	//	 {
+	//		System.err.println("invalid smartspace");
+	//		return false;
+	//	 }
+		 
+		 if (user.getUserEmail() == null)
+		 {
+			System.err.println("invalid Email");
+			return false;
+		 }
+		 
+	//	 if (user.getUsername() == null)
+	//	 {
+	//		System.err.println("invalid username");
+	//		return false;
+	//	 }
+		 
+	//	 if (user.getAvatar() == null)
+	//	 {
+	//		System.err.println("invalid avatar");
+	//		return false;
+	//	 }
+		 
+
+		 if (user.getRole() == null)
+		 {
+			System.err.println("invalid role");
+			return false;
+		 }
+		 
+
+		 if (user.getKey() == null)
+		 {
+			System.err.println("invalid key");
+			return false;
+		 }
+		 
+		 return true;
+	}
+	 
+	 */
 	
 	@Override
 	public boolean valiadateSmartspace(UserEntity user) 

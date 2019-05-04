@@ -112,4 +112,10 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.details = details;
 	}
 
+	@Override
+	public String toString() {
+		return "UserEntity [userSmartspace=" + userSmartspace + ", userEmail=" + userEmail + ", username=" + username
+				+ ", avatar=" + avatar + ", role=" + role + ", points=" + points + ", details=" + details + "]";
+	}
+
 }
