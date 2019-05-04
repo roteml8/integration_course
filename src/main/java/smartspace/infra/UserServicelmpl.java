@@ -22,13 +22,14 @@ public class UserServicelmpl implements UserService {
 		this.mySmartspace = smartspace;
 	}
 	
-	
+	@Override
 	public UserEntity newUser(UserEntity user, String adminKey) {
-		// validate code
-		if (userDao.isAdmin(adminKey) == false) {
-			throw new RuntimeException("you are not allowed to create users");
+		// validate Admin status
+		if (userDao.isAdmin(adminKey) == true) {
+			throw new RuntimeException("Only admins are allowed to import users!");
 		}
 		
+		// validate user status
 		if (valiadate(user)) {
 			return this.userDao.importUser(user);
 		}else {
@@ -36,26 +37,34 @@ public class UserServicelmpl implements UserService {
 		}
 	}
 	
+	
+	
 	private boolean valiadate(UserEntity user) 
 	{
 		return user.getUserSmartspace() != null &&
-				user.getUserSmartspace().equals(mySmartspace) == false &&
 				user.getUserEmail() != null &&
 				user.getUsername() != null &&
 				user.getAvatar() != null &&
 				user.getRole() != null &&
 				user.getKey() != null;
-		}
+	}
+	
+	@Override
+	public boolean valiadateSmartspace(UserEntity user) 
+	{
+		return user.getUserSmartspace().equals(mySmartspace) == false;
+	}
 
 	
-
+	@Override
 	public List<UserEntity> getUsingPagination(int size, int page) {
 		return this.userDao.readAll("key",size,page);
 	}
 
 	@Override
-	public void update(UserEntity userEntity) {
-		userDao.update(userEntity);
+	public void update(UserEntity userEntity, String key) {
+		userEntity.setKey(key);
+		this.userDao.update(userEntity);
 	}
 
 	

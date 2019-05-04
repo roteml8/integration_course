@@ -1,5 +1,6 @@
 package smartspace.layout;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +10,7 @@ import smartspace.data.UserRole;
 
 public class UserBoundary {
 	
-	private String key;
+	private Map<String,String> key;
 	private String username;
 	private String avatar;
 	private UserRole role;
@@ -23,7 +24,9 @@ public class UserBoundary {
 	
 	public UserBoundary (UserEntity entity) {
 		
-		this.key = entity.getKey();
+		this.key = new HashMap<>();
+		this.key.put("email", entity.getUserEmail());
+		this.key.put("smartspace", entity.getUserSmartspace());
 		this.username = entity.getUsername();
 		this.avatar = entity.getAvatar();
 		this.role = entity.getRole();
@@ -32,11 +35,11 @@ public class UserBoundary {
 
 	
 	
-	public String getKey() {
+	public Map<String,String> getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Map<String,String> key) {
 		this.key = key;
 	}
 
@@ -79,7 +82,7 @@ public class UserBoundary {
 	public UserEntity convertToEntity() {
 		UserEntity entity = new UserEntity();
 		
-		entity.setKey(key);
+		entity.setKey(key.get("smartspace")+"#"+key.get("email"));
 		entity.setUsername(username);
 		entity.setAvatar(avatar);
 		entity.setRole(role);
