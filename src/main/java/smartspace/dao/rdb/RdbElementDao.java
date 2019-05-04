@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
-import smartspace.data.UserEntity;
-import smartspace.data.UserRole;
 
 @Repository
 public class RdbElementDao implements EnhancedElementDao<String> {
@@ -48,7 +46,6 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		// TODO replace this with id stored in db
 		GenericIdGenerator nextId = 
 				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());
-		 
 		elementEntity.setKey(smartspace + "#" + nextId.getId());
 		this.genericElementIdGeneratorCrud.delete(nextId);
 		
@@ -59,6 +56,15 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		else {
 			throw new RuntimeException("elementEntity already exists with key: " + elementEntity.getKey());
 		}
+	}
+	
+	@Transactional
+	public ElementEntity importElement(ElementEntity elementEntity) {
+	if (this.elementCrud.existsById(elementEntity.getKey()))
+		this.deleteByKey(elementEntity.getKey());
+	ElementEntity rv = this.elementCrud.save(elementEntity);
+		return rv;
+
 	}
 
 	@Override

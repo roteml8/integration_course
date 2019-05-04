@@ -1,7 +1,6 @@
 package smartspace.data.util;
 
 import java.util.Date;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -11,14 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import smartspace.data.ElementEntity;
-import smartspace.data.Location;
-
+import smartspace.data.ActionEntity;
 @Component
+public class FakeActionGenerator implements ActionGenerator{
 
-public class FakeElementGenerator implements ElementGenerator {
-	
-	public static int fakeIdCounter=1;
 	private EntityFactory factory;
 	private String smartspace;
 
@@ -32,27 +27,22 @@ public class FakeElementGenerator implements ElementGenerator {
 		this.smartspace = smartspace;
 	}
 
+	
 
 	@Override
-	public ElementEntity getElement() {
-		
+	public ActionEntity getAction() {
 		String generatedString = RandomString.make();
-		String name = "element" + generatedString;
+		String actionId= "565"+generatedString;
+		String elementSmartspcae = "element" + generatedString;
 		String type = "type" + generatedString;
-		String creatorSmartspace = smartspace ;
+		String creatorSmartspace = smartspace;
 		String creatorEmail = "email" + generatedString;
 		Date creationTimeStamp = new Date();
-		Map<String,Object> moreAttributes = new HashMap<>();
-		double x = new Random().nextDouble();
-		double y = new Random().nextDouble();
-		Location location = new Location(x,y);
-		boolean expired = new Random().nextBoolean();
-		String smartspace = "Smartspace"+generatedString;
 		
-		ElementEntity fakeElement = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
-		fakeElement.setElementSmartSpace(smartspace);
-		fakeElement.setElementid(String.valueOf(fakeIdCounter));
-		return fakeElement;
+		Map<String,Object> moreAttributes = new HashMap<>();
+		ActionEntity fakeAction =this.factory.createNewAction(actionId, elementSmartspcae, type, creationTimeStamp, creatorEmail,
+				creatorSmartspace, moreAttributes);
+		return fakeAction;
 	}
 
 }

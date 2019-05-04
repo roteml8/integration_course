@@ -3,18 +3,21 @@ package smartspace.layout;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
 
 public class ElementBoundary {
 	
-	private Map<String,Object> key;
+	private Map<String,String> key;
 	private Location location;
 	private String name;
 	private String type;
 	private boolean expired;
-	private String creatorSmartspace;
-	private String creatorEmail;
+
+	private Map<String,String> creator;
 	private Date creationTimeStamp;
 	private Map<String, Object> moreAttributes;
 	
@@ -27,23 +30,24 @@ public class ElementBoundary {
 		this.key = new HashMap<>();
 		this.key.put("id", entity.getElementid());
 		this.key.put("smartspace", entity.getElementSmartSpace());
+		this.creator = new HashMap<>();
+		this.creator.put("email",entity.getCreatorEmail());
+		this.creator.put("smartspace",entity.getCreatorSmartSpace());
 		this.location = entity.getLocation();
 		this.name = entity.getName();
 		this.type = entity.getType();
 		this.expired = entity.isExpired();
-		this.creatorSmartspace = entity.getCreatorSmartSpace();
-		this.creatorEmail = entity.getCreatorEmail();
 		this.moreAttributes = entity.getMoreAttributes();
 		
 	}
 
 
 	
-	public Map<String,Object> getKey() {
+	public Map<String,String> getKey() {
 		return key;
 	}
 
-	public void setKey(Map<String,Object> key) {
+	public void setKey(Map<String,String> key) {
 		this.key = key;
 	}
 
@@ -79,21 +83,6 @@ public class ElementBoundary {
 		this.expired = expired;
 	}
 
-	public String getCreatorSmartspace() {
-		return creatorSmartspace;
-	}
-
-	public void setCreatorSmartspace(String creatorSmartspace) {
-		this.creatorSmartspace = creatorSmartspace;
-	}
-
-	public String getCreatorEmail() {
-		return creatorEmail;
-	}
-
-	public void setCreatorEmail(String creatorEmail) {
-		this.creatorEmail = creatorEmail;
-	}
 
 	public Date getCreationTimeStamp() {
 		return creationTimeStamp;
@@ -119,13 +108,30 @@ public class ElementBoundary {
 		entity.setName(name);
 		entity.setType(type);
 		entity.setExpired(expired);
-		entity.setCreatorSmartSpace(creatorSmartspace);
-		entity.setCreatorEmail(creatorEmail);
+		entity.setCreatorSmartSpace(this.creator.get("smartspace"));
+		entity.setCreatorEmail(this.creator.get("email"));
 		entity.setCreationTimeDate(creationTimeStamp);
 		entity.setMoreAttributes(moreAttributes);
 		
 		return entity;
 
+	}
+
+	public Map<String, String> getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Map<String, String> creator) {
+		this.creator = creator;
+	}
+	
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 

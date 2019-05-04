@@ -21,17 +21,18 @@ public class ElementController {
 	}
 	
 	@RequestMapping(
-			path="/elementdemo/{code}",
+			path="/elementdemo/{adminSmartspace}/{adminEmail}",
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary newElement (
 			@RequestBody ElementBoundary element, 
-			@PathVariable("code") int code) {
+			@PathVariable("adminSmartspace") String adminSmartspace,
+			@PathVariable("adminEmail") String adminEmail) {
 		
 		return new ElementBoundary(
 				this.elementService
-					.newElement(element.convertToEntity(), code));
+					.newElement(element.convertToEntity(), adminSmartspace, adminEmail));
 	}
 				
 	@RequestMapping(
