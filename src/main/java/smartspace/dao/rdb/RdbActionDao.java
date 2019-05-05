@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import smartspace.dao.EnhancedActionDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 
 import org.springframework.data.domain.Sort.Direction;
@@ -59,7 +61,57 @@ public class RdbActionDao implements EnhancedActionDao {
 
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<ActionEntity> readById(String actionKey) {
+		// SQL: SELECT
+		return this.actionCrud.findById(actionKey);
+
+	}
 	
+
+	@Override
+	@Transactional
+	public void update(ActionEntity actionEntity) {
+		ActionEntity existing = this.readById(actionEntity.getKey())
+				.orElseThrow(() -> new RuntimeException("no element entity to update"));
+
+		if (actionEntity.getElementSmartspace() != null) {
+			existing.setElementSmartspace(actionEntity.getElementSmartspace());
+		}
+		if (actionEntity.getActionSmartspace() != null) {
+			existing.setActionSmartspace(actionEntity.getActionSmartspace());
+		}
+		if (actionEntity.getActionId() != null) {
+			existing.setActionId(actionEntity.getActionId());
+		}
+		if (actionEntity.getElementId() != null) {
+			existing.setElementId(actionEntity.getElementId());
+		}
+		if (actionEntity.getPlayerSmartspace() != null) {
+			existing.setPlayerSmartspace(actionEntity.getPlayerSmartspace());
+		}
+
+		if (actionEntity.getPlayerEmail() != null) {
+			existing.setPlayerEmail(actionEntity.getPlayerEmail());
+		}
+		if (actionEntity.getActionType() != null) {
+			existing.setActionType(actionEntity.getActionType());
+		}
+		if (actionEntity.getCreationTimestamp() != null) {
+			existing.setCreationTimestamp(actionEntity.getCreationTimestamp());
+		}
+		if (actionEntity.getMoreAttributes() != null) {
+			existing.setMoreAttributes(actionEntity.getMoreAttributes());
+
+		}
+
+
+			
+		// SQL: UPDATE
+		this.actionCrud.save(existing);
+	}
+
 
 	@Override
 	@Transactional(readOnly=true)
@@ -103,12 +155,6 @@ public class RdbActionDao implements EnhancedActionDao {
 
 	
 
-	
-
-
-
-
-	
 
 
 	
@@ -174,8 +220,14 @@ public class RdbActionDao implements EnhancedActionDao {
 	@Override
 	@Transactional
 	public ActionEntity importAction(ActionEntity actionEntity) {
+		if (this.actionCrud.existsById(actionEntity.getKey()))
+			this.deleteByKey(actionEntity.getKey());
 		ActionEntity rv = this.actionCrud.save(actionEntity);
 		return rv;
+	}
+
+	private void deleteByKey(String key) {
+		this.actionCrud.deleteById(key);		
 	}
 	
 	

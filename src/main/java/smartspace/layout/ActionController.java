@@ -21,20 +21,25 @@ public class ActionController {
 	}
 	
 	@RequestMapping(
-			path="/actiondemo/{code}",
+			path="/actiondemo/{adminSmartspace}/{adminEmail}",
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ActionBoundary newAction (
 			@RequestBody ActionBoundary action, 
-			@PathVariable("code") int code) {
+			@PathVariable("adminSmartspace") String adminSmartspace,
+			@PathVariable("adminEmail") String adminEmail) {
 		
 		return new ActionBoundary(
 				this.actionService
-					.newAction(action.convertToEntity(), code));
+					.newAction(action.convertToEntity(), adminSmartspace, adminEmail));
 	}
+	
+	
+	
 				
 	@RequestMapping(
+			//path="/smartspace/admin/actions/{adminSmartspace}/{adminEmail}?page={page}&size={size}",
 			path="/actiondemo",
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)

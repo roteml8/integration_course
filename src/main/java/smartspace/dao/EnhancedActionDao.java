@@ -2,6 +2,7 @@ package smartspace.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import smartspace.data.ActionEntity;
 import smartspace.data.UserEntity;
@@ -28,6 +29,10 @@ public interface EnhancedActionDao extends ActionDao{
 
 
 	public ActionEntity importAction (ActionEntity actionEntity);
+
+	Optional<ActionEntity> readById(String actionKey);
+
+	void update(ActionEntity actionEntity);
 	
 	
 }

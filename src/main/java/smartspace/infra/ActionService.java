@@ -6,5 +6,6 @@ public interface ActionService {
 	
 	public ActionEntity newAction (ActionEntity action, int code);
 	List <ActionEntity> getUsingPagination (int size, int page);
+	public ActionEntity newAction(ActionEntity action, String string, String string2);
 
 }
