@@ -82,7 +82,17 @@ public class UserBoundary {
 	public UserEntity convertToEntity() {
 		UserEntity entity = new UserEntity();
 		
-		entity.setKey(key.get("smartspace")+"#"+key.get("email"));
+		
+		if (key.get("smartspace")!= null && key.get("email")!= null
+				&&!key.get("smartspace").trim().isEmpty()
+				&&!key.get("email").trim().isEmpty() )
+			entity.setKey(key.get("smartspace")+"#"+key.get("email"));
+		else
+		{
+			entity.setUserSmartspace(key.get("smartspace"));
+			entity.setUserEmail(key.get("email"));
+		}
+		
 		entity.setUsername(username);
 		entity.setAvatar(avatar);
 		entity.setRole(role);
