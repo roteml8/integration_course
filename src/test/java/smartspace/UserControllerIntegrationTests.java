@@ -108,6 +108,237 @@ public class UserControllerIntegrationTests {
 			.hasSize(2);
 	}
 	
+
+	@Test (expected=Exception.class)
+	public void testPostNewUserInvalid() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST an invalid user
+		// with email&smartspace of the admin 
+		
+		UserEntity e = generator.getUser();
+		// e has no smartspace and no id 
+		UserBoundary newUser = new UserBoundary(e);
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					UserBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// AND post method throws an exception 
+		assertThat(this.userDao
+			.readAll())
+			.isEmpty();;
+	}
+	
+	@Test
+	public void testPostUserWithExistingKey() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST new element with email&smartspace of the admin 
+		
+		UserEntity e = generator.getUser();
+		e.setUserSmartspace("space");
+		e.setKey("email#space");
+		UserBoundary newUser1 = new UserBoundary(e);
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser1;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// AND I POST another element with the same key 
+		UserEntity e2 = generator.getUser();
+		e2.setUserSmartspace("space");
+		e2.setKey("email#space");
+		arr[0] = new UserBoundary(e2);
+		this.restTemplate
+		.postForObject(
+				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+				arr, 
+				UserBoundary[].class, 
+				"2019B.Amitz4.SmartSpace","Email");
+
+		
+		// THEN the database contains a single element 
+		assertThat(this.userDao
+			.readAll())
+			.hasSize(2);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostNewUserSameSmartspace() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST new user with local smartspace
+		// with the email&smartspace of the admin 
+		
+		UserEntity e = generator.getUser();
+		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		e.setKey("1");
+		UserBoundary newUser = new UserBoundary(e);
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					UserBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.userDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostTwoUsersOneLocalSecondExternal() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST  an array containing an element from local smartspace
+		// and an element with external smartspace
+		// with the email&smartspace of the admin 
+		
+		UserEntity e = generator.getUser();
+		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		e.setKey("1");
+		UserEntity e2 = generator.getUser();
+		e2.setUserSmartspace("Space");
+		e2.setKey("2");
+		UserBoundary newUser1 = new UserBoundary(e);
+		UserBoundary newUser2 = new UserBoundary(e2);
+		UserBoundary[] arr = new UserBoundary[2];
+		arr[1] = newUser1;
+		arr[0] = newUser2;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					UserBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.userDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostTwoUsersOneLocalSecondExternalNotTogether() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST one user from local smartspace
+		// and POST one user with external smartspace
+		// with the email&smartspace of the admin 
+		
+		UserEntity e = generator.getUser();
+		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		e.setKey("1");
+		UserEntity e2 = generator.getUser();
+		e2.setUserSmartspace("Space");
+		e2.setKey("1");
+		UserBoundary newUser1 = new UserBoundary(e);
+		UserBoundary newUser2 = new UserBoundary(e2);
+		UserBoundary[] arr1 = new UserBoundary[1];
+		UserBoundary[] arr2 = new UserBoundary[1];
+		arr1[0] = newUser1;
+		arr2[0] = newUser2;
+		
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr1, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		this.restTemplate
+		.postForObject(
+				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+				arr2, 
+				ElementBoundary[].class, 
+				"2019B.Amitz4.SmartSpace","Email");
+	
+		// THEN the database contains the external user only 
+		// and Post method throws an exception 
+		assertThat(this.userDao
+			.readAll())
+			.hasSize(1)
+			.containsOnly(e2);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostNewUserNoAdmin() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains a player
+		UserEntity player = new UserEntity();
+		player.setUserEmail("EmailNotAdmin");
+		player.setUserSmartspace("SmartspaceNotAdmin");
+		player.setRole(UserRole.PLAYER);
+		this.userDao.create(player);
+
+		// WHEN I POST new user with smartspace and email that belong to the player 
+		UserEntity e = generator.getUser();
+		e.setKey("1");
+		e.setUserSmartspace("space");
+		UserBoundary newUser = new UserBoundary(e);
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"SmartspaceNotAdmin","EmailNotAdmin");
+		
+		// THEN the test ends with exception
+	}
+	
+	
 	@Test(expected=Exception.class)
 	public void testPostNewUserWithBadCode() throws Exception{
 		
@@ -185,8 +416,8 @@ public class UserControllerIntegrationTests {
 	
 	
 	@Test
-	public void testGetAllMessagesUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
-		// GIVEN the database contains 4 messages
+	public void testGetAllUsersUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
+		
 		int size = 4;
 		
 		UserEntity admin = new UserEntity();
@@ -208,7 +439,7 @@ public class UserControllerIntegrationTests {
 		all.add(0, new UserBoundary(admin));
 		
 		
-		// WHEN I GET messages of size 10 and page 0
+		// WHEN I GET user of size 10 and page 0
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
@@ -248,7 +479,7 @@ public class UserControllerIntegrationTests {
 			.findFirst()
 			.orElseThrow(()->new RuntimeException("no users after skipping"));
 		
-		// WHEN I GET messages of size 1 and page 2
+		// WHEN I GET user of size 1 and page 2
 		UserBoundary[] result = this.restTemplate
 			.getForObject(
 					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
