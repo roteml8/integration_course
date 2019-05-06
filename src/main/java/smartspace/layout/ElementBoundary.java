@@ -12,14 +12,14 @@ import smartspace.data.Location;
 public class ElementBoundary {
 	
 	private Map<String,String> key;
-	private Location location;
+	private Map<String,Double> latlng;
 	private String name;
-	private String type;
+	private String elementType;
 	private boolean expired;
 
 	private Map<String,String> creator;
-	private Date creationTimeStamp;
-	private Map<String, Object> moreAttributes;
+	private Date created;
+	private Map<String, Object> elementProperties;
 	
 	public ElementBoundary(){
 		
@@ -33,11 +33,14 @@ public class ElementBoundary {
 		this.creator = new HashMap<>();
 		this.creator.put("email",entity.getCreatorEmail());
 		this.creator.put("smartspace",entity.getCreatorSmartSpace());
-		this.location = entity.getLocation();
+		this.latlng = new HashMap<>();
+		this.latlng.put("lat", Double.valueOf(entity.getLocation().getX()));
+		this.latlng.put("lng", Double.valueOf(entity.getLocation().getY()));
 		this.name = entity.getName();
-		this.type = entity.getType();
+		this.elementType = entity.getType();
 		this.expired = entity.isExpired();
-		this.moreAttributes = entity.getMoreAttributes();
+		this.elementProperties = entity.getMoreAttributes();
+		this.created = entity.getCreationTimeDate();
 		
 	}
 
@@ -51,12 +54,12 @@ public class ElementBoundary {
 		this.key = key;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Map<String,Double> getLatlng() {
+		return latlng;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLatlng(Map<String,Double> location) {
+		this.latlng = location;
 	}
 
 	public String getName() {
@@ -67,13 +70,6 @@ public class ElementBoundary {
 		this.name = name;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public boolean isExpired() {
 		return expired;
@@ -83,35 +79,28 @@ public class ElementBoundary {
 		this.expired = expired;
 	}
 
-
-	public Date getCreationTimeStamp() {
-		return creationTimeStamp;
-	}
-
-	public void setCreationTimeStamp(Date creationTimeStamp) {
-		this.creationTimeStamp = creationTimeStamp;
-	}
-
-	public Map<String, Object> getMoreAttributes() {
-		return moreAttributes;
-	}
-
-	public void setMoreAttributes(Map<String, Object> moreAttributes) {
-		this.moreAttributes = moreAttributes;
-	}
-
 	public ElementEntity convertToEntity() {
 		ElementEntity entity = new ElementEntity();
-		
-		entity.setKey(key.get("smartspace")+"#"+key.get("id"));
-		entity.setLocation(location);
+		if (key.get("smartspace")!= null && key.get("id")!= null
+				&&!key.get("smartspace").trim().isEmpty()
+				&&!key.get("id").trim().isEmpty() )
+			entity.setKey(key.get("smartspace")+"#"+key.get("id"));
+		else
+		{
+			entity.setElementSmartSpace(key.get("smartspace"));
+			entity.setElementid(key.get("id"));
+		}
+		Location l = new Location();
+		l.setX(this.latlng.get("lat"));
+		l.setY(this.latlng.get("lng"));
+		entity.setLocation(l);
 		entity.setName(name);
-		entity.setType(type);
+		entity.setType(elementType);
 		entity.setExpired(expired);
 		entity.setCreatorSmartSpace(this.creator.get("smartspace"));
 		entity.setCreatorEmail(this.creator.get("email"));
-		entity.setCreationTimeDate(creationTimeStamp);
-		entity.setMoreAttributes(moreAttributes);
+		entity.setCreationTimeDate(created);
+		entity.setMoreAttributes(elementProperties);
 		
 		return entity;
 
@@ -132,6 +121,30 @@ public class ElementBoundary {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public String getElementType() {
+		return elementType;
+	}
+
+	public void setElementType(String elementType) {
+		this.elementType = elementType;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Map<String, Object> getElementProperties() {
+		return elementProperties;
+	}
+
+	public void setElementProperties(Map<String, Object> elementProperties) {
+		this.elementProperties = elementProperties;
 	}
 	
 

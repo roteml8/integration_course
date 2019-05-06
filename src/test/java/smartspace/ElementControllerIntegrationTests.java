@@ -72,7 +72,7 @@ public class ElementControllerIntegrationTests {
 	
 	@PostConstruct
 	public void init() {
-		this.baseUrl = "http://localhost:" + port + "/elementdemo";
+		this.baseUrl = "http://localhost:" + port + "/smartspace/admin/elements/";
 	}
 	
 	@Before
@@ -105,15 +105,16 @@ public class ElementControllerIntegrationTests {
 		// WHEN I POST new element with email&smartspace of the admin 
 		
 		ElementEntity e = generator.getElement();
-		e.setElementSmartSpace("smartspace");
-		e.setElementid("123");
+		e.setElementSmartSpace("space");
+		e.setElementid("1");
 		ElementBoundary newElement = new ElementBoundary(e);
-		System.out.println(e.toString());
+		ElementBoundary[] arr = new ElementBoundary[1];
+		arr[0] = newElement;
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
-					newElement, 
-					ElementBoundary.class, 
+					arr, 
+					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
 		
 		// THEN the database contains a single element
@@ -122,21 +123,232 @@ public class ElementControllerIntegrationTests {
 			.hasSize(1);
 	}
 	
-	@Test(expected=Exception.class)
-	public void testPostNewElementNoAdmin() throws Exception{
+	@Test (expected=Exception.class)
+	public void testPostNewElementInvalid() throws Exception{
 		
 		// GIVEN the element database is empty and user database contains an admin
+		
 		UserEntity admin = new UserEntity();
-		admin.setUserEmail("EmailNotAdmin");
-		admin.setUserSmartspace("SmartspaceNotAdmin");
-		admin.setRole(UserRole.PLAYER);
-		// WHEN I POST new element with smartspace and email that belong to a user who is not an admin 
-		ElementBoundary newElement = new ElementBoundary(generator.getElement());
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST an invalid element
+		// with email&smartspace of the admin 
+		
+		ElementEntity e = generator.getElement();
+		// e has no smartspace and no id 
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary[] arr = new ElementBoundary[1];
+		arr[0] = newElement;
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
-					newElement, 
-					ElementBoundary.class, 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// AND post method throws an exception 
+		assertThat(this.elementDao
+			.readAll())
+			.isEmpty();;
+	}
+	
+	@Test
+	public void testPostElementWithExistingKey() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST new element with email&smartspace of the admin 
+		
+		ElementEntity e = generator.getElement();
+		e.setElementSmartSpace("space");
+		e.setElementid("1");
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary[] arr = new ElementBoundary[1];
+		arr[0] = newElement;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// AND I POST another element with the same key 
+		ElementEntity e2 = generator.getElement();
+		e2.setElementSmartSpace("space");
+		e2.setElementid("1");
+		arr[0] = new ElementBoundary(e2);
+		this.restTemplate
+		.postForObject(
+				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+				arr, 
+				ElementBoundary[].class, 
+				"2019B.Amitz4.SmartSpace","Email");
+
+		
+		// THEN the database contains a single element 
+		assertThat(this.elementDao
+			.readAll())
+			.hasSize(1);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostNewElementSameSmartspace() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST new element with local smartspace
+		// with the email&smartspace of the admin 
+		
+		ElementEntity e = generator.getElement();
+		e.setElementSmartSpace("2019B.Amitz4.SmartSpace");
+		e.setElementid("1");
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary[] arr = new ElementBoundary[1];
+		arr[0] = newElement;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.elementDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+	
+	
+	@Test(expected=Exception.class)
+	public void testPostTwoElementsOneLocalSecondExternal() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST  an array containing an element from local smartspace
+		// and an element with external smartspace
+		// with the email&smartspace of the admin 
+		
+		ElementEntity e = generator.getElement();
+		e.setElementSmartSpace("2019B.Amitz4.SmartSpace");
+		e.setElementid("1");
+		ElementEntity e2 = generator.getElement();
+		e2.setElementSmartSpace("Space");
+		e2.setElementid("2");
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary newElement2 = new ElementBoundary(e2);
+		ElementBoundary[] arr = new ElementBoundary[2];
+		arr[1] = newElement;
+		arr[0] = newElement2;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.elementDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostTwoElementsOneLocalSecondExternalNotTogether() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST one element from local smartspace
+		// and POST one element with external smartspace
+		// with the email&smartspace of the admin 
+		
+		ElementEntity e = generator.getElement();
+		e.setElementSmartSpace("2019B.Amitz4.SmartSpace");
+		e.setElementid("1");
+		ElementEntity e2 = generator.getElement();
+		e2.setElementSmartSpace("Space");
+		e2.setElementid("1");
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary newElement2 = new ElementBoundary(e2);
+		ElementBoundary[] arr1 = new ElementBoundary[1];
+		ElementBoundary[] arr2 = new ElementBoundary[1];
+		arr1[0] = newElement;
+		arr2[0] = newElement2;
+		
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr1, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		this.restTemplate
+		.postForObject(
+				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+				arr2, 
+				ElementBoundary[].class, 
+				"2019B.Amitz4.SmartSpace","Email");
+	
+		// THEN the database contains the external element only 
+		// and Post method throws an exception 
+		assertThat(this.elementDao
+			.readAll())
+			.hasSize(1)
+			.containsOnly(e2);
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostNewElementNoAdmin() throws Exception{
+		
+		// GIVEN the element database is empty and user database contains a player
+		UserEntity player = new UserEntity();
+		player.setUserEmail("EmailNotAdmin");
+		player.setUserSmartspace("SmartspaceNotAdmin");
+		player.setRole(UserRole.PLAYER);
+		this.userDao.create(player);
+
+		// WHEN I POST new element with smartspace and email that belong to the player 
+		ElementEntity e = generator.getElement();
+		e.setElementid("1");
+		e.setElementSmartSpace("space");
+		ElementBoundary newElement = new ElementBoundary(e);
+		ElementBoundary[] arr = new ElementBoundary[1];
+		arr[0] = newElement;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
 					"SmartspaceNotAdmin","EmailNotAdmin");
 		
 		// THEN the test ends with exception
@@ -144,7 +356,9 @@ public class ElementControllerIntegrationTests {
 	
 	@Test
 	public void testGetAllElementsUsingPagination() throws Exception{
-		// GIVEN the database contains 3 elements
+		
+		// GIVEN the database contains 3 elements and user dao contains an admin 
+		
 		UserEntity admin = new UserEntity();
 		admin.setUserEmail("Email");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
@@ -160,9 +374,10 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
-					ElementBoundary[].class, 
-					10, 0);
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					ElementBoundary[].class,
+					"2019B.Amitz4.SmartSpace", "Email",
+					0, 10);
 		
 		// THEN I receive 3 elements 
 		assertThat(response)
@@ -171,38 +386,43 @@ public class ElementControllerIntegrationTests {
 	
 	@Test
 	public void testGetAllElementsUsingPaginationAndValidateContent() throws Exception{
-		// GIVEN the database contains 3 messages
+		
+		// GIVEN the database contains 3 elements and user dao contains an admin 
 		int size = 3;
 		UserEntity admin = new UserEntity();
 		admin.setUserEmail("Email");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
+		List<ElementBoundary> all = new ArrayList<>();
+
+		for (int i = 1; i<=size; i++)
+		{
+			ElementEntity e = generator.getElement();
+			e.setElementSmartSpace("Space"+i);
+			e.setElementid(String.valueOf(i));
+			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
+			all.add(new ElementBoundary(rv));
+		}
 		
-		java.util.List<ElementBoundary> all = 
-		IntStream.range(1, size + 1)
-			.mapToObj(i->generator.getElement())
-			.map(this.elementDao::create)
-			.map(ElementBoundary::new)
-			.collect(Collectors.toList());
-		
-		// WHEN I GET messages of size 10 and page 0
+		// WHEN I GET elements of size 10 and page 0
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ElementBoundary[].class, 
-					10, 0);
+					"2019B.Amitz4.SmartSpace", "Email",
+					0, 10);
 		
-		// THEN I receive the exact 3 messages written to the database
+		// THEN I receive the exact 3 elements written to the database
 		assertThat(response)
 			.usingElementComparatorOnFields("key")
 			.containsExactlyElementsOf(all);
 	}
 	
 	@Test
-	public void testGetAllMessagesUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
-		// GIVEN the database contains 4 messages
+	public void testGetAllElementsUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
+		// GIVEN the database contains 4 elements and user dao contains an admin 
 		int size = 4;
 		
 		UserEntity admin = new UserEntity();
@@ -215,36 +435,48 @@ public class ElementControllerIntegrationTests {
 		for (int i = 1; i<=size; i++)
 		{
 			ElementEntity e = generator.getElement();
+			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			e.setElementSmartSpace("Space");
 			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
 			all.add(new ElementBoundary(rv));
 		}
 
 		
 		
-		// WHEN I GET messages of size 10 and page 0
+		// WHEN I GET elements of size 10 and page 0
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl +"{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ElementBoundary[].class, 
-					10, 0);
+					"2019B.Amitz4.SmartSpace", "Email",
+					0, 10);
 	
-		// THEN I receive the exact messages written to the database
+		// THEN I receive the exact elements written to the database
 		assertThat(response)
-			.usingElementComparatorOnFields("key", "name", "location", "type", "expired","creator","creationTimeStamp","moreAttributes")
+			.usingElementComparatorOnFields("key", "name", "latlng", "elementType", "expired","creator","created","elementProperties")
 			.containsExactlyElementsOf(all);
 	}
 	
 	@Test
-	public void testGetAllMessagesUsingPaginationOfSecondPage() throws Exception{
-		// GIVEN then database contains 11 messages
-		List<ElementEntity> all = 
-		IntStream.range(0,11)
-			.mapToObj(i->generator.getElement())
-			.map(this.elementDao::create)
-			.collect(Collectors.toList());
+	public void testGetAllElementsUsingPaginationOfSecondPage() throws Exception{
+		// GIVEN then database contains 11 elements
+		List<ElementBoundary> all = new ArrayList<>();
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		for (int i=0; i<=10; i++)
+		{
+			ElementEntity e = generator.getElement();
+			e.setElementSmartSpace("Space"+i);
+			e.setElementid(String.valueOf(i));
+			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
+			all.add(new ElementBoundary(rv));
+		}	
+
 		
 //		MessageBoundary last = new MessageBoundary( 
 //		  all
@@ -256,39 +488,49 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary last =
 			all
 			.stream()
-			.skip(10)
+			.skip(9)
 			.limit(1)
-			.map(ElementBoundary::new)
 			.findFirst()
 			.orElseThrow(()->new RuntimeException("no elements after skipping"));
 		
-		// WHEN I GET messages of size 10 and page 1
+
+		
+		// WHEN I GET elements of size 10 and page 2
 		ElementBoundary[] result = this.restTemplate
 			.getForObject(
-					this.baseUrl + "?page={page}&size={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ElementBoundary[].class, 
-					2, 1);
+					"2019B.Amitz4.SmartSpace", "Email",
+					1, 2);
 		
-		// THEN the result contains a single message (last message)
+		// THEN the result contains a single element (last message)
 		assertThat(result)
 			.usingElementComparator((b1,b2)->b1.toString().compareTo(b2.toString()))
 			.containsExactly(last);
 	}
 	
 	@Test
-	public void testGetAllMessagesUsingPaginationOfSecondNonExistingPage() throws Exception{
-		// GIVEN the database contains 10 messages
+	public void testGetAllElementsUsingPaginationOfSecondNonExistingPage() throws Exception{
+		// GIVEN the database contains 10 elements
 		IntStream
 			.range(0, 10)
 			.forEach(i->this.elementDao.create(generator.getElement()));
 		
-		// WHEN I GET messages of size 10 and page 1
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		
+		// WHEN I GET elements of size 10 and page 2
 		ElementBoundary[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={pp}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ElementBoundary[].class, 
-					1, 2);
+					"2019B.Amitz4.SmartSpace", "Email",
+					1, 10);
 		
 		// THEN the result is empty
 		assertThat(result)

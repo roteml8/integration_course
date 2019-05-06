@@ -36,10 +36,6 @@ public class ElementServiceImpl implements ElementService {
 	@Override
 	public ElementEntity newElement(ElementEntity entity, String adminSmartspace, String adminEmail) {
 		
-		if (entity.getElementSmartSpace().equals(mySmartspace)) {
-			throw new RuntimeException("Can't import elements from local smartspace!");
-
-		}
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
 			throw new RuntimeException("Only admins are allowed to import elements!");
 		}
@@ -48,7 +44,7 @@ public class ElementServiceImpl implements ElementService {
 			entity.setCreationTimeDate(new Date());
 			return this.dao.importElement(entity);
 		} else {
-			throw new RuntimeException("Invalid element");
+			throw new RuntimeException("Invalid element!");
 		}
 	}
 	
@@ -66,7 +62,12 @@ public class ElementServiceImpl implements ElementService {
 				entity.getName() != null &&
 				!entity.getName().trim().isEmpty() &&
 				entity.getType() != null && 
-				!entity.getType().trim().isEmpty() ;
+				!entity.getType().trim().isEmpty()&&
+				entity.getElementSmartSpace()!=null &&
+				!entity.getElementSmartSpace().trim().isEmpty() &&
+				entity.getElementid()!= null &&
+				!entity.getElementid().trim().isEmpty()
+				;
 	}
 
 	

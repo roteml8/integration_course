@@ -18,7 +18,7 @@ import smartspace.data.Location;
 
 public class FakeElementGenerator implements ElementGenerator {
 	
-	public static int fakeIdCounter=1;
+//	public static int fakeIdCounter=1;
 	private EntityFactory factory;
 	private String smartspace;
 
@@ -47,11 +47,12 @@ public class FakeElementGenerator implements ElementGenerator {
 		double y = new Random().nextDouble();
 		Location location = new Location(x,y);
 		boolean expired = new Random().nextBoolean();
-		String smartspace = "Smartspace"+generatedString;
+//		String smartspace = "Smartspace"+generatedString;
 		
 		ElementEntity fakeElement = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
-		fakeElement.setElementSmartSpace(smartspace);
-		fakeElement.setElementid(String.valueOf(fakeIdCounter));
+//		fakeElement.setElementSmartSpace(smartspace+String.valueOf(fakeIdCounter));
+//		fakeElement.setElementid(String.valueOf(fakeIdCounter));
+//		fakeIdCounter++;
 		return fakeElement;
 	}
 
