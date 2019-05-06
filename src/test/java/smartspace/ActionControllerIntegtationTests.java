@@ -24,11 +24,13 @@ import org.springframework.web.client.RestTemplate;
 import smartspace.dao.EnhancedActionDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.FakeActionGenerator;
 import smartspace.infra.ActionService;
 import smartspace.layout.ActionBoundary;
+import smartspace.layout.ElementBoundary;
 import smartspace.layout.UserBoundary;
 
 @RunWith(SpringRunner.class)
@@ -170,6 +172,136 @@ public class ActionControllerIntegtationTests {
 			.hasSize(size);
 	}
 
+
+	@Test(expected=Exception.class)
+	public void testPostNewActionSameSmartspace() throws Exception{
+		
+		// GIVEN the action database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST new action with local smartspace
+		// with the email&smartspace of the admin 
+		
+		ActionEntity a = generator.getAction();
+		a.setActionSmartspace("2019B.Amitz4.SmartSpace");
+		a.setElementId("1");
+		ActionBoundary newAction = new ActionBoundary(a);
+		ActionBoundary[] arr = new ActionBoundary[1];
+		arr[0] = newAction;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ActionBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.actionDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+	
+
+	@Test(expected=Exception.class)
+	public void testPostTwoActionsOneLocalSecondExternal() throws Exception{
+		
+		// GIVEN the action database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST  an array containing an action from local smartspace
+		// and an action with external smartspace
+		// with the email&smartspace of the admin 
+		
+		ActionEntity a = generator.getAction();
+		a.setActionSmartspace("2019B.Amitz4.SmartSpace");
+		a.setElementId("1");
+		ActionEntity a2 = generator.getAction();
+		a2.setActionSmartspace("Space");
+		a2.setElementId("2");
+		ActionBoundary newAction = new ActionBoundary(a);
+		ActionBoundary newAction2 = new ActionBoundary(a2);
+		ActionBoundary[] arr = new ActionBoundary[2];
+		arr[1] = newAction;
+		arr[0] = newAction2;
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr, 
+					ElementBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		// THEN the database is empty
+		// and Post method throws an exception 
+		assertThat(this.actionDao
+			.readAll())
+			.hasSize(0);
+	}
+	
+
+	@Test(expected=Exception.class)
+	public void testPostTwoActionsOneLocalSecondExternalNotTogether() throws Exception{
+		
+		// GIVEN the action database is empty and user database contains an admin
+		
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("Email");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
+		
+		// WHEN I POST one action from local smartspace
+		// and POST one action with external smartspace
+		// with the email&smartspace of the admin 
+		
+		ActionEntity a = generator.getAction();
+		a.setActionSmartspace("2019B.Amitz4.SmartSpace");
+		a.setElementId("1");
+		ActionEntity e2 = generator.getAction();
+		e2.setActionSmartspace("Space");
+		e2.setElementId("1");
+		ActionBoundary newAction = new ActionBoundary(a);
+		ActionBoundary newAction2 = new ActionBoundary(e2);
+		ActionBoundary[] arr1 = new ActionBoundary[1];
+		ActionBoundary[] arr2 = new ActionBoundary[1];
+		arr1[0] = newAction;
+		arr2[0] = newAction2;
+		
+		this.restTemplate
+			.postForObject(
+					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+					arr1, 
+					ActionBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","Email");
+		
+		this.restTemplate
+		.postForObject(
+				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
+				arr2, 
+				ActionBoundary[].class, 
+				"2019B.Amitz4.SmartSpace","Email");
+	
+		// THEN the database contains the external element only 
+		// and Post method throws an exception 
+		assertThat(this.actionDao
+			.readAll())
+			.hasSize(1)
+			.containsOnly(e2);
+	}
+
+	
+	
 	@Test
 	public void testGetAllActionsUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
 		// GIVEN the database contains 4 actions
