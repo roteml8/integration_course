@@ -45,15 +45,12 @@ public class ActionServicelmpl implements ActionService {
 	}
 	
 	@Override
-	public ActionEntity newAction(ActionEntity actionEntity, int code) {
-		if (code % 2 != 0) {
-			throw new RuntimeException("you are not allowed to create actions");
-		}
-		String [] splitElementSmartspace =actionEntity.getElementSmartspace().split("#");
-		if(userDao.readById(splitElementSmartspace[1]).isPresent())
-			throw new RuntimeException("your element not in DB");
+	public ActionEntity newAction(ActionEntity actionEntity) {
+		String [] splitActionSmartspace = actionEntity.getActionSmartspace().split("#");
+		if(userDao.readById(splitActionSmartspace[1]).isPresent())
+			throw new RuntimeException("your action not in DB");
 		
-		if(userDao.isAdmin(actionEntity.getElementId()))
+		if(userDao.isAdmin(actionEntity.getActionId()))
 				throw new RuntimeException("your not an admin");	
 		
 		if (valiadate(actionEntity)) {

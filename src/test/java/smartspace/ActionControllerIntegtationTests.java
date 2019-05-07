@@ -75,7 +75,7 @@ public class ActionControllerIntegtationTests {
 	
 	@PostConstruct
 	public void init() {
-		this.baseUrl = "http://localhost:" + port + "/actiondemo";
+		this.baseUrl = "http://localhost:" + port + "/smartspace/admin/actions/";
 	}
 	
 	@Before
@@ -94,36 +94,8 @@ public class ActionControllerIntegtationTests {
 	
 
 	
-	@Test
-	public void testPostNewAction() throws Exception{
-		
-		// GIVEN the action database is empty and user database contains an admin
-		
-		UserEntity admin = new UserEntity();
-		admin.setUserEmail("Email");
-		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		admin.setRole(UserRole.ADMIN);
-		this.userDao.create(admin);
-		
-		// WHEN I POST new action with email&smartspace of the admin 
-		
-		ActionEntity action = generator.getAction();
-		action.setActionSmartspace("smartspace");
-		action.setActionId("123");
-		ActionBoundary newAction = new ActionBoundary(action);
-		System.out.println(action.toString());
-		this.restTemplate
-			.postForObject(
-					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
-					newAction, 
-					ActionBoundary.class, 
-					"2019B.Amitz4.SmartSpace","Email");
-		
-		// THEN the database contains a single action
-		assertThat(this.actionDao
-			.readAll())
-			.hasSize(1);
-	}
+
+	
 	
 	@Test(expected=Exception.class)
 	public void testPostNewActionNoAdmin() throws Exception{
@@ -147,7 +119,6 @@ public class ActionControllerIntegtationTests {
 	
 	@Test
 	public void testGetAllActionsUsingPagination() throws Exception{
-		// GIVEN the database contains 3 actions
 		UserEntity admin = new UserEntity();
 		admin.setUserEmail("Email");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
@@ -156,18 +127,19 @@ public class ActionControllerIntegtationTests {
 		
 		int size = 3;
 		IntStream.range(1, size + 1)
-			.mapToObj(i->generator.getAction())
+			.mapToObj(i->new ActionEntity("demo" + i, this.generator.getAction().getElementSmartspace(),
+					this.generator.getAction().getActionType(),this.generator.getAction().getCreationTimestamp(),
+					this.generator.getAction().getPlayerEmail(), this.generator.getAction().getPlayerSmartspace(), 
+					this.generator.getAction().getMoreAttributes()))
 			.forEach(this.actionDao::create);
 		
-		// WHEN I GET actions of size 10 and page 0
 		ActionBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ActionBoundary[].class, 
-					10, 0);
+					"2019B.Amitz4.SmartSpace","amit@gmail.com",0, 10);
 		
-		// THEN I receive 3 actions 
 		assertThat(response)
 			.hasSize(size);
 	}
@@ -239,7 +211,7 @@ public class ActionControllerIntegtationTests {
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
-					ElementBoundary[].class, 
+					ActionBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
 		
 		// THEN the database is empty
@@ -302,44 +274,8 @@ public class ActionControllerIntegtationTests {
 
 	
 	
-	@Test
-	public void testGetAllActionsUsingPaginationAndValidateContentWithAllAttributeValidation() throws Exception{
-		// GIVEN the database contains 4 actions
-		int size = 4;
-		
-		UserEntity admin = new UserEntity();
-		admin.setUserEmail("Email");
-		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		admin.setRole(UserRole.ADMIN);
-		this.userDao.create(admin);
-		
-		List<ActionBoundary> all = new ArrayList<>();
-		for (int i = 1; i<=size; i++)
-		{
-			ActionEntity action = generator.getAction();
-			action.setActionId(String.valueOf(i));
-			action.setActionSmartspace("Space");
-			ActionEntity rv = this.actionService.newAction(action, "2019B.Amitz4.SmartSpace", "Email");
-			all.add(new ActionBoundary(rv));
-		}
 
-		
-		
-		// WHEN I GET action of size 10 and page 0
-		ActionBoundary[] response = 
-		this.restTemplate
-			.getForObject(
-					this.baseUrl + "?size={size}&page={page}", 
-					ActionBoundary[].class, 
-					10, 0);
 	
-		// THEN I receive the exact action written to the database
-		assertThat(response)
-		.usingElementComparatorOnFields("key")
-		.containsExactlyElementsOf(all);
-	}
-
-
 
 	@Test
 	public void testGetAllActionsUsingPaginationOfSecondNonExistingPage() throws Exception{
@@ -356,9 +292,9 @@ public class ActionControllerIntegtationTests {
 		ActionBoundary[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}",
 					ActionBoundary[].class, 
-					1, 2);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
 		
 		assertThat(result)
 			.isEmpty();

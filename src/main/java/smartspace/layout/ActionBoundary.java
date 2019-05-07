@@ -1,13 +1,14 @@
 package smartspace.layout;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import smartspace.data.ActionEntity;
 
 public class ActionBoundary {
 	
-	private String key;
+	private Map<String,Object> key;
 	private String elementSmartspace;
 	private String elementId;
 	private String playerSmartspace;
@@ -22,22 +23,25 @@ public class ActionBoundary {
 	
 	public ActionBoundary (ActionEntity entity) {
 		
-		this.key = entity.getKey();
-		this.elementSmartspace = entity.getElementSmartspace();
-		this.elementId = entity.getElementId();
-		this.playerSmartspace = entity.getPlayerSmartspace();
-		this.playerEmail = entity.getPlayerEmail();
+		this.key = new HashMap<>();
+		this.key.put("id", entity.getActionId());
+		this.key.put("smartspace", entity.getActionSmartspace());
 		this.actionType = entity.getActionType();
 		this.creationTimeStamp = entity.getCreationTimestamp();
-		this.moreAttributes = entity.getMoreAttributes();
+		this.key = new HashMap<>();
+		this.key.put("id", entity.getElementId());
+		this.key.put("smartspace", entity.getElementSmartspace());
+		this.key = new HashMap<>();
+		this.key.put("smartspace", entity.getPlayerSmartspace());
+		this.key.put("email", entity.getPlayerEmail());
 		
 	}
 
-	public String getKey() {
+	public  Map<String,Object> getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey( Map<String,Object> key) {
 		this.key = key;
 	}
 
@@ -100,7 +104,7 @@ public class ActionBoundary {
 	public ActionEntity convertToEntity() {
 		ActionEntity entity = new ActionEntity();
 		
-		entity.setKey(key);
+		entity.setKey(key.get("smartspace")+"#"+key.get("email"));
 		entity.setElementSmartspace(elementSmartspace);
 		entity.setElementId(elementId);
 		entity.setPlayerSmartspace(playerSmartspace);
