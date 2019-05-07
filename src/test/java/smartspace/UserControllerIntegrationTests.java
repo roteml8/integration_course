@@ -1,5 +1,6 @@
 package smartspace;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,18 +129,23 @@ public class UserControllerIntegrationTests {
 		UserBoundary newUser = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser;
-		this.restTemplate
+		try {
+			this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
-		// THEN the database is empty
+			//fail("Exception not thrown"); // if we got here the exception wasn't thrown.
+			}
+		// THEN the database is contains only the admin
 		// AND post method throws an exception 
-		assertThat(this.userDao
-			.readAll())
-			.isEmpty();;
+			catch(Exception exception) {
+				assertThat(this.userDao
+						.readAll().get(0))
+						.isEqualToComparingFieldByField(admin);
+				throw exception;
+			}	
 	}
 	
 	@Test
@@ -180,11 +186,23 @@ public class UserControllerIntegrationTests {
 				UserBoundary[].class, 
 				"2019B.Amitz4.SmartSpace","Email");
 
-		
+		/*
 		// THEN the database contains a single element 
 		assertThat(this.userDao
 			.readAll())
 			.hasSize(2);
+			*/
+		
+		UserBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+							UserBoundary[].class, 
+							"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
+		
+		assertThat(this.userDao
+				.readAll().get(1)).isEqualToComparingFieldByField(e2);
+		
 	}
 	
 	@Test(expected=Exception.class)
@@ -207,18 +225,23 @@ public class UserControllerIntegrationTests {
 		UserBoundary newUser = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
-		// THEN the database is empty
-		// and Post method throws an exception 
+		}
+		// THEN the database is contains only the admin
+		// AND post method throws an exception 
+		catch(Exception exception) {
 		assertThat(this.userDao
 			.readAll())
 			.hasSize(0);
+			throw exception;
+		}			
+			
 	}
 	
 	@Test(expected=Exception.class)
@@ -237,28 +260,36 @@ public class UserControllerIntegrationTests {
 		// with the email&smartspace of the admin 
 		
 		UserEntity e = generator.getUser();
+		
 		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		e.setKey("1");
+		e.setUserEmail("Email");
+		
+		
 		UserEntity e2 = generator.getUser();
 		e2.setUserSmartspace("Space");
-		e2.setKey("2");
+		e2.setUserEmail("Email");
+		
 		UserBoundary newUser1 = new UserBoundary(e);
 		UserBoundary newUser2 = new UserBoundary(e2);
 		UserBoundary[] arr = new UserBoundary[2];
 		arr[1] = newUser1;
 		arr[0] = newUser2;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
 		// THEN the database is empty
 		// and Post method throws an exception 
+		catch(Exception exception) {
 		assertThat(this.userDao
 			.readAll())
-			.hasSize(0);
+			.hasSize(1);
+		throw exception;
+		}
 	}
 	
 	@Test(expected=Exception.class)
@@ -278,10 +309,10 @@ public class UserControllerIntegrationTests {
 		
 		UserEntity e = generator.getUser();
 		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		e.setKey("1");
+		e.setUserEmail("Email");
 		UserEntity e2 = generator.getUser();
 		e2.setUserSmartspace("Space");
-		e2.setKey("1");
+		e2.setUserEmail("Email");
 		UserBoundary newUser1 = new UserBoundary(e);
 		UserBoundary newUser2 = new UserBoundary(e2);
 		UserBoundary[] arr1 = new UserBoundary[1];
@@ -289,13 +320,15 @@ public class UserControllerIntegrationTests {
 		arr1[0] = newUser1;
 		arr2[0] = newUser2;
 		
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr1, 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
+		catch(Exception exception) {
 		this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
@@ -303,12 +336,20 @@ public class UserControllerIntegrationTests {
 				ElementBoundary[].class, 
 				"2019B.Amitz4.SmartSpace","Email");
 	
-		// THEN the database contains the external user only 
+		// THEN the database contains the external and admin user only 
 		// and Post method throws an exception 
 		assertThat(this.userDao
 			.readAll())
-			.hasSize(1)
-			.containsOnly(e2);
+			.hasSize(2);
+			
+		assertThat(this.userDao
+				.readAll().get(0)).isEqualToComparingFieldByField(admin);
+		
+		assertThat(this.userDao
+				.readAll().get(1)).isEqualToComparingFieldByField(e2);
+		
+		throw exception;
+		}
 	}
 	
 	@Test(expected=Exception.class)
@@ -334,31 +375,9 @@ public class UserControllerIntegrationTests {
 					arr, 
 					ElementBoundary[].class, 
 					"SmartspaceNotAdmin","EmailNotAdmin");
-		
 		// THEN the test ends with exception
 	}
 	
-	
-	@Test(expected=Exception.class)
-	public void testPostNewUserWithBadCode() throws Exception{
-		
-		int code = 133;
-		Map<String, Object> details = new HashMap<>();
-		details.put("y", 10.0);
-		details.put("x", "10");
-		UserBoundary newUser = new UserBoundary();
-		newUser.setUsername("Demo1");
-		newUser.setAvatar("avatar");;
-		newUser.setRole(UserRole.ADMIN);
-		newUser.setPoints(111);
-		this.restTemplate
-			.postForObject(
-					this.baseUrl +"{adminSmartspace}/{adminEmail}", 
-					newUser, 
-					UserBoundary.class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com");
-	
-	}
 	
 	@Test
 	public void testGetAllUsersUsingPagination() throws Exception{

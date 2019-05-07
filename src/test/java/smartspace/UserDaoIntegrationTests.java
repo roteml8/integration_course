@@ -182,7 +182,7 @@ public class UserDaoIntegrationTests {
 		// change (role)
 		assertThat(userFromDB.get()).isNotNull().extracting("userEmail", "username", "avatar", "role", "points")
 				.containsExactly(update.getUserEmail(), update.getUsername(), update.getAvatar(), user.getRole(),
-						update.getPoints());
+						user.getPoints());
 	}
 
 	@Test

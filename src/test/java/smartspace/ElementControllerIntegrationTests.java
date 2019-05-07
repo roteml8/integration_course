@@ -142,18 +142,22 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary newElement = new ElementBoundary(e);
 		ElementBoundary[] arr = new ElementBoundary[1];
 		arr[0] = newElement;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
 		// THEN the database is empty
 		// AND post method throws an exception 
+		catch(Exception exception) {
 		assertThat(this.elementDao
 			.readAll())
-			.isEmpty();;
+			.isEmpty();
+		throw exception;
+		}
 	}
 	
 	@Test
@@ -221,18 +225,22 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary newElement = new ElementBoundary(e);
 		ElementBoundary[] arr = new ElementBoundary[1];
 		arr[0] = newElement;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
 		// THEN the database is empty
 		// and Post method throws an exception 
+		catch(Exception exception) {
 		assertThat(this.elementDao
 			.readAll())
 			.hasSize(0);
+		throw exception;
+		}
 	}
 	
 	
@@ -263,6 +271,7 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary[] arr = new ElementBoundary[2];
 		arr[1] = newElement;
 		arr[0] = newElement2;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
@@ -272,9 +281,13 @@ public class ElementControllerIntegrationTests {
 		
 		// THEN the database is empty
 		// and Post method throws an exception 
+		}
+		catch(Exception exception) {
 		assertThat(this.elementDao
 			.readAll())
 			.hasSize(0);
+		throw exception;
+		}
 	}
 	
 	@Test(expected=Exception.class)
@@ -304,14 +317,15 @@ public class ElementControllerIntegrationTests {
 		ElementBoundary[] arr2 = new ElementBoundary[1];
 		arr1[0] = newElement;
 		arr2[0] = newElement2;
-		
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr1, 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
+		catch(Exception exception) {
 		this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
@@ -323,8 +337,14 @@ public class ElementControllerIntegrationTests {
 		// and Post method throws an exception 
 		assertThat(this.elementDao
 			.readAll())
-			.hasSize(1)
-			.containsOnly(e2);
+			.hasSize(1);
+		
+		assertThat(this.elementDao
+		.readAll().get(1))
+		.isEqualToComparingFieldByField(e2);
+			
+		throw exception;
+		}
 	}
 	
 	@Test(expected=Exception.class)

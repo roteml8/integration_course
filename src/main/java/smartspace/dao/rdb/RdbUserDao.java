@@ -103,9 +103,6 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		if (userEntity.getUserSmartspace() != null) {
 			existing.setUserSmartspace(userEntity.getUserSmartspace());
 		}
-		if (userEntity.getPoints() != Long.MIN_VALUE) {
-			existing.setPoints(userEntity.getPoints());
-		}
 
 		// SQL: UPDATE
 		this.userCrud.save(existing);

@@ -165,18 +165,22 @@ public class ActionControllerIntegtationTests {
 		ActionBoundary newAction = new ActionBoundary(a);
 		ActionBoundary[] arr = new ActionBoundary[1];
 		arr[0] = newAction;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					ActionBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
 		// THEN the database is empty
 		// and Post method throws an exception 
+		catch(Exception exception) {
 		assertThat(this.actionDao
 			.readAll())
 			.hasSize(0);
+		throw exception;
+		}
 	}
 	
 	
@@ -207,18 +211,22 @@ public class ActionControllerIntegtationTests {
 		ActionBoundary[] arr = new ActionBoundary[2];
 		arr[1] = newAction;
 		arr[0] = newAction2;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					ActionBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
+		catch(Exception exception) {
 		// THEN the database is empty
 		// and Post method throws an exception 
 		assertThat(this.actionDao
 			.readAll())
 			.hasSize(0);
+		throw exception;
+		}
 	}
 	
 
@@ -239,10 +247,10 @@ public class ActionControllerIntegtationTests {
 		
 		ActionEntity a = generator.getAction();
 		a.setActionSmartspace("2019B.Amitz4.SmartSpace");
-		a.setElementId("1");
+		a.setActionId("1");
 		ActionEntity e2 = generator.getAction();
 		e2.setActionSmartspace("Space");
-		e2.setElementId("1");
+		e2.setActionId("1");
 		ActionBoundary newAction = new ActionBoundary(a);
 		ActionBoundary newAction2 = new ActionBoundary(e2);
 		ActionBoundary[] arr1 = new ActionBoundary[1];
@@ -250,13 +258,15 @@ public class ActionControllerIntegtationTests {
 		arr1[0] = newAction;
 		arr2[0] = newAction2;
 		
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr1, 
 					ActionBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-		
+		}
+		catch(Exception exception) {
 		this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
@@ -270,6 +280,8 @@ public class ActionControllerIntegtationTests {
 			.readAll())
 			.hasSize(1)
 			.containsOnly(e2);
+		throw exception;
+		}
 	}
 
 	
