@@ -15,7 +15,7 @@ package smartspace.data.util;
 		}
 
 		public String toString() {
-			return this.getStackTrace() + "/n your not an admin";
+			return this.getStackTrace() + "/n Can't import from local smartspace! check your array at location " + indx;
 		}
 
 	}

@@ -1,10 +1,7 @@
 package smartspace.layout;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +17,6 @@ import smartspace.infra.UserService;
 @RestController
 public class UserController {
 	private UserService userService;
-	private String smartspace;
 	
 	private final String baseUrl = "/smartspace/users";
 	private final String loginUrl = "/login/{userSmartspace}/{userEmail}";
@@ -33,24 +29,17 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
-	public void setSmartspace(String smartspace) {
-		this.smartspace = smartspace;
-	}
-	
 	
 	@RequestMapping(
 			path=baseAdminUrl + adminKeyUrl,
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	public UserBoundary[] newUser (
+	public UserBoundary[] importUsers (
 			@RequestBody UserBoundary[] usersArr,
 			@PathVariable("adminSmartspace") String adminSmartspace,
-
 			@PathVariable("adminEmail") String adminEmail){
 		
-
 		UserEntity[] toImport = new UserEntity[usersArr.length];
 		UserEntity tempEntity;		
 		for(int i=0; i< usersArr.length; i++)

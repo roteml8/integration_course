@@ -1,5 +1,6 @@
 package smartspace.ControllerIntegration;
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
-import smartspace.data.util.FakeUserGenerator;
+import smartspace.data.util.*;
 import smartspace.infra.UserService;
 import smartspace.layout.UserBoundary;
 

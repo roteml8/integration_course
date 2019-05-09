@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.UserEntity;
+import smartspace.data.util.FailedValidationException;
+import smartspace.data.util.ImportFromLocalException;
 import smartspace.data.util.NotAnAdminException;
-import smartspace.layout.UserBoundary;
 
 
 @Service
@@ -31,7 +32,7 @@ public class UserServicelmpl implements UserService {
 		if (valiadateNewUser(user)) {
 			return this.userDao.create(user);
 		}else {
-			throw new RuntimeException("invalid user");
+			throw new FailedValidationException("user");
 		}
 	}
 	
@@ -40,14 +41,14 @@ public class UserServicelmpl implements UserService {
 		// validate Admin status
 		
 		if (userDao.isAdmin(adminKey) == false) {
-			throw new RuntimeException("Only admins are allowed to import users!");
+			throw new NotAnAdminException("users!");
 		}
 		UserEntity valids;
 		int count=0;
 		for (UserEntity user: users)
 		{
 			if (user.getUserSmartspace().equals(mySmartspace)) 
-				throw new RuntimeException("Can't import users from local smartspace!");
+				throw new ImportFromLocalException(count);
 			else if (valiadate(user))
 				count++;
 		}
@@ -58,7 +59,7 @@ public class UserServicelmpl implements UserService {
 			if (valiadate(user)) 
 				created.add(this.userDao.importUser(user));
 			else
-				throw new RuntimeException("invalid user");
+				throw new FailedValidationException("user");
 		}
 		
 		return created; 
