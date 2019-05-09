@@ -1,4 +1,4 @@
-package smartspace;
+package smartspace.ControllerIntegration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -23,20 +23,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedUserDao;
-import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
-import smartspace.data.util.FakeElementGenerator;
 import smartspace.data.util.FakeUserGenerator;
 import smartspace.infra.UserService;
-import smartspace.layout.ElementBoundary;
 import smartspace.layout.UserBoundary;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties= {"spring.profiles.active=default"})
 
-public class UserControllerIntegrationTests {
+public class UserControllerIntegrationADMINTests {
 	private String baseUrl;
 	private int port;
 	private RestTemplate restTemplate;
@@ -159,7 +156,7 @@ public class UserControllerIntegrationTests {
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
 		
-		// WHEN I POST new element with email&smartspace of the admin 
+		// WHEN I POST new user with email&smartspace of the admin 
 		
 		UserEntity e = generator.getUser();
 		e.setUserSmartspace("space");
@@ -171,10 +168,10 @@ public class UserControllerIntegrationTests {
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
-					ElementBoundary[].class, 
+					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
 		
-		// AND I POST another element with the same key 
+		// AND I POST another user with the same key 
 		UserEntity e2 = generator.getUser();
 		e2.setUserSmartspace("space");
 		e2.setKey("email#space");
@@ -187,19 +184,22 @@ public class UserControllerIntegrationTests {
 				"2019B.Amitz4.SmartSpace","Email");
 
 		/*
-		// THEN the database contains a single element 
+		
 		assertThat(this.userDao
 			.readAll())
 			.hasSize(2);
 			*/
 		
+		/*
 		UserBoundary[] response = 
 				this.restTemplate
 					.getForObject(
 							this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 							UserBoundary[].class, 
 							"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
+		*/
 		
+		// THEN the user in the database is the second user posted
 		assertThat(this.userDao
 				.readAll().get(1)).isEqualToComparingFieldByField(e2);
 		
@@ -247,7 +247,7 @@ public class UserControllerIntegrationTests {
 	@Test(expected=Exception.class)
 	public void testPostTwoUsersOneLocalSecondExternal() throws Exception{
 		
-		// GIVEN the element database is empty and user database contains an admin
+		// GIVEN the user database is empty and user database contains an admin
 		
 		UserEntity admin = new UserEntity();
 		admin.setUserEmail("Email");
@@ -255,8 +255,8 @@ public class UserControllerIntegrationTests {
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
 		
-		// WHEN I POST  an array containing an element from local smartspace
-		// and an element with external smartspace
+		// WHEN I POST  an array containing an user from local smartspace
+		// and an user with external smartspace
 		// with the email&smartspace of the admin 
 		
 		UserEntity e = generator.getUser();
@@ -325,7 +325,7 @@ public class UserControllerIntegrationTests {
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr1, 
-					ElementBoundary[].class, 
+					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
 		}
 		catch(Exception exception) {
@@ -333,7 +333,7 @@ public class UserControllerIntegrationTests {
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 				arr2, 
-				ElementBoundary[].class, 
+				UserBoundary[].class, 
 				"2019B.Amitz4.SmartSpace","Email");
 	
 		// THEN the database contains the external and admin user only 
@@ -373,7 +373,7 @@ public class UserControllerIntegrationTests {
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
-					ElementBoundary[].class, 
+					UserBoundary[].class, 
 					"SmartspaceNotAdmin","EmailNotAdmin");
 		// THEN the test ends with exception
 	}
@@ -451,7 +451,7 @@ public class UserControllerIntegrationTests {
 			UserEntity e = generator.getUser();
 			e.setUserSmartspace("Space"+i);
 			e.setUserEmail("t@g.co.il"+i);
-			UserEntity rv = this.userService.newUser(e, "2019B.Amitz4.SmartSpace#Email");
+			UserEntity rv = this.userDao.create(e);
 			all.add(new UserBoundary(rv));
 		}
 		

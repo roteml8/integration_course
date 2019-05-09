@@ -21,8 +21,12 @@ import smartspace.infra.UserService;
 public class UserController {
 	private UserService userService;
 	private String smartspace;
-	private final String baseUrl = "/smartspace/admin/users/";
-	private final String keyUrl = "{adminSmartspace}/{adminEmail}";
+	
+	private final String baseUrl = "/smartspace/users";
+	private final String loginUrl = "/login/{userSmartspace}/{userEmail}";
+
+	private final String baseAdminUrl = "/smartspace/admin/users";
+	private final String adminKeyUrl = "/{adminSmartspace}/{adminEmail}";
 
 	@Autowired
 	public UserController (UserService userService) {
@@ -36,45 +40,37 @@ public class UserController {
 	
 	
 	@RequestMapping(
-			path=baseUrl + keyUrl,
+			path=baseAdminUrl + adminKeyUrl,
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] newUser (
 			@RequestBody UserBoundary[] usersArr,
 			@PathVariable("adminSmartspace") String adminSmartspace,
+
 			@PathVariable("adminEmail") String adminEmail){
 		
 
-		List<UserBoundary> outPutUsers = new ArrayList<UserBoundary>();
-		List<UserEntity> inputPutEntitys = new ArrayList<UserEntity>();
-		UserEntity tempEntity;
-		int usersCount = 0;
-		
-		for(UserBoundary userBound : usersArr)
+		UserEntity[] toImport = new UserEntity[usersArr.length];
+		UserEntity tempEntity;		
+		for(int i=0; i< usersArr.length; i++)
 		{
-			tempEntity = userBound.convertToEntity();
-			if (this.userService.valiadateSmartspace(tempEntity) == false)
-				throw new RuntimeException("Can't import users from local smartspace! check the user at location " + usersCount);
-			else 
-			{
-				usersCount++;
-				inputPutEntitys.add(tempEntity);
-			}
-		}
-		
-		for(UserEntity curUserEntity : inputPutEntitys)
-		{
-			outPutUsers.add(new UserBoundary(this.userService
-			.newUser(curUserEntity, adminSmartspace + "#" + adminEmail)));
+			tempEntity = usersArr[i].convertToEntity();
+			toImport[i] = tempEntity;	
 		}
 			
-		return outPutUsers.toArray(new UserBoundary[0]);
-		
+		  return 
+				this.userService
+				.importUsers(toImport, adminSmartspace + "#" + adminEmail)
+				.stream()
+				.map(UserBoundary::new)
+				.collect(Collectors.toList())
+				.toArray(new UserBoundary[0]);
+		 
 	}
 	
 	@RequestMapping(
-			path=baseUrl + keyUrl,
+			path=baseAdminUrl + adminKeyUrl,
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] getUsingPagination (
@@ -92,14 +88,38 @@ public class UserController {
 	}
 	
 	@RequestMapping(
-			path=baseUrl + keyUrl,
+			path=baseUrl + loginUrl,
 			method=RequestMethod.PUT,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 	public void update (
-			@PathVariable("adminSmartspace") String adminSmartspace,
-			@PathVariable("adminEmail") String adminEmail,
+			@PathVariable("userSmartspace") String adminSmartspace,
+			@PathVariable("userEmail") String adminEmail,
 			@RequestBody UserBoundary user) {
 		this.userService.update(user.convertToEntity() ,adminSmartspace + "#" + adminEmail);
+	}
+	
+	@RequestMapping(
+			path=baseUrl,
+			method=RequestMethod.POST,
+			consumes=MediaType.APPLICATION_JSON_VALUE,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public UserBoundary newUser (
+			@RequestBody NewUserForm newUserForm){
+			
+		return new UserBoundary(this.userService.newUser(newUserForm.convertToEntity()));
+		
+	}
+	
+	@RequestMapping(
+			path=baseUrl + loginUrl,
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public UserBoundary login (
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail){
+			
+		return new UserBoundary(this.userService.login(userSmartspace + "#" + userEmail));
+		
 	}
 }
 

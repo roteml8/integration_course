@@ -4,9 +4,8 @@ import smartspace.data.UserEntity;
 
 public interface UserService {
 
-	public UserEntity newUser(UserEntity user, String key);
 	List <UserEntity> getUsingPagination(int size, int page);
-	public void update(UserEntity userEntity, String key);
+	public List<UserEntity> importUsers(UserEntity[] users, String key);
 	
 	/**
 	 * Checks if user's smartspace is similar to local project smartspace and throws an exception if it is.
@@ -16,4 +15,9 @@ public interface UserService {
 	 */
 	public boolean valiadateSmartspace(UserEntity user);
 
+	public void update(UserEntity userEntity, String key);
+	public UserEntity newUser(UserEntity user);
+	public UserEntity login(String string);
+
 }
+

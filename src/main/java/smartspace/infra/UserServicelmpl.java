@@ -1,10 +1,13 @@
 package smartspace.infra;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.UserEntity;
+import smartspace.data.util.NotAnAdminException;
+import smartspace.layout.UserBoundary;
 
 
 @Service
@@ -21,23 +24,56 @@ public class UserServicelmpl implements UserService {
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
 	}
-	
+
 	@Override
-	public UserEntity newUser(UserEntity user, String adminKey) {
-		// validate Admin status
-		if (userDao.isAdmin(adminKey) == false) {
-			throw new RuntimeException("Only admins are allowed to import users!");
-		}
-		
+	public UserEntity newUser(UserEntity user) {
 		// validate user status
-		if (valiadate(user)) {
-			return this.userDao.importUser(user);
+		if (valiadateNewUser(user)) {
+			return this.userDao.create(user);
 		}else {
 			throw new RuntimeException("invalid user");
 		}
 	}
 	
+	@Override
+	public List<UserEntity> importUsers(UserEntity[] users, String adminKey) {
+		// validate Admin status
+		
+		if (userDao.isAdmin(adminKey) == false) {
+			throw new RuntimeException("Only admins are allowed to import users!");
+		}
+		UserEntity valids;
+		int count=0;
+		for (UserEntity user: users)
+		{
+			if (user.getUserSmartspace().equals(mySmartspace)) 
+				throw new RuntimeException("Can't import users from local smartspace!");
+			else if (valiadate(user))
+				count++;
+		}
+		List<UserEntity> created = new ArrayList<>();
+		// validate user status
+		for (UserEntity user: users)
+		{
+			if (valiadate(user)) 
+				created.add(this.userDao.importUser(user));
+			else
+				throw new RuntimeException("invalid user");
+		}
+		
+		return created; 
 	
+	}
+	
+	
+	private boolean valiadateNewUser(UserEntity user) 
+	{
+		return  user.getUserEmail() != null &&
+				user.getUsername() != null &&
+				user.getAvatar() != null &&
+				user.getRole() != null;
+				
+	}
 	
 	private boolean valiadate(UserEntity user) 
 	{
@@ -113,5 +149,11 @@ public class UserServicelmpl implements UserService {
 		this.userDao.update(userEntity);
 	}
 
-	
+	@Override
+	public UserEntity login(String key) {
+		return this.userDao.readById(key).orElseThrow(() -> new RuntimeException("Login failed, there is no such user in the DB."));
+	}
+
 }
+
+

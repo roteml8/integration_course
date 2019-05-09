@@ -1,4 +1,4 @@
-package smartspace;
+package smartspace.ControllerIntegration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ import smartspace.layout.UserBoundary;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties= {"spring.profiles.active=default"})
-public class ActionControllerIntegtationTests {
+public class ActionControllerIntegrtationADMINTests {
 	
 	private String baseUrl;
 	private int port;
