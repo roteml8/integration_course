@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import smartspace.data.ActionEntity;
 
 public class ActionBoundary {
@@ -115,6 +117,15 @@ public class ActionBoundary {
 		
 		return entity;
 
+	}
+	
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 

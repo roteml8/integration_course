@@ -34,7 +34,7 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	@Override
-	public ElementEntity newElement(ElementEntity entity, String adminSmartspace, String adminEmail) {
+	public ElementEntity importElement(ElementEntity entity, String adminSmartspace, String adminEmail) {
 		
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
 			throw new RuntimeException("Only admins are allowed to import elements!");
@@ -48,9 +48,6 @@ public class ElementServiceImpl implements ElementService {
 		}
 	}
 	
-	public void updateElement(ElementEntity element) {
-		this.dao.update(element);
-	}
 
 	private boolean valiadate(ElementEntity entity) {
 		return entity.getCreatorEmail() != null && 
@@ -72,8 +69,48 @@ public class ElementServiceImpl implements ElementService {
 
 	
 	  @Override 
-	  public List<ElementEntity> getUsingPagination(int size, int page) {
+	  public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
 		  	return this.dao.readAll("key", size, page);
 	  }
+
+	@Override
+	public void updateElement(ElementEntity element, String managerSmartspace, String managerEmail,
+			String elementSmartspace, String elementId) {
+		element.setElementSmartSpace(elementSmartspace);
+		element.setElementid(elementId);
+		this.dao.update(element);
+	}
+
+	@Override
+	public ElementEntity newElement(ElementEntity entity, String managerSmartspace, String managerEmail) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ElementEntity getElement(String userSmartspace, String userEmail, String elementSmartspace,
+			String elementId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ElementEntity> getByName(String userSmartspace, String userEmail, String value, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ElementEntity> getByType(String userSmartspace, String userEmail, String value, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, int x, int y, int distance,
+			int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	 
 }

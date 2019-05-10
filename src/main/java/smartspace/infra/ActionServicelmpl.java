@@ -1,6 +1,7 @@
 package smartspace.infra;
 
 import java.util.Date;  
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,22 @@ public class ActionServicelmpl implements ActionService {
 		} else {
 			throw new RuntimeException("Invalid element");
 		}
+	}
+
+	@Override
+	public ActionEntity invoke(ActionEntity action) {
+		if(action.getActionType().equals("ECHO"))
+		{
+			if (valiadate(action)) {
+				action.setCreationTimestamp(new Date());
+				return this.actionDao.create(action);
+			} else {
+				throw new RuntimeException("Invalid element");
+			}
+		}
+		else
+			throw new RuntimeException("Unsupported action type");
+		
 	}
 
 }

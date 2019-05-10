@@ -421,7 +421,7 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
+			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
 			all.add(new ElementBoundary(rv));
 		}
 		
@@ -457,7 +457,7 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
+			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
 			all.add(new ElementBoundary(rv));
 		}
 
@@ -493,7 +493,7 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.newElement(e, "2019B.Amitz4.SmartSpace", "Email");
+			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
 			all.add(new ElementBoundary(rv));
 		}	
 

@@ -2,6 +2,9 @@ package smartspace.layout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -21,9 +24,15 @@ import smartspace.infra.ElementService;
 public class ElementController {
 	private ElementService elementService;
 	private String smartspace;
+	
+	private final String baseUrl = "/smartspace/elements";
+	private final String baseAdminUrl = "/smartspace/admin/elements";
+	
+	private final String adminKeyUrl = "/{adminSmartspace}/{adminEmail}";
+	private final String managerKeyUrl = "/{managerSmartspace}/{managerEmail}";
+	private final String userKeyUrl = "/{userSmartspace}/{userEmail}";
+	private final String elementKeyUrl = "/{elementSmartspace}/{elementId}";
 
-	private final String baseUrl = "/smartspace/admin/elements/";
-	private final String keyUrl = "{adminSmartspace}/{adminEmail}";
 	
 	@Autowired
 	public ElementController (ElementService elementService) {
@@ -36,11 +45,11 @@ public class ElementController {
 	}
 	
 	@RequestMapping(
-			path=baseUrl+keyUrl,
+			path=baseAdminUrl+adminKeyUrl,
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	public ElementBoundary[] newElement (
+	public ElementBoundary[] importElements (
 			@RequestBody ElementBoundary[] elementArr, 
 			@PathVariable("adminSmartspace") String adminSmartspace,
 			@PathVariable("adminEmail") String adminEmail) {
@@ -65,7 +74,7 @@ public class ElementController {
 		for(ElementEntity curElementEntity : inputEntitys)
 		{
 			outPutElements.add(new ElementBoundary(this.elementService
-			.newElement(curElementEntity, adminSmartspace, adminEmail)));
+			.importElement(curElementEntity, adminSmartspace, adminEmail)));
 		}
 			
 		return outPutElements.toArray(new ElementBoundary[0]);
@@ -74,7 +83,7 @@ public class ElementController {
 	
 				
 	@RequestMapping(
-			path=baseUrl+keyUrl,
+			path=baseAdminUrl+adminKeyUrl,
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary[] getUsingPagination (
@@ -84,12 +93,138 @@ public class ElementController {
 			@PathVariable("adminEmail") String adminEmail){
 		return 
 			this.elementService
-			.getUsingPagination(size, page)
+			.getUsingPagination(adminSmartspace, adminEmail, size, page)
 			.stream()
 			.map(ElementBoundary::new)
 			.collect(Collectors.toList())
 			.toArray(new ElementBoundary[0]);
 	}
+	
+	
+	@RequestMapping(
+			path=baseUrl+managerKeyUrl,
+			method=RequestMethod.POST,
+			consumes=MediaType.APPLICATION_JSON_VALUE,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary newElement (
+			@RequestBody ElementBoundary elementBoundry, 
+			@PathVariable("managerSmartspace") String managerSmartspace,
+			@PathVariable("managerEmail") String managerEmail) {
+		
+		
+		return new ElementBoundary(this.elementService
+				.newElement(elementBoundry.convertToEntity(), managerSmartspace, managerEmail));
+	}
+	
+	@RequestMapping(
+			path=baseUrl+managerKeyUrl + elementKeyUrl,
+			method=RequestMethod.PUT,
+			consumes=MediaType.APPLICATION_JSON_VALUE)
+	public void updateElement (
+			@RequestBody ElementBoundary elementBoundry, 
+			@PathVariable("managerSmartspace") String managerSmartspace,
+			@PathVariable("managerEmail") String managerEmail,
+			@PathVariable("elementSmartspace") String elementSmartspace,
+			@PathVariable("elementId") String elementId){
+
+		this.elementService
+			.updateElement(elementBoundry.convertToEntity(), managerSmartspace, managerEmail, elementSmartspace, elementId);
+	}
+	
+	@RequestMapping(
+			path=baseUrl+userKeyUrl + elementKeyUrl,
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary getElement (
+			@PathVariable("managerSmartspace") String userSmartspace,
+			@PathVariable("managerEmail") String userEmail,
+			@PathVariable("elementSmartspace") String elementSmartspace,
+			@PathVariable("elementId") String elementId){
+		
+		return new ElementBoundary(this.elementService
+				.getElement(userSmartspace, userEmail, elementSmartspace, elementId));
+	}
+	
+	/*
+	@RequestMapping(
+			path=baseUrl+userKeyUrl,
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] getElements (
+			@RequestParam(name="size", required=false, defaultValue="10") int size,
+			@RequestParam(name="page", required=false, defaultValue="0") int page,
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail){
+		
+		return 
+			this.elementService
+			.getUsingPagination(userSmartspace, userEmail, size, page)
+			.stream()
+			.map(ElementBoundary::new)
+			.collect(Collectors.toList())
+			.toArray(new ElementBoundary[0]);
+	}
+	*/
+	
+	@RequestMapping(
+			path=baseUrl+userKeyUrl,
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] getElementsBy (
+			@RequestParam(name="search", required=false, defaultValue="") String search,
+			@RequestParam(name="x", required=false, defaultValue="0") int x,
+			@RequestParam(name="y", required=false, defaultValue="0") int y,
+			@RequestParam(name="distance", required=false, defaultValue="1") int distance,
+			@RequestParam(value="value", required=false, defaultValue="") String value,
+			@RequestParam(name="page", required=false, defaultValue="0") int page,
+			@RequestParam(name="size", required=false, defaultValue="10") int size,
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail){
+		
+		switch(search)
+		{
+		case "":{
+			return 
+			this.elementService
+			.getUsingPagination(userSmartspace, userEmail, size, page)
+			.stream()
+			.map(ElementBoundary::new)
+			.collect(Collectors.toList())
+			.toArray(new ElementBoundary[0]);
+		}
+		case "location":{
+		return 
+			this.elementService
+			.getByLocation(userSmartspace, userEmail, x, y, distance, size, page)
+			.stream()
+			.map(ElementBoundary::new)
+			.collect(Collectors.toList())
+			.toArray(new ElementBoundary[0]);
+		}
+		case "name":{
+			return 
+				this.elementService
+				.getByName(userSmartspace, userEmail, value , size, page)
+				.stream()
+				.map(ElementBoundary::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementBoundary[0]);
+		}
+		case "type":{
+			return 
+				this.elementService
+				.getByType(userSmartspace, userEmail, value , size, page)
+				.stream()
+				.map(ElementBoundary::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementBoundary[0]);
+		}
+		default:
+			throw new RuntimeException("Unsupported search parameter! wtf is " + search + 
+					"? consult the guidebook for a list of supported and FDA approved searches.");
+		}
+	}
+	
 	
 	/*
 	@RequestMapping(
@@ -110,6 +245,8 @@ public class ElementController {
 			.toArray(new ElementBoundary[0]);
 	}
 	*/
+	
+	
 	
 }
 
