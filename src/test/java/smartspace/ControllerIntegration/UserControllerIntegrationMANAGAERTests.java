@@ -40,7 +40,7 @@ public class UserControllerIntegrationMANAGAERTests {
 	private FakeUserGenerator generator;
 	private String mySmartspace;
 	private String loginUrl;
-
+	private UserRole userRoleToCheck;
 
 	
 	@Autowired
@@ -68,6 +68,7 @@ public class UserControllerIntegrationMANAGAERTests {
 	public void init() {
 		this.baseUrl = "http://localhost:" + port + "/smartspace/users";
 		this.loginUrl = "/login/{userSmartspace}/{userEmail}";
+		this.userRoleToCheck = UserRole.MANAGER;
 	}
 	
 	@Before
@@ -88,7 +89,7 @@ public class UserControllerIntegrationMANAGAERTests {
 
 		// WHEN I POST new user with new user form
 		UserEntity manager = generator.getUser();
-		manager.setRole(UserRole.MANAGER);
+		manager.setRole(userRoleToCheck);
 		manager.setUserSmartspace(null);
 		
 		NewUserForm userForm = new NewUserForm(manager);
@@ -108,9 +109,9 @@ public class UserControllerIntegrationMANAGAERTests {
 			.hasSize(1);
 		
 		assertThat(rv.get(0)).isNotNull()
-		.extracting("userEmail", "username", "avatar", "role", "userSmartspace")
+		.extracting("userEmail", "username", "avatar", "role", "userSmartspace", "points")
 		.containsExactly(manager.getUserEmail(), manager.getUsername(), manager.getAvatar(), manager.getRole(),
-				this.mySmartspace);
+				this.mySmartspace, Long.MIN_VALUE);
 			
 	}
 	
@@ -118,7 +119,7 @@ public class UserControllerIntegrationMANAGAERTests {
 	public void testGetLoginWithValidUser() throws Exception{
 		// GIVEN the user database contains manager
 		UserEntity manager = generator.getUser();
-		manager.setRole(UserRole.MANAGER);
+		manager.setRole(userRoleToCheck);
 		this.userDao.create(manager);
 		
 		// WHEN i login with manager's smartspace and email 		
@@ -133,12 +134,54 @@ public class UserControllerIntegrationMANAGAERTests {
 		assertThat(result).isNotNull().isEqualToComparingFieldByField(new UserBoundary(manager));
 	}
 	
+	@Test
+	public void testPostNewUserAndLogin() throws Exception{
+		// GIVEN the user database is empty
+
+		// WHEN I POST new user with new user form
+		UserEntity manager = generator.getUser();
+		manager.setRole(userRoleToCheck);
+		manager.setUserSmartspace(null);
+		
+		NewUserForm userForm = new NewUserForm(manager);
+		
+		this.restTemplate
+			.postForObject(
+					this.baseUrl , 
+					userForm, 
+					NewUserForm.class);
+		
+		// And i login with manager's smartspace and email 		
+		UserBoundary result = 
+			this.restTemplate
+			.getForObject(
+					this.baseUrl + this.loginUrl,
+					UserBoundary.class,
+					this.mySmartspace , manager.getUserEmail());
+		
+		// THEN the database contains a single user
+		// AND this user's email , avatar ,role and username fields
+		// are exactly the same as the fields in userForm
+		// AND his smartspace field is the same as the local project's smartspace
+		// AND the login will retrieve the user's details.
+				
+		List<UserEntity> rv = this.userDao.readAll();
+		assertThat(rv)
+			.hasSize(1);
+		
+		assertThat(result.convertToEntity()).isNotNull()
+		.extracting("userEmail", "username", "avatar", "role", "userSmartspace", "points")
+		.containsExactly(manager.getUserEmail(), manager.getUsername(), manager.getAvatar(), manager.getRole(),
+				this.mySmartspace, Long.MIN_VALUE);
+			
+	}
+	
 	
 	@Test
 	public void testPutUpdateWithUserInDatabase() throws Exception{
 		// GIVEN the user database contains only manager
 		UserEntity manager = generator.getUser();
-		manager.setRole(UserRole.MANAGER);
+		manager.setRole(userRoleToCheck);
 		this.userDao.create(manager);
 		
 		// WHEN i update manager's details with updetedUser details using PUT 
@@ -163,19 +206,27 @@ public class UserControllerIntegrationMANAGAERTests {
 	public void testPutUpdateWithUserNotInDatabase() throws Exception{
 		// GIVEN the user database contains only manager
 		UserEntity manager = generator.getUser();
-		manager.setRole(UserRole.MANAGER);
+		manager.setRole(userRoleToCheck);
 		this.userDao.create(manager);
 		
 		// WHEN i try to update a user not in the database
 		UserEntity updatedUser = generator.getUser();
-
+		try {
 			this.restTemplate
 			.put(this.baseUrl + this.loginUrl,
 					new UserBoundary(updatedUser),
 					updatedUser.getUserSmartspace(),
 					updatedUser.getUserEmail());
-
+		}
+		catch(Exception exception) {
 		// THEN an exception will be thrown.
+		// AND the user will stay unchanged.
+		assertThat(this.userDao
+			.readAll().get(0)).isEqualToComparingFieldByField(manager);
+		
+		throw exception;
+		}
+		
 	}
 	
 
