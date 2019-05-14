@@ -61,7 +61,7 @@ public class ElementControllerIntegrationMANAGARTests {
 		this.userGenerator = userGenerator;
 	}
 
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String mySmartspace) {
 		this.mySmartspace = mySmartspace;
 	}
@@ -135,16 +135,16 @@ public class ElementControllerIntegrationMANAGARTests {
 				myManager.getUserEmail());
 
 		// THEN the element database contains a single element
-		// AND this element's  fields are exactly the same as the fields in element
+		// AND this element's  fields are exactly the same as the fields in element except for elementSmartspace and creationTimeDate
 		// AND his smartspace field is the same as the local project's smartspace and he has a valid Id.
 		List<ElementEntity> rv = this.elementDao.readAll();
 		assertThat(rv).hasSize(1);
 		
 		assertThat(rv.get(0)).isNotNull()
-				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail", "creationTimeStamp")
-				.containsExactly(element.getElementSmartSpace(), element.getLocation(), element.getName(), element.getType(), element.isExpired(),
-						element.getCreatorSmartSpace(), element.getCreatorEmail(), element.getCreationTimeDate());
-		
+				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail")
+				.containsExactly(this.mySmartspace, element.getLocation(), element.getName(), element.getType(), element.isExpired(),
+						element.getCreatorSmartSpace(), element.getCreatorEmail());
+		assertThat(rv.get(0).getCreationTimeDate()).isNotEqualTo(element.getCreationTimeDate());
 		assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
 	}
 	

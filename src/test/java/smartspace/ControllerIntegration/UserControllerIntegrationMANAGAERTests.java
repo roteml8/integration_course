@@ -48,7 +48,7 @@ public class UserControllerIntegrationMANAGAERTests {
 		this.generator = generator;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String mySmartspace) {
 		this.mySmartspace = mySmartspace;
 	}

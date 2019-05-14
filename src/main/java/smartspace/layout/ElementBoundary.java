@@ -81,15 +81,16 @@ public class ElementBoundary {
 
 	public ElementEntity convertToEntity() {
 		ElementEntity entity = new ElementEntity();
-		if (key.get("smartspace")!= null && key.get("id")!= null
+		if (key != null && key.get("smartspace")!= null && key.get("id")!= null
 				&&!key.get("smartspace").trim().isEmpty()
 				&&!key.get("id").trim().isEmpty() )
 			entity.setKey(key.get("smartspace")+"#"+key.get("id"));
-		else
+		/*else
 		{
 			entity.setElementSmartSpace(key.get("smartspace"));
 			entity.setElementid(key.get("id"));
 		}
+		*/
 		Location l = new Location();
 		l.setX(this.latlng.get("lat"));
 		l.setY(this.latlng.get("lng"));

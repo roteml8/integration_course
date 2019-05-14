@@ -101,7 +101,7 @@ public class EnhancedElementDaoIntegrationTests {
 		IntStream.range(0, 12) // Stream Integer
 				.mapToObj(i -> {
 					ElementEntity element = generator.getElement();
-					element.setName("abc" + i);
+					element.setName("abc");
 					return element;
 				}) // ElementEntity Stream
 				.forEach(this.dao::create);
@@ -109,7 +109,7 @@ public class EnhancedElementDaoIntegrationTests {
 		IntStream.range(12, 33) // Stream Integer
 				.mapToObj(i -> {
 					ElementEntity element = generator.getElement();
-					element.setName("xyz" + i);
+					element.setName("xyz");
 					return element;
 				}) // UserEntity Stream
 				.forEach(this.dao::create);

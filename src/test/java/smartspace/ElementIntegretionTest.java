@@ -172,8 +172,8 @@ public class ElementIntegretionTest {
 			.get()
 			.extracting("name", "type", "location","creatorEmail","expired","creatorSmartspace","moreAttributes")
 			.containsExactly(updatedElement.getName(),updatedElement.getType(),updatedElement.getLocation(),
-					updatedElement.getCreatorEmail(),
-					updatedElement.isExpired(),updatedElement.getCreatorSmartSpace(),
+					elementInDB.getCreatorEmail(),
+					updatedElement.isExpired(),elementInDB.getCreatorSmartSpace(),
 					updatedElement.getMoreAttributes());
 		// AND the elementInDB creationTimeStamp is the same (can't change)
 		assertThat(rv.get().getCreationTimeDate().compareTo(elementInDB.getCreationTimeDate()));
