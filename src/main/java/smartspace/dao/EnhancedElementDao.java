@@ -15,17 +15,17 @@ public interface EnhancedElementDao<Key> extends ElementDao<Key> {
 	
 	public List<ElementEntity> readAll(String sortBy, int size, int page);
 	
-	public List<ElementEntity> readElementWithNameContaining(String text, int size, int page);
+	public List<ElementEntity> readElementWithName(String text, int size, int page);
 	
 	public List<ElementEntity> readElementWithLocation(Location location, int size, int page);
 
-	public List<ElementEntity> readElementWithTypeContaining(String text, int size, int page);
+	public List<ElementEntity> readElementWithType(String text, int size, int page);
 	
 	public List<ElementEntity> readElementWithExpired(boolean expired, int size, int page);
 	
-	public List<ElementEntity> readElementWithCreatorEmailContaining(String text, int size, int page);
+	public List<ElementEntity> readElementWithCreatorEmail(String text, int size, int page);
 	
-	public List<ElementEntity> readElementWithCreatorSmartspaceContaining(String text, int size, int page);
+	public List<ElementEntity> readElementWithCreatorSmartspace(String text, int size, int page);
 	
 	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page);
 	

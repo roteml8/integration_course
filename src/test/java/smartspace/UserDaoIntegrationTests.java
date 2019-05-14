@@ -212,6 +212,7 @@ public class UserDaoIntegrationTests {
 
 		// AND read the user from the dao
 		Optional<UserEntity> userFromDB = this.dao.readById(update.getKey());
+		System.out.println(userFromDB.get().getUserEmail());
 
 		// THEN the returned object is the updated user merged with user at the fields
 		// update didn't

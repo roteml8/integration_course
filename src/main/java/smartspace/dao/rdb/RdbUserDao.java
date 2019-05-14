@@ -29,7 +29,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 
 	}
 
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}

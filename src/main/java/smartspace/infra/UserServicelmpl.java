@@ -21,7 +21,7 @@ public class UserServicelmpl implements UserService {
 		this.userDao = userDao;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
 	}
@@ -43,23 +43,20 @@ public class UserServicelmpl implements UserService {
 		if (userDao.isAdmin(adminKey) == false) {
 			throw new NotAnAdminException("users!");
 		}
-		UserEntity valids;
 		int count=0;
 		for (UserEntity user: users)
 		{
 			if (user.getUserSmartspace().equals(mySmartspace)) 
 				throw new ImportFromLocalException(count);
-			else if (valiadate(user))
-				count++;
+			if (!valiadate(user))
+				throw new FailedValidationException("user");
+			count++;
 		}
 		List<UserEntity> created = new ArrayList<>();
 		// validate user status
 		for (UserEntity user: users)
 		{
-			if (valiadate(user)) 
-				created.add(this.userDao.importUser(user));
-			else
-				throw new FailedValidationException("user");
+			this.userDao.importUser(user);
 		}
 		
 		return created; 

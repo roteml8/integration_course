@@ -1,5 +1,6 @@
 package smartspace.infra;
 
+import java.util.ArrayList;
 import java.util.Date;  
 
 import java.util.List;
@@ -9,14 +10,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import smartspace.dao.EnhancedActionDao;
+import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.util.FailedValidationException;
+import smartspace.data.util.ImportFromLocalException;
+import smartspace.data.util.NotAnAdminException;
 
 
 @Service
 public class ActionServicelmpl implements ActionService {
 	private EnhancedActionDao actionDao;
 	private EnhancedUserDao<String> userDao;
+	private EnhancedElementDao<String> elementDao;
 	private String mySmartspace;
 	
 	private boolean valiadate(ActionEntity entity) {
@@ -45,50 +51,49 @@ public class ActionServicelmpl implements ActionService {
 	this.userDao = userDao;
 	}
 	
-	@Override
-	public ActionEntity newAction(ActionEntity actionEntity) {
-		String [] splitActionSmartspace = actionEntity.getActionSmartspace().split("#");
-		if(userDao.readById(splitActionSmartspace[1]).isPresent())
-			throw new RuntimeException("your action not in DB");
-		
-		if(userDao.isAdmin(actionEntity.getActionId()))
-				throw new RuntimeException("your not an admin");	
-		
-		if (valiadate(actionEntity)) {
-			actionEntity.setCreationTimestamp(new Date());
-			return this.actionDao.importAction(actionEntity);
-		}else {
-			throw new RuntimeException("invalid action  ");
-		}
+	@Autowired
+	public void setElementDao(EnhancedElementDao<String> elementDao) {
+	this.elementDao = elementDao;
 	}
+	
 
 	@Override
-	public List<ActionEntity> getUsingPagination(int size, int page) {
+	public List<ActionEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
 		return this.actionDao
-				.readAll(size, page);
+				.readAll("key", size, page);
 	}
 
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
 	}
 	
 	@Override
-	public ActionEntity newAction(ActionEntity action, String adminSmartspace, String adminEmail) {
-		if (action.getActionSmartspace().equals(mySmartspace)) {
-			throw new RuntimeException("Can't import elements from local smartspace!");
+	public List<ActionEntity> importActions(ActionEntity[] actions, String adminSmartspace, String adminEmail) {
 
-		}
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new RuntimeException("Only admins are allowed to import action!");
+			throw new NotAnAdminException("actions!");
 		}
+		int count=0;
+		for (ActionEntity a: actions)
+		{
+			if (a.getActionSmartspace().equals(mySmartspace)) 
+				throw new ImportFromLocalException(count);
+			if (!valiadate(a))
+				throw new FailedValidationException("action");
+			if (!elementDao.readById(a.getElementSmartspace()+"#"+a.getElementId()).isPresent())
+				throw new ElementNotInDBException();
+			count++;
+		}
+		List<ActionEntity> created = new ArrayList<>();
+		// validate element status
+		for (ActionEntity a: actions)
+		{
+			this.actionDao.importAction(a);
+		}
+		
+		return created; 
 
-		if (valiadate(action)) {
-			action.setCreationTimestamp(new Date());
-			return this.actionDao.importAction(action);
-		} else {
-			throw new RuntimeException("Invalid element");
-		}
 	}
 
 	@Override

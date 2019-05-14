@@ -4,7 +4,7 @@ import smartspace.data.UserEntity;
 
 public interface UserService {
 
-	List <UserEntity> getUsingPagination(int size, int page);
+	public List <UserEntity> getUsingPagination(int size, int page);
 	public List<UserEntity> importUsers(UserEntity[] users, String key);
 	
 	/**

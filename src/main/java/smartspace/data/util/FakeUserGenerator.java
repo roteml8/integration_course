@@ -23,7 +23,7 @@ public class FakeUserGenerator implements UserGenerator {
 		this.factory = factory;
 	}
 
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}

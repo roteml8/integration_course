@@ -15,7 +15,6 @@ public class UserBoundary {
 	private String avatar;
 	private UserRole role;
 	private long points;
-	private Map<String, Object> details;
 
 	
 	public UserBoundary(){
@@ -75,9 +74,6 @@ public class UserBoundary {
 		this.points = points;
 	}
 	
-	public void setDetails(Map<String, Object> details) {
-		this.details = details;
-	}
 
 	public UserEntity convertToEntity() {
 		UserEntity entity = new UserEntity();

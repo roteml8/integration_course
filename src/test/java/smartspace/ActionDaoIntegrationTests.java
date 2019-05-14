@@ -1,5 +1,6 @@
 package smartspace;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
@@ -84,6 +85,7 @@ public class ActionDaoIntegrationTests {
 		// AND the action key is not null and is smartspace+"#"+id and  id > 0 and 
 		assertThat(actionInDB.getKey()).isNotNull().isEqualTo(actionInDB.getActionSmartspace()+"#"+actionInDB.getActionId());
 		assertThat(actionInDB.getActionId()).isGreaterThan("0");
+
 
 
 	}

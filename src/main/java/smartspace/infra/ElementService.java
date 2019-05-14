@@ -4,7 +4,7 @@ import java.util.List;
 import smartspace.data.ElementEntity;
 
 public interface ElementService {
-	public ElementEntity importElement(ElementEntity entity, String adminSmartspace, String adminEmail);
+	public List<ElementEntity> importElements(ElementEntity[] elements, String adminSmartspace, String adminEmail);
 
 	public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page);
 

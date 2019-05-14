@@ -1,12 +1,6 @@
 package smartspace.layout;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,14 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import smartspace.data.ElementEntity;
-import smartspace.data.UserEntity;
 import smartspace.infra.ElementService;
 
 
 @RestController
 public class ElementController {
 	private ElementService elementService;
-	private String smartspace;
 	
 	private final String baseUrl = "/smartspace/elements";
 	private final String baseAdminUrl = "/smartspace/admin/elements";
@@ -39,10 +31,6 @@ public class ElementController {
 		this.elementService = elementService;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
-	public void setSmartspace(String smartspace) {
-		this.smartspace = smartspace;
-	}
 	
 	@RequestMapping(
 			path=baseAdminUrl+adminKeyUrl,
@@ -54,30 +42,21 @@ public class ElementController {
 			@PathVariable("adminSmartspace") String adminSmartspace,
 			@PathVariable("adminEmail") String adminEmail) {
 		
-		List<ElementBoundary> outPutElements = new ArrayList<ElementBoundary>();
-		List<ElementEntity> inputEntitys = new ArrayList<>();
+		ElementEntity[] toImport = new ElementEntity[elementArr.length];
 		ElementEntity tempEntity;
-		int elementsCount = 0;
 		
-		for(ElementBoundary elementBound : elementArr)
+		for(int i=0; i<elementArr.length; i++)
 		{
-			tempEntity = elementBound.convertToEntity();
-			if (tempEntity.getElementSmartSpace().equals(smartspace))
-				throw new RuntimeException("Can't import elements from local smartspace! check the element at location " + elementsCount);
-			else 
-			{
-				elementsCount++;
-				inputEntitys.add(tempEntity);
-			}
-		}
-		
-		for(ElementEntity curElementEntity : inputEntitys)
-		{
-			outPutElements.add(new ElementBoundary(this.elementService
-			.importElement(curElementEntity, adminSmartspace, adminEmail)));
+			tempEntity = elementArr[i].convertToEntity();
+			toImport[i] = tempEntity;
+
 		}
 			
-		return outPutElements.toArray(new ElementBoundary[0]);
+		return this.elementService.importElements(toImport, adminSmartspace, adminEmail)
+				.stream()
+				.map(ElementBoundary::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementBoundary[0]);
 		
 	}
 	

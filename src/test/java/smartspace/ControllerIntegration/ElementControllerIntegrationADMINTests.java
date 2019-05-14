@@ -415,15 +415,17 @@ public class ElementControllerIntegrationADMINTests {
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
 		List<ElementBoundary> all = new ArrayList<>();
+		ElementEntity[] arr = new ElementEntity[size];
 
-		for (int i = 1; i<=size; i++)
+		for (int i = 0; i<size; i++)
 		{
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
-			all.add(new ElementBoundary(rv));
+			arr[i] = e;
+			all.add(new ElementBoundary(e));
 		}
+		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
 		
 		// WHEN I GET elements of size 10 and page 0
 		ElementBoundary[] response = 
@@ -450,16 +452,18 @@ public class ElementControllerIntegrationADMINTests {
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
-		
+		ElementEntity[] arr = new ElementEntity[size];
 		List<ElementBoundary> all = new ArrayList<>();
-		for (int i = 1; i<=size; i++)
+		for (int i = 0; i<size; i++)
 		{
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
-			all.add(new ElementBoundary(rv));
+			arr[i] = e;
+			all.add(new ElementBoundary(e));
 		}
+		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
+		
 
 		
 		
@@ -487,15 +491,17 @@ public class ElementControllerIntegrationADMINTests {
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
-		
-		for (int i=0; i<=10; i++)
+		int size = 11;
+		ElementEntity[] arr = new ElementEntity[size];
+		for (int i=0; i<size; i++)
 		{
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
-			ElementEntity rv = this.elementService.importElement(e, "2019B.Amitz4.SmartSpace", "Email");
-			all.add(new ElementBoundary(rv));
-		}	
+			arr[i] = e;
+			all.add(new ElementBoundary(e));
+		}
+		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
 
 		
 //		MessageBoundary last = new MessageBoundary( 

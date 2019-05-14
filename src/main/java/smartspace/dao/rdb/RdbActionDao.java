@@ -34,7 +34,7 @@ public class RdbActionDao implements EnhancedActionDao {
 	this.genericActionIdGeneratorCrud = genericActionIdGeneratorCrud;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}

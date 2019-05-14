@@ -1,8 +1,5 @@
 package smartspace.layout;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import smartspace.data.UserEntity;

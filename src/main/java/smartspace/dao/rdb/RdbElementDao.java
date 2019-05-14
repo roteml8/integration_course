@@ -33,7 +33,7 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		this.genericElementIdGeneratorCrud = genericElementIdGeneratorCrud;
 	}
 
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}
@@ -60,8 +60,6 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 	
 	@Transactional
 	public ElementEntity importElement(ElementEntity elementEntity) {
-	if (this.elementCrud.existsById(elementEntity.getKey()))
-		this.deleteByKey(elementEntity.getKey());
 	ElementEntity rv = this.elementCrud.save(elementEntity);
 		return rv;
 
@@ -94,18 +92,18 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		ElementEntity existing = this.readById(elementEntity.getKey())
 				.orElseThrow(() -> new RuntimeException("no element entity to update"));
 
-		if (elementEntity.getCreatorEmail() != null) {
-			existing.setCreatorEmail(elementEntity.getCreatorEmail());
-		}
-		if (elementEntity.getCreatorSmartSpace() != null) {
-			existing.setCreatorSmartSpace(elementEntity.getCreatorSmartSpace());
-		}
-		if (elementEntity.getElementid() != null) {
-			existing.setElementid(elementEntity.getElementid());
-		}
-		if (elementEntity.getElementSmartSpace() != null) {
-			existing.setElementSmartSpace(elementEntity.getElementSmartSpace());
-		}
+//		if (elementEntity.getCreatorEmail() != null) {
+//			existing.setCreatorEmail(elementEntity.getCreatorEmail());
+//		}
+//		if (elementEntity.getCreatorSmartSpace() != null) {
+//			existing.setCreatorSmartSpace(elementEntity.getCreatorSmartSpace());
+//		}
+//		if (elementEntity.getElementid() != null) {
+//			existing.setElementid(elementEntity.getElementid());
+//		}
+//		if (elementEntity.getElementSmartSpace() != null) {
+//			existing.setElementSmartSpace(elementEntity.getElementSmartSpace());
+//		}
 		if (elementEntity.getLocation() != null) {
 			existing.setLocation(elementEntity.getLocation());
 		}
@@ -164,8 +162,8 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 
 	@Override
 	@Transactional
-	public List<ElementEntity> readElementWithNameContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByNameLike("%" + text + "%", PageRequest.of(page, size));
+	public List<ElementEntity> readElementWithName(String text, int size, int page) {
+		return this.elementCrud.findAllByNameLike(text, PageRequest.of(page, size));
 
 	}
 
@@ -177,8 +175,8 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 
 	@Override
 	@Transactional
-	public List<ElementEntity> readElementWithTypeContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByTypeLike("%" + text + "%", PageRequest.of(page, size));
+	public List<ElementEntity> readElementWithType(String text, int size, int page) {
+		return this.elementCrud.findAllByTypeLike(text, PageRequest.of(page, size));
 
 	}
 
@@ -191,15 +189,15 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 
 	@Override
 	@Transactional
-	public List<ElementEntity> readElementWithCreatorEmailContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByCreatorEmailLike("%" + text + "%", PageRequest.of(page, size));
+	public List<ElementEntity> readElementWithCreatorEmail(String text, int size, int page) {
+		return this.elementCrud.findAllByCreatorEmailLike(text, PageRequest.of(page, size));
 
 	}
 
 	@Override
 	@Transactional
-	public List<ElementEntity> readElementWithCreatorSmartspaceContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByCreatorSmartspaceLike("%" + text + "%", PageRequest.of(page, size));
+	public List<ElementEntity> readElementWithCreatorSmartspace(String text, int size, int page) {
+		return this.elementCrud.findAllByCreatorSmartspaceLike(text, PageRequest.of(page, size));
 
 	}
 

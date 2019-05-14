@@ -1,6 +1,6 @@
 package smartspace.infra;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
+import smartspace.data.Location;
+import smartspace.data.util.FailedValidationException;
+import smartspace.data.util.ImportFromLocalException;
+import smartspace.data.util.NotAnAdminException;
 
 @Service
 public class ElementServiceImpl implements ElementService {
@@ -28,24 +32,34 @@ public class ElementServiceImpl implements ElementService {
 	this.userDao = userDao;
 	}
 	
-	@Value("${name.of.Smartspace:smartspace}")
+	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
 	}
 
 	@Override
-	public ElementEntity importElement(ElementEntity entity, String adminSmartspace, String adminEmail) {
+	public List<ElementEntity> importElements(ElementEntity[] elements, String adminSmartspace, String adminEmail) {
 		
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new RuntimeException("Only admins are allowed to import elements!");
+			throw new NotAnAdminException("elements!");
 		}
+		int count=0;
+		for (ElementEntity e: elements)
+		{
+			if (e.getElementSmartSpace().equals(mySmartspace)) 
+				throw new ImportFromLocalException(count);
+			if (!valiadate(e))
+					throw new FailedValidationException("element");
+			count++;
 
-		if (valiadate(entity)) {
-			entity.setCreationTimeDate(new Date());
-			return this.dao.importElement(entity);
-		} else {
-			throw new RuntimeException("Invalid element!");
 		}
+		List<ElementEntity> created = new ArrayList<>();
+		for (ElementEntity e: elements)
+		{
+			this.dao.importElement(e);
+		}
+		
+		return created; 
 	}
 	
 
@@ -83,34 +97,38 @@ public class ElementServiceImpl implements ElementService {
 
 	@Override
 	public ElementEntity newElement(ElementEntity entity, String managerSmartspace, String managerEmail) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dao.create(entity);
 	}
 
 	@Override
 	public ElementEntity getElement(String userSmartspace, String userEmail, String elementSmartspace,
 			String elementId) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dao.readById(elementSmartspace+"#"+elementId).orElseThrow(() -> 
+		new RuntimeException("No such element in the DB!"));
+
 	}
 
 	@Override
-	public List<ElementEntity> getByName(String userSmartspace, String userEmail, String value, int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ElementEntity> getByName(String userSmartspace, String userEmail, String value, int size, int page){ 
+		return this.dao.readElementWithName(value, size, page);
 	}
 
 	@Override
 	public List<ElementEntity> getByType(String userSmartspace, String userEmail, String value, int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dao.readElementWithType(value, size, page);
 	}
 
 	@Override
 	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, int x, int y, int distance,
 			int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ElementEntity> result = new ArrayList<>();
+		for (int lat = x; lat <= x+distance; lat++)
+		{
+			for (int lng = y; lng<=y+distance; lng++)
+				result.addAll(this.dao.readElementWithLocation(new Location(lat,lng), size, page));
+		}
+		return result;
+
 	}
 	 
 }

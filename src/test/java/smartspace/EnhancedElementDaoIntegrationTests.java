@@ -116,7 +116,7 @@ public class EnhancedElementDaoIntegrationTests {
 
 		// WHEN I read 10 elements with name containing 'abc' after skipping first 10
 		// elements
-		List<ElementEntity> result = this.dao.readElementWithNameContaining("abc", 10, 1);
+		List<ElementEntity> result = this.dao.readElementWithName("abc", 10, 1);
 
 		// THEN I receive 2 results
 		assertThat(result).hasSize(2);

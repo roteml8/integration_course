@@ -1,6 +1,4 @@
 package smartspace.layout;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +60,7 @@ public class ActionController {
 			@PathVariable("adminEmail") String adminEmail) {
 		return 
 			this.actionService
-			.getUsingPagination(size, page)
+			.getUsingPagination(adminSmartspace, adminEmail, size, page)
 			.stream()
 			.map(ActionBoundary::new)
 			.collect(Collectors.toList())
@@ -82,24 +80,21 @@ public class ActionController {
 			@PathVariable("adminSmartspace") String adminSmartspace,
 			@PathVariable("adminEmail") String adminEmail){
 		
-
-		List<ActionBoundary> outPutActions = new ArrayList<ActionBoundary>();
-		List<ActionEntity> inputPutEntitys = new ArrayList<ActionEntity>();
+		ActionEntity[] toImport = new ActionEntity[actionsArr.length];
 		ActionEntity tempEntity;
 		
-		for(ActionBoundary actionBound : actionsArr)
+		for(int i=0; i<actionsArr.length; i++)
 		{
-				tempEntity = actionBound.convertToEntity();
-				inputPutEntitys.add(tempEntity);
-		}
-		
-		for(ActionEntity curActionEntity : inputPutEntitys)
-		{
-			outPutActions.add(new ActionBoundary(this.actionService
-			.newAction(curActionEntity)));
+			tempEntity = actionsArr[i].convertToEntity();
+			toImport[i] = tempEntity;
+
 		}
 			
-		return outPutActions.toArray(new ActionBoundary[0]);
+		return this.actionService.importActions(toImport, adminSmartspace, adminEmail)
+				.stream()
+				.map(ActionBoundary::new)
+				.collect(Collectors.toList())
+				.toArray(new ActionBoundary[0]);
 		
 	}
 	
