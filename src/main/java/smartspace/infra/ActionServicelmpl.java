@@ -1,18 +1,21 @@
 package smartspace.infra;
 
 import java.util.ArrayList;
+
 import java.util.Date;  
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import smartspace.dao.EnhancedActionDao;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
+import smartspace.plugin.Plugin;
 
 
 @Service
@@ -20,9 +23,11 @@ public class ActionServicelmpl implements ActionService {
 	private EnhancedActionDao actionDao;
 	private EnhancedUserDao<String> userDao;
 	private EnhancedElementDao<String> elementDao;
+	private ApplicationContext ctx;
+
 	private String mySmartspace;
 	
-	private boolean valiadate(ActionEntity entity) {
+	private boolean valiadateImport(ActionEntity entity) {
 		return !entity.getActionType().trim().isEmpty() &&
 				entity.getActionType() != null &&
 				!entity.getElementId().trim().isEmpty() &&
@@ -76,7 +81,7 @@ public class ActionServicelmpl implements ActionService {
 		{
 			if (a.getActionSmartspace().equals(mySmartspace)) 
 				throw new ImportFromLocalException(" check your array at location " + count);
-			if (!valiadate(a))
+			if (!valiadateImport(a))
 				throw new FailedValidationException(" action");
 			if (!elementDao.readById(a.getElementSmartspace()+"#"+a.getElementId()).isPresent())
 				throw new ElementNotInDBException();
@@ -92,21 +97,39 @@ public class ActionServicelmpl implements ActionService {
 		return created; 
 
 	}
-
+	
 	@Override
 	public ActionEntity invoke(ActionEntity action) {
-		if(action.getActionType().equals("ECHO"))
+ 
+		if(valiadateInvoke(action) == false)
 		{
-			if (valiadate(action)) {
-				action.setCreationTimestamp(new Date());
-				return this.actionDao.create(action);
-			} else {
-				throw new RuntimeException(" Invalid element");
-			}
+			throw new FailedValidationException(action.getActionType());
 		}
-		else
-			throw new RuntimeException(" Unsupported action type");
 		
+		try {
+			String type = action.getActionType();
+			String className =
+					"smartspace.plugin." 
+					+ type.toUpperCase().charAt(0) 
+					+ type.substring(1, type.length())
+					+ "Plugin";
+			Class<?> theClass = Class.forName(className);
+			Plugin plugin = (Plugin) this.ctx.getBean(theClass);
+			
+			action.setCreationTimestamp(new Date());
+			action = plugin.process(action);
+			
+			this.actionDao.create(action);
+			return action;
+		} catch (Exception e) {
+			//throw new UnsupportedActionTypeException(e);
+			throw new UnsupportedActionTypeException(action.getActionType());
+		}
+	}
+	
+	private boolean valiadateInvoke(ActionEntity entity) {
+		return !entity.getActionType().trim().isEmpty() &&
+				entity.getActionType() != null;
 	}
 
 }

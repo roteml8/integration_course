@@ -1,16 +1,23 @@
 package smartspace.layout;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import smartspace.data.ElementEntity;
 import smartspace.infra.ElementService;
+import smartspace.infra.EntityNotInDBException;
+import smartspace.infra.FailedValidationException;
+import smartspace.infra.ImportFromLocalException;
+import smartspace.infra.NotAnAdminException;
 
 
 @RestController
@@ -199,8 +206,7 @@ public class ElementController {
 				.toArray(new ElementBoundary[0]);
 		}
 		default:
-			throw new RuntimeException("Unsupported search parameter! wtf is " + search + 
-					"? consult the guidebook for a list of supported and FDA approved searches.");
+			throw new UnsupportedSearchException(search);
 		}
 	}
 	
@@ -225,7 +231,60 @@ public class ElementController {
 	}
 	*/
 	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+	public ErrorMessage handleException (UnsupportedSearchException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
 	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ErrorMessage handleException (NotAnAdminException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+	public ErrorMessage handleException (FailedValidationException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public ErrorMessage handleException (EntityNotInDBException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorMessage handleException (ImportFromLocalException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
 	
 }
 
