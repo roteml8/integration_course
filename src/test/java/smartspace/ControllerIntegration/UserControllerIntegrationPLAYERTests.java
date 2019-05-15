@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedUserDao;
@@ -105,7 +107,7 @@ public class UserControllerIntegrationPLAYERTests {
 
 	}
 	
-	@Test (expected = Exception.class)
+	@Test (expected = HttpClientErrorException.class)
 	public void testPostNewUserWithBadForm() throws Exception {
 		// GIVEN the user database is empty
 
@@ -122,10 +124,11 @@ public class UserControllerIntegrationPLAYERTests {
 				this.baseUrl,
 				userForm,
 				NewUserForm.class);
-		} catch (Exception exception) {
+		} catch (HttpClientErrorException exception) {
 			
 		// THEN an exception will be thrown.
 		// AND the database will stay empty.
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
 		List<UserEntity> rv = this.userDao.readAll();
 		assertThat(rv).hasSize(0);
 		throw exception;
@@ -210,6 +213,7 @@ public class UserControllerIntegrationPLAYERTests {
 	}
 
 	@Test(expected = Exception.class)
+	//@Test(expected = HttpClientErrorException.class)
 	public void testPutUpdateWithUserNotInDatabase() throws Exception {
 		// GIVEN the user database contains only manager
 		UserEntity manager = generator.getUser();
@@ -222,8 +226,10 @@ public class UserControllerIntegrationPLAYERTests {
 			this.restTemplate.put(this.baseUrl + this.loginUrl, new UserBoundary(updatedUser),
 					updatedUser.getUserSmartspace(), updatedUser.getUserEmail());
 		} catch (Exception exception) {
+		//catch (HttpClientErrorException exception) {
 			// THEN an exception will be thrown.
 			// AND the user will stay unchanged.
+			//assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
 			assertThat(this.userDao.readAll().get(0)).isEqualToComparingFieldByField(manager);
 
 			throw exception;

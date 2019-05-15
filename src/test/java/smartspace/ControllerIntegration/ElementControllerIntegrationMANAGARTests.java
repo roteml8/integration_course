@@ -155,7 +155,7 @@ public class ElementControllerIntegrationMANAGARTests {
 		ElementEntity element = generator.getElement();
 		element.setCreatorEmail(this.myManager.getUserEmail());
 		element.setCreatorSmartSpace(this.myManager.getUserSmartspace());
-		this.elementDao.create(element);
+		ElementEntity elementInDB = this.elementDao.create(element);
 
 		// WHEN i update element with updatedElement
 		ElementEntity updatedElement = generator.getElement();
@@ -164,15 +164,16 @@ public class ElementControllerIntegrationMANAGARTests {
 		
 		ElementBoundary elementBoundary = new ElementBoundary(updatedElement);
 		elementBoundary.setKey(null);
+		
+		String bla = elementInDB.getElementid();
 
 		this.restTemplate.put(
 				this.baseUrl + this.managerKeyUrl + this.elementKeyUrl,
 				elementBoundary,
-				ElementBoundary.class,
-				this.myManager.getUserSmartspace(),
+				myManager.getUserSmartspace(),
 				myManager.getUserEmail(),
-				element.getElementSmartSpace(),
-				element.getElementid());
+				elementInDB.getElementSmartSpace(),
+				elementInDB.getElementid());
 
 		// THEN the element in the database will have details exactly like updatedElement except for elemntId
 		// AND his smartspace field is the same as the local project's smartspace and he has a valid Id
@@ -182,9 +183,9 @@ public class ElementControllerIntegrationMANAGARTests {
 		List<ElementEntity> rv = this.elementDao.readAll();
 		
 		assertThat(rv.get(0)).isNotNull()
-				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail", "creationTimeStamp" , "moreAttributes")
-				.containsExactly(updatedElement.getElementSmartSpace(), updatedElement.getLocation(), updatedElement.getName(), updatedElement.getType(), updatedElement.isExpired(),
-						element.getCreatorSmartSpace(), element.getCreatorEmail(), element.getCreationTimeDate() , updatedElement.getMoreAttributes());
+				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail" , "moreAttributes")
+				.containsExactly(this.mySmartspace, updatedElement.getLocation(), updatedElement.getName(), updatedElement.getType(), updatedElement.isExpired(),
+						element.getCreatorSmartSpace(), element.getCreatorEmail(), updatedElement.getMoreAttributes());
 		
 		assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
 		

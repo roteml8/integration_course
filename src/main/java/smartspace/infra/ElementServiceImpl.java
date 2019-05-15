@@ -11,9 +11,6 @@ import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
-import smartspace.data.util.FailedValidationException;
-import smartspace.data.util.ImportFromLocalException;
-import smartspace.data.util.NotAnAdminException;
 
 @Service
 public class ElementServiceImpl implements ElementService {
@@ -41,15 +38,15 @@ public class ElementServiceImpl implements ElementService {
 	public List<ElementEntity> importElements(ElementEntity[] elements, String adminSmartspace, String adminEmail) {
 		
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new NotAnAdminException("elements!");
+			throw new NotAnAdminException(" elements!");
 		}
 		int count=0;
 		for (ElementEntity e: elements)
 		{
 			if (e.getElementSmartSpace().equals(mySmartspace)) 
-				throw new ImportFromLocalException(count);
+				throw new ImportFromLocalException(" check your array at location " + count);
 			if (!valiadate(e))
-					throw new FailedValidationException("element");
+					throw new FailedValidationException(" element");
 			count++;
 
 		}

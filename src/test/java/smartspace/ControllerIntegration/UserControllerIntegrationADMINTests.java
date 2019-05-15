@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedUserDao;
@@ -108,7 +110,7 @@ public class UserControllerIntegrationADMINTests {
 	}
 	
 
-	@Test (expected=Exception.class)
+	@Test (expected=HttpClientErrorException.class)
 	public void testPostNewUserInvalid() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
@@ -124,6 +126,8 @@ public class UserControllerIntegrationADMINTests {
 		
 		UserEntity e = generator.getUser();
 		// e has no smartspace and no id 
+		e.setUsername(null);
+		e.setUserSmartspace("bla");
 		UserBoundary newUser = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser;
@@ -134,11 +138,11 @@ public class UserControllerIntegrationADMINTests {
 					arr, 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
-			//fail("Exception not thrown"); // if we got here the exception wasn't thrown.
 			}
-		// THEN the database is contains only the admin
-		// AND post method throws an exception 
-			catch(Exception exception) {
+		// THEN the database contains only the admin
+		// AND post method throws the correct exception 
+			catch(HttpClientErrorException exception) {
+				assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
 				assertThat(this.userDao
 						.readAll().get(0))
 						.isEqualToComparingFieldByField(admin);
@@ -206,7 +210,7 @@ public class UserControllerIntegrationADMINTests {
 		
 	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected=HttpClientErrorException.class)
 	public void testPostNewUserSameSmartspace() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
@@ -222,7 +226,7 @@ public class UserControllerIntegrationADMINTests {
 		
 		UserEntity e = generator.getUser();
 		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		e.setKey("1");
+		e.setUserEmail(admin.getUserEmail());
 		UserBoundary newUser = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser;
@@ -236,16 +240,17 @@ public class UserControllerIntegrationADMINTests {
 		}
 		// THEN the database is contains only the admin
 		// AND post method throws an exception 
-		catch(Exception exception) {
+		catch(HttpClientErrorException exception) {
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		assertThat(this.userDao
 			.readAll())
-			.hasSize(0);
+			.hasSize(1);
 			throw exception;
 		}			
 			
 	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected=HttpClientErrorException.class)
 	public void testPostTwoUsersOneLocalSecondExternal() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
@@ -285,7 +290,8 @@ public class UserControllerIntegrationADMINTests {
 		}
 		// THEN the database is empty
 		// and Post method throws an exception 
-		catch(Exception exception) {
+		catch(HttpClientErrorException exception) {
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		assertThat(this.userDao
 			.readAll())
 			.hasSize(1);
@@ -293,7 +299,7 @@ public class UserControllerIntegrationADMINTests {
 		}
 	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected=HttpClientErrorException.class)
 	public void testPostTwoUsersOneLocalSecondExternalNotTogether() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
@@ -329,7 +335,8 @@ public class UserControllerIntegrationADMINTests {
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email");
 		}
-		catch(Exception exception) {
+		catch(HttpClientErrorException exception) {
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
@@ -353,7 +360,7 @@ public class UserControllerIntegrationADMINTests {
 		}
 	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected=HttpClientErrorException.class)
 	public void testPostNewUserNoAdmin() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains a player
@@ -365,18 +372,24 @@ public class UserControllerIntegrationADMINTests {
 
 		// WHEN I POST new user with smartspace and email that belong to the player 
 		UserEntity e = generator.getUser();
-		e.setKey("1");
+		e.setUserEmail("mail");
 		e.setUserSmartspace("space");
 		UserBoundary newUser = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser;
+		try {
 		this.restTemplate
 			.postForObject(
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
 					"SmartspaceNotAdmin","EmailNotAdmin");
+		}
+		catch(HttpClientErrorException exception) {
 		// THEN the test ends with exception
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		throw exception;
+		}
 	}
 	
 	

@@ -13,9 +13,6 @@ import smartspace.dao.EnhancedActionDao;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
-import smartspace.data.util.FailedValidationException;
-import smartspace.data.util.ImportFromLocalException;
-import smartspace.data.util.NotAnAdminException;
 
 
 @Service
@@ -72,15 +69,15 @@ public class ActionServicelmpl implements ActionService {
 	public List<ActionEntity> importActions(ActionEntity[] actions, String adminSmartspace, String adminEmail) {
 
 		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new NotAnAdminException("actions!");
+			throw new NotAnAdminException(" actions!");
 		}
 		int count=0;
 		for (ActionEntity a: actions)
 		{
 			if (a.getActionSmartspace().equals(mySmartspace)) 
-				throw new ImportFromLocalException(count);
+				throw new ImportFromLocalException(" check your array at location " + count);
 			if (!valiadate(a))
-				throw new FailedValidationException("action");
+				throw new FailedValidationException(" action");
 			if (!elementDao.readById(a.getElementSmartspace()+"#"+a.getElementId()).isPresent())
 				throw new ElementNotInDBException();
 			count++;
@@ -104,11 +101,11 @@ public class ActionServicelmpl implements ActionService {
 				action.setCreationTimestamp(new Date());
 				return this.actionDao.create(action);
 			} else {
-				throw new RuntimeException("Invalid element");
+				throw new RuntimeException(" Invalid element");
 			}
 		}
 		else
-			throw new RuntimeException("Unsupported action type");
+			throw new RuntimeException(" Unsupported action type");
 		
 	}
 

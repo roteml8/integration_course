@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.UserEntity;
-import smartspace.data.util.FailedValidationException;
-import smartspace.data.util.ImportFromLocalException;
-import smartspace.data.util.NotAnAdminException;
 
 
 @Service
@@ -32,7 +29,7 @@ public class UserServicelmpl implements UserService {
 		if (valiadateNewUser(user)) {
 			return this.userDao.create(user);
 		}else {
-			throw new FailedValidationException("user");
+			throw new FailedValidationException(" bad user form");
 		}
 	}
 	
@@ -41,15 +38,15 @@ public class UserServicelmpl implements UserService {
 		// validate Admin status
 		
 		if (userDao.isAdmin(adminKey) == false) {
-			throw new NotAnAdminException("users!");
+			throw new NotAnAdminException(" user");
 		}
 		int count=0;
 		for (UserEntity user: users)
 		{
 			if (user.getUserSmartspace().equals(mySmartspace)) 
-				throw new ImportFromLocalException(count);
+				throw new ImportFromLocalException(" check your array at location " + count);
 			if (!valiadate(user))
-				throw new FailedValidationException("user");
+				throw new FailedValidationException(" user");
 			count++;
 		}
 		List<UserEntity> created = new ArrayList<>();
@@ -144,12 +141,18 @@ public class UserServicelmpl implements UserService {
 	@Override
 	public void update(UserEntity userEntity, String key) {
 		userEntity.setKey(key);
-		this.userDao.update(userEntity);
+		//try {
+			this.userDao.update(userEntity);
+		//}
+		//catch(RuntimeException e)
+		//{
+		//	throw new EntityNotInDBException(e.getMessage());
+		//}
 	}
 
 	@Override
 	public UserEntity login(String key) {
-		return this.userDao.readById(key).orElseThrow(() -> new RuntimeException("Login failed, there is no such user in the DB."));
+		return this.userDao.readById(key).orElseThrow(() -> new EntityNotInDBException("user login failed, there is no such user in the DB"));
 	}
 
 }
