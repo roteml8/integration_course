@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedElementDao;
+import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
 
@@ -23,14 +24,29 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 	private String smartspace;
 	private ElementCrud elementCrud;
 	// TODO remove this
-	private GenericIdGeneratorCrud genericElementIdGeneratorCrud; 
+//	private GenericIdGeneratorCrud genericElementIdGeneratorCrud; 
 
 	@Autowired
-	public RdbElementDao(ElementCrud elementCrud,
-			GenericIdGeneratorCrud genericElementIdGeneratorCrud) {
+	public RdbElementDao(ElementCrud elementCrud) {
 		super();
 		this.elementCrud = elementCrud;
-		this.genericElementIdGeneratorCrud = genericElementIdGeneratorCrud;
+//		this.smartspace = "2019B.Amitz4.SmartSpace";
+		if(this.elementCrud.count() > 0) {
+			List<ElementEntity> allElements= this.elementCrud.
+					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			
+			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
+			for(ElementEntity element : allElements) {
+				element.setKey(element.getKey());
+				System.err.println("1" + this.smartspace);
+				if(element.getElementSmartSpace().equals(smartspace)) {
+//					System.err.println("2" + this.smartspace);
+					filteredElementsBySmartspace.add(element);
+				}
+			}			
+			GeneratedId.setElementId(filteredElementsBySmartspace.size());
+//			System.err.println(filteredActionsBySmartspace.size());
+		}
 	}
 
 	@Value("${name.of.Smartspace:smartspace}")
@@ -44,14 +60,18 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
 
 		// TODO replace this with id stored in db
-		GenericIdGenerator nextId = 
-				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());
-		elementEntity.setKey(smartspace + "#" + nextId.getId());
-		this.genericElementIdGeneratorCrud.delete(nextId);
+//		GenericIdGenerator nextId = 
+//				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());		
+//		elementEntity.setKey(smartspace + "#" + nextId.getId());
+//		this.genericElementIdGeneratorCrud.delete(nextId);
+		
+		long number = GeneratedId.getNextElementValue();
+		elementEntity.setKey(smartspace + "#" + number);
 		
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
-			return rv;
+			System.err.println("rv = " + rv.getElementid());
+			return rv;	
 		}
 		else {
 			throw new RuntimeException("elementEntity already exists with key: " + elementEntity.getKey());
@@ -165,55 +185,140 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithNameContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByNameLike("%" + text + "%", PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getName() != null) {
+				if(element.getName().contains(text)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;	
 
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithLocation(Location location, int size, int page) {
-		return this.elementCrud.findAllByLocationLike(location, PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getLocation() != null) {
+				if(element.getLocation().equals(location)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
+
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithTypeContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByTypeLike("%" + text + "%", PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getType() != null) {
+				if(element.getType().contains(text)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
 
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithExpired(boolean expired, int size, int page) {
-		return this.elementCrud.findAllByExpiredLike(expired, PageRequest.of(page, size));
-
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.isExpired()  == expired) {
+				filteredElements.add(element);
+			}	
+		}
+		return filteredElements;
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithCreatorEmailContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByCreatorEmailLike("%" + text + "%", PageRequest.of(page, size));
-
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getCreatorEmail() != null) {
+				if(element.getCreatorEmail().contains(text)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithCreatorSmartspaceContaining(String text, int size, int page) {
-		return this.elementCrud.findAllByCreatorSmartspaceLike("%" + text + "%", PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getCreatorSmartSpace() != null) {
+				if(element.getCreatorSmartSpace().contains(text)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
 
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page) {
-		return this.elementCrud.findAllByCreationTimeStampLike(stamp, PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getCreationTimeDate() != null) {
+				if(element.getCreationTimeDate().equals(stamp)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
 
 	}
 
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
-		return this.elementCrud.findAllByMoreAttributesLike(moreAttributes, PageRequest.of(page, size));
+		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ElementEntity> filteredElements = new ArrayList<>();
+		
+		for(ElementEntity element : allElements) {
+			if(element.getMoreAttributes() != null) {
+				if(element.getMoreAttributes().equals(moreAttributes)) {
+					filteredElements.add(element);
+				}	
+			}
+		}
+		return filteredElements;
 
 	}
 

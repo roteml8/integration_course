@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedUserDao;
+import smartspace.data.ActionEntity;
+import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 
@@ -25,7 +27,23 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Autowired
 	public RdbUserDao(UserCrud userCrud) {
 		super();
+//		this.smartspace = "2019B.Amitz4.SmartSpace";
 		this.userCrud = userCrud;
+		if(this.userCrud.count() > 0) {
+			List<UserEntity> allUsers= this.userCrud.
+					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			
+			List<UserEntity> filteredUsersBySmartspace = new ArrayList<>();
+			for(UserEntity user : allUsers) {
+				user.setKey(user.getKey());
+				if(user.getUserSmartspace().equals(smartspace)) {
+					filteredUsersBySmartspace.add(user);
+				}
+			}
+			
+			GeneratedId.setActionId(filteredUsersBySmartspace.size());
+//			System.err.println(filteredActionsBySmartspace.size());
+		}
 
 	}
 
@@ -43,7 +61,6 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public UserEntity create(UserEntity userEntity) {
 
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
-
 		userEntity.setKey(smartspace + "#" + userEntity.getUserEmail());
 
 		if (!this.userCrud.existsById(userEntity.getKey())) {
@@ -87,7 +104,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public void update(UserEntity userEntity) {
 		UserEntity existing = this.readById(userEntity.getKey())
 				.orElseThrow(() -> new RuntimeException("no userEntity to update"));
-
+		
 		if (userEntity.getAvatar() != null) {
 			existing.setAvatar(userEntity.getAvatar());
 		}
@@ -97,13 +114,15 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		if (userEntity.getUserEmail() != null) {
 			existing.setUserEmail(userEntity.getUserEmail());
 		}
+//		existing.setKey(userEntity.getKey());
 		if (userEntity.getUsername() != null) {
 			existing.setUsername(userEntity.getUsername());
 		}
+		
 		if (userEntity.getUserSmartspace() != null) {
 			existing.setUserSmartspace(userEntity.getUserSmartspace());
 		}
-
+		
 		// SQL: UPDATE
 		this.userCrud.save(existing);
 	}
@@ -129,43 +148,114 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithNameContaining(String text, int size, int page) {
-		return this.userCrud.findAllByUsernameLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getUsername() != null) {
+				if(user.getUsername().contains(text)) {
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithEmailContaining(String text, int size, int page) {
-		return this.userCrud.findAllByUserEmailLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getUserEmail() != null) {
+				if(user.getUserEmail() .contains(text)) {
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithAvaterContaining(String text, int size, int page) {
-		return this.userCrud.findAllByAvatarLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getAvatar() != null) {
+				if(user.getAvatar().contains(text)) {
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithRole(UserRole role, int size, int page) {
-		return this.userCrud.findAllByRoleLike(role, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getRole() != null) {
+				if(user.getRole() == role) {
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPoints(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLike(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() == points) {
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsMore(long points, int size, int page) {
-		return this.userCrud.findAllByPointsGreaterThanEqual(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() > points) {
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsLess(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLessThanEqual(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() < points) {
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override

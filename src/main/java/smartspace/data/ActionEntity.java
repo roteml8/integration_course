@@ -1,21 +1,38 @@
 package smartspace.data;
-
-import java.util.Date; 
+/*
+ 
+ 
+import java.util.Date;
 import java.util.Map;
 
-import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import smartspace.dao.rdb.MapToJsonConverter;
-@Entity
-@Table(name="ACTIONS")
+*/
+import org.springframework.data.annotation.Transient;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+import java.util.Map;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+// Talk with eyal about action key
+// Ask about @value in rdbActionDao: why it doesnt work?
+//	for now i do this.smartSpace = "2019B.Amitz4.SmartSpace"
+// assertThat(actionInDB.getActionId()).isGreaterThan("0") doesnt work
+// Ask why @JsonIgnore doesnt work
+// After i read from db, the key fields are null, i must do set to split the key field
+// Line 503 in ElementControllerIntegrationADMINTests, the skip shuld get 9 or 10?
+// Ask eyal what is the object that return from save function in mongoDb
+
+@Document(collection = "Action")
 public class ActionEntity implements SmartspaceEntity<String> {
 	private String actionSmartspace;
 	private String actionId;
@@ -26,15 +43,14 @@ public class ActionEntity implements SmartspaceEntity<String> {
 	private String actionType;
 	private Date creationTimestamp;
 	private Map<String, Object> moreAttributes;
+	private String key;
+
 
 	public ActionEntity() {
-
 	}
 
 	public ActionEntity(String elementId, String elementSmartspace, String actionType, Date creationTimestamp,
 			String playerEmail, String playerSmartspace, Map<String, Object> moreAttributes) {
-
-		super();
 		this.elementId = elementId;
 		this.elementSmartspace = elementSmartspace;
 		this.playerSmartspace = playerSmartspace;
@@ -44,7 +60,7 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.moreAttributes = moreAttributes;
 	}
 
-	@Transient
+//	@Transient
 	public String getActionSmartspace() {
 		return actionSmartspace;
 	}
@@ -53,7 +69,7 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.actionSmartspace = actionSmartspace;
 	}
 
-	@Transient
+//	@Transient
 	public String getActionId() {
 		return actionId;
 	}
@@ -101,7 +117,7 @@ public class ActionEntity implements SmartspaceEntity<String> {
 	public void setActionType(String actionType) {
 		this.actionType = actionType;
 	}
-	@Temporal(TemporalType.TIMESTAMP)
+//	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationTimestamp() {
 		return creationTimestamp;
 	}
@@ -109,8 +125,8 @@ public class ActionEntity implements SmartspaceEntity<String> {
 	public void setCreationTimestamp(Date creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
-	@Lob
-	@Convert(converter=MapToJsonConverter.class)
+//	@Lob
+//	@Convert(converter=MapToJsonConverter.class)
 	public Map<String, Object> getMoreAttributes() {
 		return moreAttributes;
 	}
@@ -119,18 +135,18 @@ public class ActionEntity implements SmartspaceEntity<String> {
 		this.moreAttributes = moreAttributes;
 	}
 
-	@Override
+
 	@Id
-	@Column(name="ID")
 	public String getKey() {
 		return this.actionSmartspace + "#" + this.actionId;
 	}
 
-	@Override
+	
 	public void setKey(String key) {
 		String[] parts = key.split("#");
-		this.actionSmartspace = parts[0];
 		this.actionId = parts[1];
+		this.actionSmartspace = parts[0];
+		this.key = key;
 	}
 
 	@Override

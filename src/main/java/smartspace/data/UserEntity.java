@@ -3,25 +3,36 @@ package smartspace.data;
 import java.util.Map;
 
 import javax.persistence.Column;
-
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
-@Entity
-@Table(name = "USER")
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+
+//import javax.persistence.Entity;
+//import javax.persistence.EnumType;
+//import javax.persistence.Enumerated;
+//import javax.persistence.Id;
+//import javax.persistence.Table;
+//import javax.persistence.Transient;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+
+@Document(collection = "User")
 public class UserEntity implements SmartspaceEntity<String> {
 
+//	@Transient
 	private String userSmartspace;
+	
+//	@Transient
 	private String userEmail;
+	
 	private String username;
 	private String avatar;
 	private UserRole role;
 	private long points = Long.MIN_VALUE;
 	private Map<String, Object> details;
+	private String key;
 
 	public UserEntity() {
 	}
@@ -43,7 +54,6 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.userEmail = userEmail;
 	}
 
-	@Transient
 	public String getUserSmartspace() {
 		return userSmartspace;
 	}
@@ -52,7 +62,6 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.userSmartspace = userSmartspace;
 	}
 
-	@Transient
 	public String getUserEmail() {
 		return userEmail;
 	}
@@ -77,7 +86,7 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.avatar = avatar;
 	}
 
-	@Enumerated(EnumType.STRING)
+//	@Enumerated(EnumType.STRING)
 	public UserRole getRole() {
 		return role;
 	}
@@ -94,18 +103,20 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.points = points;
 	}
 
-	@Override
+//	@Override
+//	@Column(name = "ID")
 	@Id
-	@Column(name = "ID")
 	public String getKey() {
-		return this.userSmartspace + "#" + this.userEmail;
+//		return this.userSmartspace + "#" + this.userEmail;
+		return this.key;
 	}
 
-	@Override
+//	@Override
 	public void setKey(String key) {
 		String[] parts = key.split("#");
 		this.userSmartspace = parts[0];
 		this.userEmail = parts[1];
+		this.key = key;
 	}
 	
 	public void setDetails(Map<String, Object> details) {

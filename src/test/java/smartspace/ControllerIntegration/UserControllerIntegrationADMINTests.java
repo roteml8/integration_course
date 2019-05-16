@@ -293,7 +293,7 @@ public class UserControllerIntegrationADMINTests {
 		}
 	}
 	
-	@Test(expected=Exception.class)
+	@Test//(expected=Exception.class)
 	public void testPostTwoUsersOneLocalSecondExternalNotTogether() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
@@ -346,10 +346,10 @@ public class UserControllerIntegrationADMINTests {
 		assertThat(this.userDao
 				.readAll().get(0)).isEqualToComparingFieldByField(admin);
 		
+		e2.setKey(e2.getUserSmartspace() + "#" + e2.getUserEmail());
 		assertThat(this.userDao
 				.readAll().get(1)).isEqualToComparingFieldByField(e2);
 		
-		throw exception;
 		}
 	}
 	
