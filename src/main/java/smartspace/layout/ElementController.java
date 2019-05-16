@@ -122,8 +122,8 @@ public class ElementController {
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary getElement (
-			@PathVariable("managerSmartspace") String userSmartspace,
-			@PathVariable("managerEmail") String userEmail,
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail,
 			@PathVariable("elementSmartspace") String elementSmartspace,
 			@PathVariable("elementId") String elementId){
 		

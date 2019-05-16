@@ -105,8 +105,9 @@ public class ActionBoundary {
 	
 	public ActionEntity convertToEntity() {
 		ActionEntity entity = new ActionEntity();
-		
-		entity.setKey(key.get("smartspace")+"#"+key.get("email"));
+		if (key != null && key.get("smartspace")!= null && key.get("id")!= null)		
+			entity.setKey(key.get("smartspace")+"#"+key.get("id"));
+		//entity.setKey(key.get("smartspace")+"#"+key.get("email"));
 		entity.setElementSmartspace(elementSmartspace);
 		entity.setElementId(elementId);
 		entity.setPlayerSmartspace(playerSmartspace);

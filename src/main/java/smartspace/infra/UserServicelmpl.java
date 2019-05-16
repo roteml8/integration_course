@@ -12,6 +12,7 @@ import smartspace.data.UserEntity;
 public class UserServicelmpl implements UserService {
 	private EnhancedUserDao <String> userDao;
 	private String mySmartspace;
+	private long defualtStartingPoints;
 	
 	@Autowired
 	public UserServicelmpl (EnhancedUserDao<String> userDao) {
@@ -22,11 +23,17 @@ public class UserServicelmpl implements UserService {
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
 	}
+	
+	@Value("${defualt.starting.points:100}")
+	public void setdefualtStartingPoints(String points) {
+		this.defualtStartingPoints = Long.parseLong(points);
+	}
 
 	@Override
 	public UserEntity newUser(UserEntity user) {
 		// validate user status
 		if (valiadateNewUser(user)) {
+			user.setPoints(defualtStartingPoints);
 			return this.userDao.create(user);
 		}else {
 			throw new FailedValidationException(" bad user form");
@@ -53,6 +60,7 @@ public class UserServicelmpl implements UserService {
 		// validate user status
 		for (UserEntity user: users)
 		{
+			user.setPoints(defualtStartingPoints);
 			this.userDao.importUser(user);
 		}
 		
@@ -64,75 +72,30 @@ public class UserServicelmpl implements UserService {
 	private boolean valiadateNewUser(UserEntity user) 
 	{
 		return  user.getUserEmail() != null &&
+				!user.getUserEmail().trim().isEmpty() &&
 				user.getUsername() != null &&
+				!user.getUsername().trim().isEmpty() &&
 				user.getAvatar() != null &&
+				!user.getAvatar().trim().isEmpty() &&
 				user.getRole() != null;
 				
 	}
 	
 	private boolean valiadate(UserEntity user) 
 	{
-		return user.getUserSmartspace() != null &&
+		return user.getKey() != null &&
+				!user.getKey().trim().isEmpty() &&
+				user.getUserSmartspace() != null &&
+				!user.getUserSmartspace().trim().isEmpty() &&
 				user.getUserEmail() != null &&
+				!user.getUserEmail().trim().isEmpty() &&
 				user.getUsername() != null &&
+				!user.getUsername().trim().isEmpty() &&
 				user.getAvatar() != null &&
-				user.getRole() != null &&
-				user.getKey() != null;
-	}
-	
-	/*
-	private boolean valiadate(UserEntity user) 
-	{
-	//	 if (user.getUserSmartspace() == null)
-	//	 {
-	//		System.err.println("invalid smartspace");
-	//		return false;
-	//	 }
-		 
-		 if (user.getUserEmail() == null)
-		 {
-			System.err.println("invalid Email");
-			return false;
-		 }
-		 
-	//	 if (user.getUsername() == null)
-	//	 {
-	//		System.err.println("invalid username");
-	//		return false;
-	//	 }
-		 
-	//	 if (user.getAvatar() == null)
-	//	 {
-	//		System.err.println("invalid avatar");
-	//		return false;
-	//	 }
-		 
-
-		 if (user.getRole() == null)
-		 {
-			System.err.println("invalid role");
-			return false;
-		 }
-		 
-
-		 if (user.getKey() == null)
-		 {
-			System.err.println("invalid key");
-			return false;
-		 }
-		 
-		 return true;
-	}
-	 
-	 */
-	
-	@Override
-	public boolean valiadateSmartspace(UserEntity user) 
-	{
-		return user.getUserSmartspace().equals(mySmartspace) == false;
+				!user.getAvatar().trim().isEmpty() &&
+				user.getRole() != null ;
 	}
 
-	
 	@Override
 	public List<UserEntity> getUsingPagination(int size, int page) {
 		return this.userDao.readAll("key",size,page);

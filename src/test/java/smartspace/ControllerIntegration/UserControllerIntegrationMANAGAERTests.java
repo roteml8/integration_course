@@ -44,6 +44,9 @@ public class UserControllerIntegrationMANAGAERTests {
 	private String mySmartspace;
 	private String loginUrl;
 	private UserRole userRoleToCheck;
+	private String baseAdminUrl;
+	private String adminKeyUrl;
+	private long defualtStartingPoints;
 
 	
 	@Autowired
@@ -54,6 +57,11 @@ public class UserControllerIntegrationMANAGAERTests {
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String mySmartspace) {
 		this.mySmartspace = mySmartspace;
+	}
+	
+	@Value("${defualt.starting.points:100}")
+	public void setdefualtStartingPoints(String points) {
+		this.defualtStartingPoints = Long.parseLong(points);
 	}
 	
 	@Autowired
@@ -71,6 +79,8 @@ public class UserControllerIntegrationMANAGAERTests {
 	public void init() {
 		this.baseUrl = "http://localhost:" + port + "/smartspace/users";
 		this.loginUrl = "/login/{userSmartspace}/{userEmail}";
+		this.baseAdminUrl = "http://localhost:" + port + "/smartspace/admin/users/";
+		this.adminKeyUrl = "/{adminSmartspace}/{adminEmail}";
 		this.userRoleToCheck = UserRole.MANAGER;
 	}
 	
@@ -97,16 +107,18 @@ public class UserControllerIntegrationMANAGAERTests {
 		
 		NewUserForm userForm = new NewUserForm(manager);
 		
-		this.restTemplate
+		UserBoundary recivedBoundary = this.restTemplate
 			.postForObject(
 					this.baseUrl , 
 					userForm, 
-					NewUserForm.class);
+					UserBoundary.class);
 		
 		// THEN the database contains a single user
 		// AND this user's email , avatar ,role and username fields
 		// are exactly the same as the fields in userForm
 		// AND his smartspace field is the same as the local project's smartspace
+		// AND the received boundary from the post is the same as the entity in the DB
+
 		List<UserEntity> rv = this.userDao.readAll();
 		assertThat(rv)
 			.hasSize(1);
@@ -114,9 +126,13 @@ public class UserControllerIntegrationMANAGAERTests {
 		assertThat(rv.get(0)).isNotNull()
 		.extracting("userEmail", "username", "avatar", "role", "userSmartspace", "points")
 		.containsExactly(manager.getUserEmail(), manager.getUsername(), manager.getAvatar(), manager.getRole(),
-				this.mySmartspace, Long.MIN_VALUE);
+				this.mySmartspace, defualtStartingPoints);
+		
+		assertThat(rv.get(0)).isNotNull()
+		.isEqualToComparingFieldByField(recivedBoundary.convertToEntity());
 			
 	}
+	
 	
 	@Test
 	public void testGetLoginWithValidUser() throws Exception{
@@ -148,14 +164,14 @@ public class UserControllerIntegrationMANAGAERTests {
 		
 		NewUserForm userForm = new NewUserForm(manager);
 		
-		this.restTemplate
+		UserBoundary postResult = this.restTemplate
 			.postForObject(
 					this.baseUrl , 
 					userForm, 
-					NewUserForm.class);
+					UserBoundary.class);
 		
 		// And i login with manager's smartspace and email 		
-		UserBoundary result = 
+		UserBoundary loginResult = 
 			this.restTemplate
 			.getForObject(
 					this.baseUrl + this.loginUrl,
@@ -167,15 +183,20 @@ public class UserControllerIntegrationMANAGAERTests {
 		// are exactly the same as the fields in userForm
 		// AND his smartspace field is the same as the local project's smartspace
 		// AND the login will retrieve the user's details.
+		// AND the received boundary from the post is the same the received boundary from the login
+
 				
 		List<UserEntity> rv = this.userDao.readAll();
 		assertThat(rv)
 			.hasSize(1);
 		
-		assertThat(result.convertToEntity()).isNotNull()
+		assertThat(loginResult.convertToEntity()).isNotNull()
 		.extracting("userEmail", "username", "avatar", "role", "userSmartspace", "points")
 		.containsExactly(manager.getUserEmail(), manager.getUsername(), manager.getAvatar(), manager.getRole(),
-				this.mySmartspace, Long.MIN_VALUE);
+				this.mySmartspace, defualtStartingPoints);
+		
+		assertThat(postResult)
+		.isEqualToComparingFieldByField(loginResult);
 			
 	}
 	
@@ -192,7 +213,7 @@ public class UserControllerIntegrationMANAGAERTests {
 		updatedUser.setUserEmail(manager.getUserEmail());
 		updatedUser.setUserSmartspace(manager.getUserSmartspace());
 		
-			this.restTemplate
+		this.restTemplate
 			.put(this.baseUrl + this.loginUrl,
 					new UserBoundary(updatedUser),
 					manager.getUserSmartspace(),
@@ -203,6 +224,7 @@ public class UserControllerIntegrationMANAGAERTests {
 		assertThat(this.userDao.readAll().get(0)).isNotNull().extracting("userEmail", "username", "avatar", "role", "userSmartspace", "points")
 		.containsExactly(updatedUser.getUserEmail(), updatedUser.getUsername(), updatedUser.getAvatar(), updatedUser.getRole(),
 				updatedUser.getUserSmartspace(), manager.getPoints());
+		
 	}
 	
 	//@Test(expected = HttpClientErrorException.class)
@@ -233,6 +255,40 @@ public class UserControllerIntegrationMANAGAERTests {
 		throw exception;
 		}
 		
+	}
+	
+	@Test(expected=HttpClientErrorException.class)
+	public void testPostImportNewUsersAsManager() throws Exception{
+		
+		// GIVEN the user database is empty and user database contains a player
+		UserEntity manager = new UserEntity();
+		manager.setUserEmail("EmailNotAdmin@bla.com");
+		manager.setUserSmartspace("SmartspaceNotAdmin");
+		manager.setRole(this.userRoleToCheck);
+		this.userDao.create(manager);
+
+		// WHEN I POST new user with smartspace and email that belong to the player 
+		UserEntity e = generator.getUser();
+		e.setUserEmail("mail");
+		e.setUserSmartspace("space");
+		UserBoundary newUser = new UserBoundary(e);
+		UserBoundary[] arr = new UserBoundary[1];
+		arr[0] = newUser;
+		try {
+		this.restTemplate
+			.postForObject(
+					baseAdminUrl + adminKeyUrl, 
+					arr, 
+					UserBoundary[].class, 
+					"SmartspaceNotAdmin@bla.com","EmailNotAdmin");
+		}
+		catch(HttpClientErrorException exception) {
+		// THEN the test ends with exception
+		// AND the user in the database in unchanged
+		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(this.userDao.readAll().get(0)).isNotNull().isEqualToComparingFieldByField(manager);
+		throw exception;
+		}
 	}
 	
 

@@ -2,6 +2,7 @@ package smartspace.ControllerIntegration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedElementDao;
@@ -27,6 +30,7 @@ import smartspace.data.UserRole;
 import smartspace.data.util.FakeElementGenerator;
 import smartspace.data.util.FakeUserGenerator;
 import smartspace.layout.ElementBoundary;
+import smartspace.layout.UserBoundary;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -49,6 +53,8 @@ public class ElementControllerIntegrationMANAGARTests {
 	private final String managerKeyUrl = "/{managerSmartspace}/{managerEmail}";
 	private final String userKeyUrl = "/{userSmartspace}/{userEmail}";
 	private final String elementKeyUrl = "/{elementSmartspace}/{elementId}";
+	private final String pageAndKeyUrl = "?page={page}&size={size}";
+
 
 
 	@Autowired
@@ -127,7 +133,7 @@ public class ElementControllerIntegrationMANAGARTests {
 		ElementBoundary elementBoundary = new ElementBoundary(element);
 		elementBoundary.setKey(null);
 
-		this.restTemplate.postForObject(
+		ElementBoundary recivedBoundary = this.restTemplate.postForObject(
 				this.baseUrl + this.managerKeyUrl,
 				elementBoundary,
 				ElementBoundary.class,
@@ -137,6 +143,8 @@ public class ElementControllerIntegrationMANAGARTests {
 		// THEN the element database contains a single element
 		// AND this element's  fields are exactly the same as the fields in element except for elementSmartspace and creationTimeDate
 		// AND his smartspace field is the same as the local project's smartspace and he has a valid Id.
+		// AND the received boundary from the post is the same as the entity in the DB
+
 		List<ElementEntity> rv = this.elementDao.readAll();
 		assertThat(rv).hasSize(1);
 		
@@ -146,6 +154,39 @@ public class ElementControllerIntegrationMANAGARTests {
 						element.getCreatorSmartSpace(), element.getCreatorEmail());
 		assertThat(rv.get(0).getCreationTimeDate()).isNotEqualTo(element.getCreationTimeDate());
 		assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
+		assertThat(rv.get(0)).isEqualToIgnoringGivenFields(recivedBoundary.convertToEntity(), "creationTimeStamp");
+	}
+	
+	@Test (expected=HttpClientErrorException.class)
+	public void testPostWithBadNewElement() throws Exception {
+		// GIVEN the element database is empty
+		// AND the user database has a manager
+
+		// WHEN I POST new element with an element boundary with null key and null creator fields
+		ElementEntity element = generator.getElement();
+
+		ElementBoundary elementBoundary = new ElementBoundary(element);
+		elementBoundary.setCreator(null);
+		elementBoundary.setKey(null);
+
+		try {
+		this.restTemplate.postForObject(
+				this.baseUrl + this.managerKeyUrl,
+				elementBoundary,
+				ElementBoundary.class,
+				this.myManager.getUserSmartspace(),
+				myManager.getUserEmail());
+		}
+		// THEN the database stays empty
+		// AND post method throws the correct exception 
+		catch(HttpClientErrorException exception) 
+		{
+			List<ElementEntity> rv = this.elementDao.readAll();
+			assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+			assertThat(rv).isNotNull().hasSize(0);
+			
+			throw exception;
+		}
 	}
 	
 	@Test
@@ -165,8 +206,6 @@ public class ElementControllerIntegrationMANAGARTests {
 		ElementBoundary elementBoundary = new ElementBoundary(updatedElement);
 		elementBoundary.setKey(null);
 		
-		String bla = elementInDB.getElementid();
-
 		this.restTemplate.put(
 				this.baseUrl + this.managerKeyUrl + this.elementKeyUrl,
 				elementBoundary,
@@ -191,5 +230,159 @@ public class ElementControllerIntegrationMANAGARTests {
 		
 		assertThat(rv).hasSize(1);
 	}
+	
+	@Test(expected = Exception.class)
+	//@Test(expected = HttpClientErrorException.class)
+	public void testPutUpdateWithElementNotInDatabase() throws Exception {
+		// GIVEN the user database has that manager
+		// AND the element database contains element that was created by that manager
+		ElementEntity element = generator.getElement();
+		element.setCreatorEmail(this.myManager.getUserEmail());
+		element.setCreatorSmartSpace(this.myManager.getUserSmartspace());
+		ElementEntity elementInDB = this.elementDao.create(element);
+
+		// WHEN i try to update an element not stored in the database
+		ElementEntity updatedElement = generator.getElement();
+		updatedElement.setCreatorEmail(this.myManager.getUserEmail());
+		updatedElement.setCreatorSmartSpace(this.myManager.getUserSmartspace());
+		
+		ElementBoundary elementBoundary = new ElementBoundary(updatedElement);
+		elementBoundary.setKey(null);
+		
+		try {
+		this.restTemplate.put(
+				this.baseUrl + this.managerKeyUrl + this.elementKeyUrl,
+				elementBoundary,
+				myManager.getUserSmartspace(),
+				myManager.getUserEmail(),
+				"notMySmartSpace",
+				2);
+
+		}
+		catch(HttpClientErrorException exception) {
+			// THEN the test ends with exception
+			// AND the element in the database in unchanged
+		
+			assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+			List<ElementEntity> rv = this.elementDao.readAll();
+		
+			assertThat(rv.get(0)).isNotNull()
+				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail" , "moreAttributes")
+				.containsExactly(this.mySmartspace, element.getLocation(), element.getName(), element.getType(), element.isExpired(),
+						element.getCreatorSmartSpace(), element.getCreatorEmail(), element.getMoreAttributes());
+		
+			assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
+			assertThat(rv).hasSize(1);
+		
+		throw exception;
+
+		}
+	}
+	
+	
+	@Test
+	public void testGetSpecificElement() throws Exception {
+		// GIVEN the user database has that manager
+		// AND the element database contains element that was created by that manager
+		ElementEntity element = generator.getElement();
+		element.setCreatorEmail(this.myManager.getUserEmail());
+		element.setCreatorSmartSpace(this.myManager.getUserSmartspace());
+		ElementEntity elementInDB = this.elementDao.create(element);
+		
+		// WHEN i retrieve a that element using GET
+		ElementBoundary recievedBoundary = 
+				this.restTemplate
+				.getForObject(
+						this.baseUrl + this.userKeyUrl + this.elementKeyUrl ,
+						ElementBoundary.class,
+						myManager.getUserSmartspace(),
+						myManager.getUserEmail(),
+						elementInDB.getElementSmartSpace(),
+						elementInDB.getElementid());
+		
+		// THEN the received boundary is equals to the element in the DB
+		
+		assertThat(elementInDB).isNotNull().isEqualToComparingFieldByField(recievedBoundary.convertToEntity());
+		//assertThat(this.elementDao.readAll().get(0)).isNotNull().isEqualToComparingFieldByField(recievedBoundary.convertToEntity());
+
+	}
+	
+	//@Test(expected = HttpClientErrorException.class)
+	@Test(expected = Exception.class)
+	public void testGetSpecificElementNotInDB() throws Exception {
+		// GIVEN the user database has that manager
+		// AND the element database contains element that was created by that manager
+		ElementEntity element = generator.getElement();
+		element.setCreatorEmail(this.myManager.getUserEmail());
+		element.setCreatorSmartSpace(this.myManager.getUserSmartspace());
+		ElementEntity elementInDB = this.elementDao.create(element);
+		
+		// WHEN i try to retrieve an element not in the DB using GET
+		try {
+		ElementBoundary recievedBoundary = 
+				this.restTemplate
+				.getForObject(
+						this.baseUrl + this.userKeyUrl + this.elementKeyUrl ,
+						ElementBoundary.class,
+						myManager.getUserSmartspace(),
+						myManager.getUserEmail(),
+						elementInDB.getElementSmartSpace() + "bla",
+						elementInDB.getElementid());
+		}
+		catch(Exception exception) {
+			// THEN an exception will be thrown.
+			// AND the element will stay unchanged.
+			//assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+			assertThat(this.elementDao
+					.readAll().get(0)).isNotNull().isEqualToIgnoringGivenFields(elementInDB, "creationTimeStamp");
+			
+			throw exception;
+		}
+	}
+	
+	
+	@Test
+	public void testGetAllElementsUsingPaginationAndPost() throws Exception {
+		
+		// GIVEN the database contains 3 elements 
+		// AND user dao contains a manager 
+				int size = 3;
+				
+				List<ElementBoundary> all = new ArrayList<>();
+				ElementEntity[] arr = new ElementEntity[size];
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					ElementBoundary recivedBoundary = this.restTemplate.postForObject(
+							this.baseUrl + this.managerKeyUrl,
+							new ElementBoundary(e),
+							ElementBoundary.class,
+							this.myManager.getUserSmartspace(),
+							myManager.getUserEmail());
+				}
+				
+				// WHEN I GET elements of size 10 and page 0
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							0, 10);
+				
+				// THEN I receive the exact 3 elements written to the database
+				for (int i = 0; i<size; i++)
+				{
+					arr[i] = response[i].convertToEntity();
+				}
+				
+				assertThat(arr)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readAll());
+	}
+
 
 }

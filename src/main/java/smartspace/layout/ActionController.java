@@ -83,7 +83,7 @@ public class ActionController {
 			method=RequestMethod.POST,
 			consumes=MediaType.APPLICATION_JSON_VALUE,
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	public ActionBoundary[] newAction (
+	public ActionBoundary[] importActions (
 			@RequestBody ActionBoundary[] actionsArr,
 			@PathVariable("adminSmartspace") String adminSmartspace,
 			@PathVariable("adminEmail") String adminEmail){

@@ -58,7 +58,7 @@ public class ActionControllerIntegrtationADMINTests {
 	}
 	
 	@Autowired
-	public void setElementDao(EnhancedActionDao actionDao) {
+	public void setActionDao(EnhancedActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
 	

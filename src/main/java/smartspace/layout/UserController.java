@@ -88,10 +88,10 @@ public class UserController {
 			method=RequestMethod.PUT,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 	public void update (
-			@PathVariable("userSmartspace") String adminSmartspace,
-			@PathVariable("userEmail") String adminEmail,
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail,
 			@RequestBody UserBoundary user) {
-		this.userService.update(user.convertToEntity() ,adminSmartspace + "#" + adminEmail);
+		this.userService.update(user.convertToEntity() ,userSmartspace + "#" + userEmail);
 	}
 	
 	@RequestMapping(

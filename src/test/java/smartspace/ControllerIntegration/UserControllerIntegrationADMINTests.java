@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -43,6 +44,10 @@ public class UserControllerIntegrationADMINTests {
 	private EnhancedUserDao<String> userDao;
 	private UserService userService;
 	private FakeUserGenerator generator;
+	private String baseAdminUrl;
+	private String adminKeyUrl;
+	private UserRole userRoleToCheck;
+	private long defualtStartingPoints;
 	
 	@Autowired
 	public void setGenerator(FakeUserGenerator generator) {
@@ -59,6 +64,11 @@ public class UserControllerIntegrationADMINTests {
 		this.userDao = userDao;
 	}
 	
+	@Value("${defualt.starting.points:100}")
+	public void setdefualtStartingPoints(String points) {
+		this.defualtStartingPoints = Long.parseLong(points);
+	}
+	
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
@@ -68,6 +78,8 @@ public class UserControllerIntegrationADMINTests {
 	@PostConstruct
 	public void init() {
 		this.baseUrl = "http://localhost:" + port + "/smartspace/admin/users/";
+		this.adminKeyUrl = "/{adminSmartspace}/{adminEmail}";
+		this.userRoleToCheck = UserRole.ADMIN;
 	}
 	
 	@After
@@ -77,7 +89,7 @@ public class UserControllerIntegrationADMINTests {
 	}
 	
 	@Test
-	public void testPostNewUser() throws Exception{
+	public void testPostImportUsers() throws Exception{
 		UserEntity admin = new UserEntity();
 		admin.setUserEmail("tom@gmail.com");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
@@ -111,7 +123,7 @@ public class UserControllerIntegrationADMINTests {
 	
 
 	@Test (expected=HttpClientErrorException.class)
-	public void testPostNewUserInvalid() throws Exception{
+	public void testPostImportUsersWithInvalidUser() throws Exception{
 		
 		// GIVEN the user database is empty and user database contains an admin
 		
@@ -181,7 +193,7 @@ public class UserControllerIntegrationADMINTests {
 		e2.setUserSmartspace("space");
 		e2.setKey("email#space");
 		arr[0] = new UserBoundary(e2);
-		this.restTemplate
+		UserBoundary[] recUsersBoundary = this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 				arr, 
@@ -205,8 +217,13 @@ public class UserControllerIntegrationADMINTests {
 		*/
 		
 		// THEN the user in the database is the second user posted
+		// AND the received boundary is the same entity as the one in the DB
+		e2.setPoints(defualtStartingPoints);
 		assertThat(this.userDao
 				.readAll().get(1)).isEqualToComparingFieldByField(e2);
+		
+		//assertThat(this.userDao
+				//.readAll().get(1)).isEqualToComparingFieldByField(recUsersBoundary[0].convertToEntity());
 		
 	}
 	
@@ -308,7 +325,7 @@ public class UserControllerIntegrationADMINTests {
 		admin.setUserEmail("Email");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
-		this.userDao.create(admin);
+		UserEntity userInDB = this.userDao.create(admin);
 		
 		// WHEN I POST one user from local smartspace
 		// and POST one user with external smartspace
@@ -337,7 +354,7 @@ public class UserControllerIntegrationADMINTests {
 		}
 		catch(HttpClientErrorException exception) {
 		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		this.restTemplate
+		UserBoundary[] recivedUsers = this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 				arr2, 
@@ -350,44 +367,14 @@ public class UserControllerIntegrationADMINTests {
 			.readAll())
 			.hasSize(2);
 			
-		assertThat(this.userDao
-				.readAll().get(0)).isEqualToComparingFieldByField(admin);
 		
+		assertThat(this.userDao
+				.readAll().get(0)).isEqualToComparingFieldByField(userInDB);
+		
+		e2.setPoints(defualtStartingPoints);
 		assertThat(this.userDao
 				.readAll().get(1)).isEqualToComparingFieldByField(e2);
 		
-		throw exception;
-		}
-	}
-	
-	@Test(expected=HttpClientErrorException.class)
-	public void testPostNewUserNoAdmin() throws Exception{
-		
-		// GIVEN the user database is empty and user database contains a player
-		UserEntity player = new UserEntity();
-		player.setUserEmail("EmailNotAdmin");
-		player.setUserSmartspace("SmartspaceNotAdmin");
-		player.setRole(UserRole.PLAYER);
-		this.userDao.create(player);
-
-		// WHEN I POST new user with smartspace and email that belong to the player 
-		UserEntity e = generator.getUser();
-		e.setUserEmail("mail");
-		e.setUserSmartspace("space");
-		UserBoundary newUser = new UserBoundary(e);
-		UserBoundary[] arr = new UserBoundary[1];
-		arr[0] = newUser;
-		try {
-		this.restTemplate
-			.postForObject(
-					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
-					arr, 
-					UserBoundary[].class, 
-					"SmartspaceNotAdmin","EmailNotAdmin");
-		}
-		catch(HttpClientErrorException exception) {
-		// THEN the test ends with exception
-		assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		throw exception;
 		}
 	}
@@ -542,6 +529,9 @@ public class UserControllerIntegrationADMINTests {
 			.isEmpty();
 		
 	}
+	
+	
+	
 	
 		
 	

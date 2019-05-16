@@ -27,24 +27,31 @@ public class ActionServicelmpl implements ActionService {
 
 	private String mySmartspace;
 	
+	@Autowired
+	public ActionServicelmpl(EnhancedActionDao actionDao,
+			ApplicationContext ctx) {
+		this.actionDao=actionDao;
+		this.ctx = ctx;
+	}
+	
 	private boolean valiadateImport(ActionEntity entity) {
-		return !entity.getActionType().trim().isEmpty() &&
+		return  entity.getKey()!= null &&
+				!entity.getKey().trim().isEmpty() &&
+				entity.getActionSmartspace() != null &&
+				!entity.getActionSmartspace().trim().isEmpty() &&
+				entity.getActionId()!= null &&
+				!entity.getActionId().trim().isEmpty() &&
 				entity.getActionType() != null &&
-				!entity.getElementId().trim().isEmpty() &&
+				!entity.getActionType().trim().isEmpty() &&
 				entity.getElementId()!= null &&
+				!entity.getElementId().trim().isEmpty() &&
 				entity.getElementSmartspace()!= null &&
 				!entity.getElementSmartspace().trim().isEmpty() &&
 				entity.getPlayerEmail() != null&&
 				!entity.getPlayerEmail().trim().isEmpty()&&
 				entity.getMoreAttributes() != null&&
 					entity.getPlayerSmartspace()!=null&&
-					!entity.getPlayerSmartspace().trim().isEmpty()	;
-	}
-	
-	@Autowired
-	public ActionServicelmpl(EnhancedActionDao actionDao) {
-		super();
-		this.actionDao=actionDao;
+					!entity.getPlayerSmartspace().trim().isEmpty();
 	}
 	
 	
@@ -128,8 +135,17 @@ public class ActionServicelmpl implements ActionService {
 	}
 	
 	private boolean valiadateInvoke(ActionEntity entity) {
-		return !entity.getActionType().trim().isEmpty() &&
-				entity.getActionType() != null;
+		return entity.getActionType() != null &&
+				!entity.getActionType().trim().isEmpty() &&
+				entity.getElementId()!= null &&
+				!entity.getElementId().trim().isEmpty() &&
+				entity.getElementSmartspace()!= null &&
+				!entity.getElementSmartspace().trim().isEmpty() &&
+				entity.getPlayerEmail() != null&&
+				!entity.getPlayerEmail().trim().isEmpty()&&
+				entity.getPlayerSmartspace()!=null&&
+				!entity.getPlayerSmartspace().trim().isEmpty();
+					
 	}
 
 }
