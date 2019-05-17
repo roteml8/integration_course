@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+  <meta charset="UTF-8">
+  <title> Login + Signup form </title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Responsive Signup with login form</title>
+    <link rel="stylesheet" href="index.css" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+
+  <div class="form-modal">
+    
+    <div class="form-toggle">
+        <button id="login-toggle" onclick="toggleLogin()">log in</button>
+        <button id="signup-toggle" onclick="toggleSignup()">sign up</button>
+    </div>
+
+    <div id="login-form">
+        <form id="loginform">
+            <input type="text" id="userSmartspace"  placeholder="Enter userSmartspace"/>
+            <input type="text"  id="userEmailogin" placeholder="Enter userEmail"/>
+            <button type="button" id="btnlogin"  onclick="login()"  class="btn login">login</button>
+         <button id="popup" onclick="div_show()">pop up</button>
+            <hr/>
+           
+           
+        </form>
+    </div>
+
+    <div id="signup-form">
+        <form  id="signupform">
+            <input id="emailSign" type="email" placeholder="Enter your email"/>
+            <input type="text" id="userNameSign"placeholder="Enter your userName"/>
+            <input type="text" id="role"placeholder="Choose role:ADMIN ,MANAGER PLAYER"/>
+            <input type="text" id="avatarSign" placeholder=" avatar"/>
+            <button type="button" id="btnsignup"  onclick="Signup()" class="btn signup">create User</button>
+           
+            <hr/>
+
+        </form>
+    </div>
+
+</div>
+  
+  
+
+    <script  src="js/index.js"></script>
+
+
+
+
+</body>
+
+</html>
