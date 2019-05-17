@@ -122,6 +122,7 @@ public class ActionControllerIntegrtationPLAYERTests {
 		action.setElementSmartspace(elementInDB.getElementSmartSpace());
 		action.setPlayerEmail(user.getUserEmail());
 		action.setPlayerSmartspace(user.getUserSmartspace());
+		action.setMoreAttributes(new HashMap<String,Object>());
 		
 		// WHEN invoke a new action of type ECHO with POST
 		ActionBoundary recivedBoundary = 
@@ -131,9 +132,20 @@ public class ActionControllerIntegrtationPLAYERTests {
 						action,
 						ActionBoundary.class);
 		
-		//THEN the jason i receive is the same as the input boundary
-		assertThat(recivedBoundary).isNotNull().isEqualToComparingFieldByField(action);
+		//THEN the jason i receive is the same as the input boundary except for the key, creationTImeStamp and moreAttributes fields
+		//AND moreAtrributes got the echo signature
+		assertThat(recivedBoundary).isNotNull().isEqualToIgnoringGivenFields(action, "key","creationTimeStamp","moreAttributes");
+		Map<String,Object> attributes = new HashMap<String,Object>();
+		attributes.put("echo", "echo");
+		assertThat(recivedBoundary.getMoreAttributes()).isEqualTo(attributes);
+		assertThat(recivedBoundary.getCreationTimeStamp()).isNotNull();
+		assertThat(recivedBoundary.getKey()).isNotNull();
+		assertThat(Long.parseLong((String) recivedBoundary.getKey().get("id"))).isGreaterThan(0);
+		
+
+		
 	}
+	
 	
 
 	

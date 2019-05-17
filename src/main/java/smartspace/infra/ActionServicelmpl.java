@@ -126,8 +126,9 @@ public class ActionServicelmpl implements ActionService {
 			action.setCreationTimestamp(new Date());
 			action = plugin.process(action);
 			
-			this.actionDao.create(action);
-			return action;
+		//	this.actionDao.create(action);
+		//	return action;
+			return this.actionDao.create(action);
 		} catch (Exception e) {
 			//throw new UnsupportedActionTypeException(e);
 			throw new UnsupportedActionTypeException(action.getActionType());
@@ -144,8 +145,8 @@ public class ActionServicelmpl implements ActionService {
 				entity.getPlayerEmail() != null&&
 				!entity.getPlayerEmail().trim().isEmpty()&&
 				entity.getPlayerSmartspace()!=null&&
-				!entity.getPlayerSmartspace().trim().isEmpty();
-					
+				!entity.getPlayerSmartspace().trim().isEmpty() &&
+				entity.getMoreAttributes()!=null;
 	}
 
 }

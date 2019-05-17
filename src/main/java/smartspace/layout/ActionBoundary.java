@@ -28,14 +28,13 @@ public class ActionBoundary {
 		this.key = new HashMap<>();
 		this.key.put("id", entity.getActionId());
 		this.key.put("smartspace", entity.getActionSmartspace());
+		this.elementSmartspace = entity.getElementSmartspace();
+		this.elementId = entity.getElementId();
+		this.playerSmartspace = entity.getPlayerSmartspace();
+		this.playerEmail = entity.getPlayerEmail();
 		this.actionType = entity.getActionType();
 		this.creationTimeStamp = entity.getCreationTimestamp();
-		this.key = new HashMap<>();
-		this.key.put("id", entity.getElementId());
-		this.key.put("smartspace", entity.getElementSmartspace());
-		this.key = new HashMap<>();
-		this.key.put("smartspace", entity.getPlayerSmartspace());
-		this.key.put("email", entity.getPlayerEmail());
+		this.moreAttributes = entity.getMoreAttributes();
 		
 	}
 
@@ -114,7 +113,11 @@ public class ActionBoundary {
 		entity.setPlayerEmail(playerEmail);
 		entity.setActionType(actionType);
 		entity.setCreationTimestamp(creationTimeStamp);
-		entity.setMoreAttributes(moreAttributes);
+		
+		//if(moreAttributes != null)
+			entity.setMoreAttributes(moreAttributes);
+		//else
+			//entity.setMoreAttributes(new HashMap<>());
 		
 		return entity;
 
