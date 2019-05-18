@@ -10,7 +10,7 @@ public interface ElementService {
 
 	void updateElement(ElementEntity element, String managerSmartspace, String managerEmail, String elementSmartspace, String elementId);
 
-	public ElementEntity newElement(ElementEntity entity, String managerSmartspace, String managerEmail);
+	public ElementEntity newElement(String managerSmartspace, String managerEmail, ElementEntity entity);
 
 	public ElementEntity getElement(String userSmartspace, String userEmail, String elementSmartspace,
 			String elementId);

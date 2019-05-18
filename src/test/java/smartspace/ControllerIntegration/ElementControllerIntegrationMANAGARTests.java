@@ -29,6 +29,7 @@ import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.FakeElementGenerator;
 import smartspace.data.util.FakeUserGenerator;
+import smartspace.infra.NotAManagerException;
 import smartspace.layout.ElementBoundary;
 import smartspace.layout.UserBoundary;
 
@@ -279,6 +280,31 @@ public class ElementControllerIntegrationMANAGARTests {
 
 		}
 	}
+	
+	@Test(expected = HttpClientErrorException.class)
+	public void testPostNewElementNotManager() throws Exception {
+		// GIVEN the element database is empty
+		// AND the user database has a manager
+
+		// WHEN I POST new element with an element boundary with null key
+		ElementEntity element = generator.getElement();
+		UserEntity user = new UserEntity();
+		user.setRole(UserRole.PLAYER);
+		user.setUserEmail("email");
+		user.setUserSmartspace("smartspace");
+		this.userDao.create(user);
+		ElementBoundary elementBoundary = new ElementBoundary(element);
+		elementBoundary.setKey(null);
+
+		this.restTemplate.postForObject(
+				this.baseUrl + this.managerKeyUrl,
+				elementBoundary,
+				ElementBoundary.class,
+				user.getUserSmartspace(),
+				user.getUserEmail());
+
+	}
+
 	
 	
 	@Test

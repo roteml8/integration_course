@@ -1,12 +1,18 @@
 package smartspace.infra;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import smartspace.aop.ManagerCheck;
+import smartspace.aop.MeasureElapsedTime;
+import smartspace.aop.MyLogger;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
@@ -17,11 +23,14 @@ public class ElementServiceImpl implements ElementService {
 	private EnhancedUserDao<String> userDao;
 	private EnhancedElementDao<String> dao;
 	private String mySmartspace;
+//	private ApplicationContext ctx;
+
 
 	@Autowired
-	public ElementServiceImpl(EnhancedElementDao<String> dao) {
+	public ElementServiceImpl(EnhancedElementDao<String> dao, ApplicationContext ctx) {
 		super();
 		this.dao = dao;
+//		this.ctx = ctx;
 	}
 	
 	@Autowired
@@ -77,7 +86,27 @@ public class ElementServiceImpl implements ElementService {
 				!entity.getElementid().trim().isEmpty()
 				;
 	}
-
+	
+	private boolean validateNew(ElementEntity entity) {
+		return entity.getCreatorEmail() != null && 
+				!entity.getCreatorEmail().trim().isEmpty() &&
+				entity.getCreatorSmartSpace() != null && 
+				!entity.getCreatorSmartSpace().trim().isEmpty() &&
+				entity.getName() != null &&
+				!entity.getName().trim().isEmpty() &&
+				entity.getType() != null && 
+				!entity.getType().trim().isEmpty()
+				; 
+	}
+	
+	private List<ElementEntity> filterExpiredElements (List<ElementEntity> all){
+		List<ElementEntity> filtered = new ArrayList<ElementEntity>();
+		for (ElementEntity e: all)
+			if (e.isExpired() == false)
+				filtered.add(e);
+		return filtered; 
+		
+	}
 	
 	  @Override 
 	  public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
@@ -85,6 +114,9 @@ public class ElementServiceImpl implements ElementService {
 	  }
 
 	@Override
+	@MyLogger
+	@ManagerCheck
+	@MeasureElapsedTime
 	public void updateElement(ElementEntity element, String managerSmartspace, String managerEmail,
 			String elementSmartspace, String elementId) {
 		element.setElementSmartSpace(elementSmartspace);
@@ -93,8 +125,19 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	@Override
-	public ElementEntity newElement(ElementEntity entity, String managerSmartspace, String managerEmail) {
-		return this.dao.create(entity);
+	@MyLogger
+	@ManagerCheck
+	@MeasureElapsedTime
+	public ElementEntity newElement(String managerSmartspace, String managerEmail, ElementEntity entity) {
+		if (validateNew(entity))
+		{
+			entity.setCreationTimeDate(new Date());
+			entity.setExpired(false);
+			return this.dao.create(entity);
+		}
+		else
+			throw new FailedValidationException();
+
 	}
 
 	@Override
@@ -119,13 +162,14 @@ public class ElementServiceImpl implements ElementService {
 	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, int x, int y, int distance,
 			int size, int page) {
 		List<ElementEntity> result = new ArrayList<>();
-		for (int lat = x; lat <= x+distance; lat++)
+		for (int lat = x-distance; lat <= x+distance; lat++)
 		{
-			for (int lng = y; lng<=y+distance; lng++)
+			for (int lng = y-distance; lng<=y+distance; lng++)
 				result.addAll(this.dao.readElementWithLocation(new Location(lat,lng), size, page));
 		}
 		return result;
 
 	}
+
 	 
 }
