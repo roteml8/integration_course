@@ -113,7 +113,7 @@ public class EnhancedUserDaoIntegrationTests {
 	}
 
 	@Test
-	public void testGetAllMessagesByPatternAndPagination() throws Exception {
+	public void testGetAllUsersByNamePatternAndPagination() throws Exception {
 		// GIVEN the database contains 12 users with name containing 'abc'
 		// AND the database contains 20 users that do not have with name containing
 		// 'abc'

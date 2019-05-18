@@ -170,7 +170,15 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 	@Override
 	@Transactional
 	public List<ElementEntity> readElementWithLocation(Location location, int size, int page) {
-		return this.elementCrud.findAllByLocationLike(location, PageRequest.of(page, size));
+		//return this.elementCrud.findAllByLocationLike(location, PageRequest.of(page, size));
+		List<ElementEntity> result = new ArrayList<>();
+		List<ElementEntity> curDB = this.readAll();
+		for(ElementEntity curElement : curDB)
+		{
+			if(curElement.getLocation().equals(location))
+				result.add(curElement);
+		}
+		return result;
 	}
 
 	@Override

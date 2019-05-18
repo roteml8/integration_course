@@ -32,9 +32,11 @@ public class FakeUserGenerator implements UserGenerator {
 	public UserEntity getUser() {
 
 		String generatedString = RandomString.make();
+		//String generatedString = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
 
 		String userSmartspace = smartspace;
 		String userEmail = generatedString + "missroteml@gmail.com";
+		//String userEmail =  "missroteml@gmail.com";
 		String userName = generatedString + "rotemlevi";
 		String userAvatar = generatedString + "cat";
 

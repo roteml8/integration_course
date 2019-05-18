@@ -159,8 +159,8 @@ public class ElementController {
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary[] getElementsBy (
 			@RequestParam(name="search", required=false, defaultValue="") String search,
-			@RequestParam(name="x", required=false, defaultValue="0") int x,
-			@RequestParam(name="y", required=false, defaultValue="0") int y,
+			@RequestParam(name="x", required=false, defaultValue="0") double x,
+			@RequestParam(name="y", required=false, defaultValue="0") double y,
 			@RequestParam(name="distance", required=false, defaultValue="1") int distance,
 			@RequestParam(value="value", required=false, defaultValue="") String value,
 			@RequestParam(name="page", required=false, defaultValue="0") int page,

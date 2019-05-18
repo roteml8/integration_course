@@ -43,8 +43,9 @@ public class FakeElementGenerator implements ElementGenerator {
 		String creatorEmail = "email" + generatedString;
 		Date creationTimeStamp = new Date();
 		Map<String,Object> moreAttributes = new HashMap<>();
-		double x = new Random().nextDouble();
-		double y = new Random().nextDouble();
+		double x = (double)new Random().nextInt();
+		//double y = new Random().nextDouble();
+		double y = (double)new Random().nextInt();
 		Location location = new Location(x,y);
 		boolean expired = new Random().nextBoolean();
 //		String smartspace = "Smartspace"+generatedString;

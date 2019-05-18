@@ -159,12 +159,12 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	@Override
-	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, int x, int y, int distance,
+	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, double x, double y, int distance,
 			int size, int page) {
 		List<ElementEntity> result = new ArrayList<>();
-		for (int lat = x-distance; lat <= x+distance; lat++)
+		for (double lat = x-distance; lat <= x+distance; lat++)
 		{
-			for (int lng = y-distance; lng<=y+distance; lng++)
+			for (double lng = y-distance; lng<=y+distance; lng++)
 				result.addAll(this.dao.readElementWithLocation(new Location(lat,lng), size, page));
 		}
 		return result;

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
+import smartspace.data.Location;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.FakeElementGenerator;
@@ -55,6 +57,10 @@ public class ElementControllerIntegrationMANAGARTests {
 	private final String userKeyUrl = "/{userSmartspace}/{userEmail}";
 	private final String elementKeyUrl = "/{elementSmartspace}/{elementId}";
 	private final String pageAndKeyUrl = "?page={page}&size={size}";
+	
+	private final String getElementsByLocationUrl = "?search=location&x={x}&y={y}&distance={distance}&page={page}&size={size}";
+	private final String getElementsByNameUrl = "?search=name&value={name}&page={page}&size={size}";
+	private final String getElementsByTypeUrl = "?search=type&value={type}&page={page}&size={size}";
 
 
 
@@ -151,7 +157,7 @@ public class ElementControllerIntegrationMANAGARTests {
 		
 		assertThat(rv.get(0)).isNotNull()
 				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail")
-				.containsExactly(this.mySmartspace, element.getLocation(), element.getName(), element.getType(), element.isExpired(),
+				.containsExactly(this.mySmartspace, element.getLocation(), element.getName(), element.getType(), false,
 						element.getCreatorSmartSpace(), element.getCreatorEmail());
 		assertThat(rv.get(0).getCreationTimeDate()).isNotEqualTo(element.getCreationTimeDate());
 		assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
@@ -409,6 +415,265 @@ public class ElementControllerIntegrationMANAGARTests {
 					.usingElementComparatorOnFields("key")
 					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
+	
+	@Test
+	public void testGetElementsUsingPagination() throws Exception {
+		
+		// GIVEN the database contains 3 elements 
+		// AND user dao contains a manager 
+				int size = 3;
+				
+				List<ElementBoundary> all = new ArrayList<>();
+				ElementEntity[] arr = new ElementEntity[size];
 
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					this.elementDao.create(e);
+				}
+				
+				// WHEN I GET elements of size 10 and page 0
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							0, 10);
+				
+				// THEN I receive the exact 3 elements written to the database
+				for (int i = 0; i<size; i++)
+				{
+					arr[i] = response[i].convertToEntity();
+				}
+				
+				assertThat(arr)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readAll());
+	}
+	
+	
+	@Test
+	public void testPostAndGetElementsUsingPagination() throws Exception {
+		
+		// GIVEN the database contains 3 elements 
+		// AND user dao contains a manager 
+				int size = 3;
+				
+				List<ElementBoundary> all = new ArrayList<>();
+				ElementEntity[] arr = new ElementEntity[size];
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					ElementBoundary recivedBoundary = this.restTemplate.postForObject(
+							this.baseUrl + this.managerKeyUrl,
+							new ElementBoundary(e),
+							ElementBoundary.class,
+							this.myManager.getUserSmartspace(),
+							myManager.getUserEmail());
+				}
+				
+				// WHEN I GET elements of size 10 and page 0
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							0, 10);
+				
+				// THEN I receive the exact 3 elements written to the database
+				for (int i = 0; i<size; i++)
+				{
+					arr[i] = response[i].convertToEntity();
+				}
+				
+				assertThat(arr)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readAll());
+	}
+	
+	@Test
+	public void testGetElementsByName() throws Exception {
+		
+		// GIVEN the database contains 11 elements, some with the name bla1 and some with the name bla2
+		// AND user dao contains a manager 
+				int size = 11;
+				String nameToGet = "bla1";
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					e.setName("bla" + String.valueOf(new Random().nextInt(2)));
+					this.elementDao.create(e);
+				}
+				
+				// WHEN I GET elements by name with size 11 and page 0
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.getElementsByNameUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							nameToGet,
+							0,
+							11);
+				
+				// THEN I receive all the elements written to the database with the name bla1
+				List<ElementEntity> resultsAsEntitys = new ArrayList<>();
+				
+				for (int i = 0; i<response.length; i++)
+				{
+					resultsAsEntitys.add(response[i].convertToEntity());
+				}
+				
+				assertThat(resultsAsEntitys)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readElementWithName(nameToGet, 11, 0));
+				
+			//	assertThat(resultsAsEntitys)
+			//	.usingFieldByFieldElementComparator()
+			//	.containsExactlyElementsOf(this.elementDao.readElementWithName(nameToGet, 11, 0));
+
+	}
+	
+	@Test
+	public void testGetElementsByType() throws Exception {
+		
+		// GIVEN the database contains 11 elements, some with the name bla1 and some with the name bla2
+		// AND user dao contains a manager 
+				int size = 11;
+				String typeToGet = "bla1";
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					e.setType("bla" + String.valueOf(new Random().nextInt(3)));
+					this.elementDao.create(e);
+				}
+				
+				// WHEN I GET elements by type with size 11 and page 0
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.getElementsByTypeUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							typeToGet,
+							0,
+							11);
+				
+				// THEN I receive all the elements written to the database with the type bla1
+				List<ElementEntity> resultsAsEntitys = new ArrayList<>();
+				
+				for (int i = 0; i<response.length; i++)
+				{
+					resultsAsEntitys.add(response[i].convertToEntity());
+				}
+				
+				assertThat(resultsAsEntitys)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readElementWithType(typeToGet, 11, 0));
+
+	}
+	
+	@Test
+	public void testGetElementsByLocationWithDistanceZero() throws Exception {
+		
+		// GIVEN the database contains 3 elements 
+		// AND user dao contains a manager 
+				int size = 3;
+				List<ElementEntity> entitysInDB = new ArrayList<>();
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					e.setLocation(new Location(i , i));
+					entitysInDB.add(this.elementDao.create(e));
+				}
+								
+				// WHEN I GET elements by location with x=1, y=1 and distance=0 and size 11 and page 0
+				double x = 1;
+				double y = 1;
+				int distance = 0;
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.getElementsByLocationUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							x,
+							y,
+							distance,
+							0, 
+							10);
+				
+				// THEN I receive all the elements written to the database that are located at 1,1
+				List<ElementEntity> resultsAsEntitys = new ArrayList<>();
+				
+				for (int i = 0; i<response.length; i++)
+				{
+					resultsAsEntitys.add(response[i].convertToEntity());
+				}
+					
+				assertThat(resultsAsEntitys)
+					.usingElementComparatorOnFields("key")
+					//.containsExactlyElementsOf(this.elementDao.readElementWithLocation(location, size, page));
+					.containsExactlyElementsOf(this.elementDao.readElementWithLocation(new Location(x, y), size, 0));
+	}
+	
+	@Test
+	public void testGetElementsByLocationWithDistanceOne() throws Exception {
+		
+		// GIVEN the database contains 3 elements 
+		// AND user dao contains a manager 
+				int size = 3;
+				List<ElementEntity> entitysInDB = new ArrayList<>();
+
+				for (int i = 0; i<size; i++)
+				{
+					ElementEntity e = generator.getElement();
+					e.setLocation(new Location(i , i));
+					entitysInDB.add(this.elementDao.create(e));
+				}
+								
+				// WHEN I GET elements by location with x=1, y=1 and distance=1 and size 11 and page 0
+				double x = 1;
+				double y = 1;
+				int distance = 1;
+				ElementBoundary[] response = 
+				this.restTemplate
+					.getForObject(
+							this.baseUrl + this.userKeyUrl + this.getElementsByLocationUrl, 
+							ElementBoundary[].class, 
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
+							x,
+							y,
+							distance,
+							0, 
+							10);
+				
+				// THEN I receive all the elements written to the database that are located no more then a distance of one from the location
+				List<ElementEntity> resultsAsEntitys = new ArrayList<>();
+				
+				for (int i = 0; i<response.length; i++)
+				{
+					resultsAsEntitys.add(response[i].convertToEntity());
+				}
+					
+				assertThat(resultsAsEntitys)
+					.usingElementComparatorOnFields("key")
+					//.containsExactlyElementsOf(this.elementDao.readElementWithLocation(location, size, page));
+					.containsExactlyElementsOf(entitysInDB);
+	}
+
+	
 
 }

@@ -117,7 +117,7 @@ public void testReadAllSortedWithPaginationOfSmallerDB() throws Exception {
 }
 
 @Test
-public void testGetAllElementsByPatternAndPagination() throws Exception {
+public void testGetAllActionsByPatternAndPagination() throws Exception {
 	// GIVEN the database contains 12 elements with name containing 'abc'
 	// AND the database contains 20 elements that do not have a name containing
 	// 'abc'

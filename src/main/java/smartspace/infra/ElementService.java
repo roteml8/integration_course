@@ -21,6 +21,6 @@ public interface ElementService {
 	public List<ElementEntity> getByType(String userSmartspace, String userEmail, String value, int size,
 			int page);
 
-	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, int x, int y,
+	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, double x, double y,
 			int distance, int size, int page);
 }

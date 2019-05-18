@@ -168,7 +168,7 @@ public class UserControllerIntegrationADMINTests {
 		// GIVEN the user database is empty and user database contains an admin
 		
 		UserEntity admin = new UserEntity();
-		admin.setUserEmail("Email");
+		admin.setUserEmail("email@an.email.com");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
@@ -177,7 +177,7 @@ public class UserControllerIntegrationADMINTests {
 		
 		UserEntity e = generator.getUser();
 		e.setUserSmartspace("space");
-		e.setKey("email#space");
+		e.setKey("space#email@an.email.com");
 		UserBoundary newUser1 = new UserBoundary(e);
 		UserBoundary[] arr = new UserBoundary[1];
 		arr[0] = newUser1;
@@ -186,19 +186,19 @@ public class UserControllerIntegrationADMINTests {
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","Email");
+					"2019B.Amitz4.SmartSpace","email@an.email.com");
 		
 		// AND I POST another user with the same key 
 		UserEntity e2 = generator.getUser();
 		e2.setUserSmartspace("space");
-		e2.setKey("email#space");
+		e2.setKey("space#email@an.email.com");
 		arr[0] = new UserBoundary(e2);
 		UserBoundary[] recUsersBoundary = this.restTemplate
 		.postForObject(
 				this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 				arr, 
 				UserBoundary[].class, 
-				"2019B.Amitz4.SmartSpace","Email");
+				"2019B.Amitz4.SmartSpace","email@an.email.com");
 
 		/*
 		
@@ -273,7 +273,7 @@ public class UserControllerIntegrationADMINTests {
 		// GIVEN the user database is empty and user database contains an admin
 		
 		UserEntity admin = new UserEntity();
-		admin.setUserEmail("Email");
+		admin.setUserEmail("tom@gmail.com");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
@@ -285,12 +285,12 @@ public class UserControllerIntegrationADMINTests {
 		UserEntity e = generator.getUser();
 		
 		e.setUserSmartspace("2019B.Amitz4.SmartSpace");
-		e.setUserEmail("Email");
+		e.setUserEmail("tom@gmail.com");
 		
 		
 		UserEntity e2 = generator.getUser();
 		e2.setUserSmartspace("Space");
-		e2.setUserEmail("Email");
+		e2.setUserEmail("tom@gmail.com");
 		
 		UserBoundary newUser1 = new UserBoundary(e);
 		UserBoundary newUser2 = new UserBoundary(e2);
@@ -303,7 +303,7 @@ public class UserControllerIntegrationADMINTests {
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					UserBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","Email");
+					"2019B.Amitz4.SmartSpace","tom@gmail.com");
 		}
 		// THEN the database is empty
 		// and Post method throws an exception 
