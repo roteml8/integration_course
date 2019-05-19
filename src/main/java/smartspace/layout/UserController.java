@@ -57,7 +57,7 @@ public class UserController {
 			
 		  return 
 				this.userService
-				.importUsers(toImport, adminSmartspace + "#" + adminEmail)
+				.importUsers(adminSmartspace, adminEmail,toImport)
 				.stream()
 				.map(UserBoundary::new)
 				.collect(Collectors.toList())
@@ -76,7 +76,7 @@ public class UserController {
 			@PathVariable("adminEmail") String adminEmail) {
 		return 
 			this.userService
-			.getUsingPagination(size, page)
+			.getUsingPagination(adminSmartspace, adminEmail, size, page)
 			.stream()
 			.map(UserBoundary::new)
 			.collect(Collectors.toList())
@@ -91,7 +91,7 @@ public class UserController {
 			@PathVariable("userSmartspace") String userSmartspace,
 			@PathVariable("userEmail") String userEmail,
 			@RequestBody UserBoundary user) {
-		this.userService.update(user.convertToEntity() ,userSmartspace + "#" + userEmail);
+		this.userService.update(userSmartspace, userEmail, user.convertToEntity());
 	}
 	
 	@RequestMapping(

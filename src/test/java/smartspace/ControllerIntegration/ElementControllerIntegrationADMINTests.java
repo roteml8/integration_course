@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import smartspace.dao.EnhancedElementDao;
@@ -347,7 +348,7 @@ public class ElementControllerIntegrationADMINTests {
 		}
 	}
 	
-	@Test(expected=Exception.class)
+	@Test(expected=HttpClientErrorException.class)
 	public void testPostNewElementNoAdmin() throws Exception{
 		
 		// GIVEN the element database is empty and user database contains a player
@@ -369,7 +370,7 @@ public class ElementControllerIntegrationADMINTests {
 					this.baseUrl + "/{adminSmartspace}/{adminEmail}", 
 					arr, 
 					ElementBoundary[].class, 
-					"SmartspaceNotAdmin","EmailNotAdmin");
+					player.getUserSmartspace(),player.getUserEmail());
 		
 		// THEN the test ends with exception
 	}
@@ -425,7 +426,7 @@ public class ElementControllerIntegrationADMINTests {
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}
-		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
+		this.elementService.importElements("2019B.Amitz4.SmartSpace", "Email", arr);
 		
 		// WHEN I GET elements of size 10 and page 0
 		ElementBoundary[] response = 
@@ -462,7 +463,7 @@ public class ElementControllerIntegrationADMINTests {
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}
-		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
+		this.elementService.importElements("2019B.Amitz4.SmartSpace", "Email", arr);
 		
 
 		
@@ -501,7 +502,7 @@ public class ElementControllerIntegrationADMINTests {
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}
-		this.elementService.importElements(arr, "2019B.Amitz4.SmartSpace", "Email");
+		this.elementService.importElements("2019B.Amitz4.SmartSpace", "Email", arr);
 
 		
 //		MessageBoundary last = new MessageBoundary( 

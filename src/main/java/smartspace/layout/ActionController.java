@@ -98,7 +98,7 @@ public class ActionController {
 
 		}
 			
-		return this.actionService.importActions(toImport, adminSmartspace, adminEmail)
+		return this.actionService.importActions(adminSmartspace, adminEmail, toImport)
 				.stream()
 				.map(ActionBoundary::new)
 				.collect(Collectors.toList())

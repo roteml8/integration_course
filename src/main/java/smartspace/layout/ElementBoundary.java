@@ -98,8 +98,14 @@ public class ElementBoundary {
 		entity.setName(name);
 		entity.setType(elementType);
 		entity.setExpired(expired);
-		entity.setCreatorSmartSpace(this.creator.get("smartspace"));
-		entity.setCreatorEmail(this.creator.get("email"));
+		if (creator != null && creator.get("smartspace")!= null && creator.get("email")!= null
+				&&!creator.get("smartspace").trim().isEmpty()
+				&&!creator.get("email").trim().isEmpty() )
+		{
+			entity.setCreatorSmartSpace(this.creator.get("smartspace"));
+			entity.setCreatorEmail(this.creator.get("email"));
+
+		}
 		entity.setCreationTimeDate(created);
 		entity.setMoreAttributes(elementProperties);
 		

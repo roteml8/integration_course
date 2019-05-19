@@ -107,6 +107,7 @@ public class ActionControllerIntegrtationPLAYERTests {
 		// GIVEN the element database has an element
 		// AND the user database has a user
 		UserEntity user = this.userGenerator.getUser();
+		user.setRole(UserRole.PLAYER);
 		ElementEntity element = this.elementGenerator.getElement();
 		
 		UserEntity userInDB = this.userDao.create(user);
@@ -116,25 +117,26 @@ public class ActionControllerIntegrtationPLAYERTests {
 		
 		ElementEntity elementInDB = this.elementDao.create(element);
 		
-		ActionBoundary action = new ActionBoundary();
+		ActionEntity action = new ActionEntity();
 		action.setActionType("Echo");
 		action.setElementId(elementInDB.getElementid());
 		action.setElementSmartspace(elementInDB.getElementSmartSpace());
 		action.setPlayerEmail(user.getUserEmail());
 		action.setPlayerSmartspace(user.getUserSmartspace());
 		action.setMoreAttributes(new HashMap<String,Object>());
+		ActionBoundary bound = new ActionBoundary(action);
 		
 		// WHEN invoke a new action of type ECHO with POST
 		ActionBoundary recivedBoundary = 
 				this.restTemplate
 				.postForObject(
 						this.baseUrl,
-						action,
+						bound,
 						ActionBoundary.class);
 		
 		//THEN the jason i receive is the same as the input boundary except for the key, creationTImeStamp and moreAttributes fields
 		//AND moreAtrributes got the echo signature
-		assertThat(recivedBoundary).isNotNull().isEqualToIgnoringGivenFields(action, "key","creationTimeStamp","moreAttributes");
+		assertThat(recivedBoundary).isNotNull().isEqualToIgnoringGivenFields(bound, "key","creationTimeStamp","moreAttributes");
 		Map<String,Object> attributes = new HashMap<String,Object>();
 		attributes.put("echo", "echo");
 		assertThat(recivedBoundary.getMoreAttributes()).isEqualTo(attributes);

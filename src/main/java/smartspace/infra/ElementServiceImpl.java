@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import smartspace.aop.AdminCheck;
 import smartspace.aop.ManagerCheck;
 import smartspace.aop.MeasureElapsedTime;
 import smartspace.aop.MyLogger;
@@ -47,11 +48,10 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	@Override
-	public List<ElementEntity> importElements(ElementEntity[] elements, String adminSmartspace, String adminEmail) {
+	@MyLogger
+	@AdminCheck
+	public List<ElementEntity> importElements(String adminSmartspace, String adminEmail, ElementEntity[] elements) {
 		
-		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new NotAnAdminException(" elements!");
-		}
 		int count=0;
 		for (ElementEntity e: elements)
 		{
@@ -113,18 +113,16 @@ public class ElementServiceImpl implements ElementService {
 	
 	  @Override 
 	  @MyLogger
-	  @UserCheck
-	  public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
-		  if (this.userDao.isPlayer(userSmartspace+"#"+userEmail)) 
-			  return this.dao.readElementWithExpired(false, size, page);
+	  @AdminCheck
+	  public List<ElementEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page) {
 		  return this.dao.readAll("key", size, page);
 	  }
 
 	@Override
 	@MyLogger
 	@ManagerCheck
-	@MeasureElapsedTime
-	public void updateElement(ElementEntity element, String managerSmartspace, String managerEmail,
+//	@MeasureElapsedTime
+	public void updateElement(String managerSmartspace, String managerEmail, ElementEntity element,
 			String elementSmartspace, String elementId) {
 		element.setElementSmartSpace(elementSmartspace);
 		element.setElementid(elementId);
@@ -134,7 +132,7 @@ public class ElementServiceImpl implements ElementService {
 	@Override
 	@MyLogger
 	@ManagerCheck
-	@MeasureElapsedTime
+//	@MeasureElapsedTime
 	public ElementEntity newElement(String managerSmartspace, String managerEmail, ElementEntity entity) {
 		if (validateNew(entity))
 		{

@@ -4,11 +4,11 @@ import java.util.List;
 import smartspace.data.ElementEntity;
 
 public interface ElementService {
-	public List<ElementEntity> importElements(ElementEntity[] elements, String adminSmartspace, String adminEmail);
+	public List<ElementEntity> importElements(String adminSmartspace, String adminEmail, ElementEntity[] elements);
 
-	public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page);
+	public List<ElementEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page);
 
-	void updateElement(ElementEntity element, String managerSmartspace, String managerEmail, String elementSmartspace, String elementId);
+	void updateElement(String managerSmartspace, String managerEmail, ElementEntity element, String elementSmartspace, String elementId);
 
 	public ElementEntity newElement(String managerSmartspace, String managerEmail, ElementEntity entity);
 

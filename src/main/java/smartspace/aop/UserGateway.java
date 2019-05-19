@@ -25,9 +25,9 @@ public class UserGateway {
 		this.users=users;
 	}
 	
-	@Around("@annotation(smartspace.aop.ManagerCheck) && args(smartspace,email,..)")
-	public Object logName (ProceedingJoinPoint pjp, String smartspace, String email) throws Throwable{
-		Optional<UserEntity> user = this.users.readById(smartspace+"#"+email);
+	@Around("@annotation(smartspace.aop.UserCheck) && args(userSmartspace,userEmail,..)")
+	public Object logName (ProceedingJoinPoint pjp, String userSmartspace, String userEmail) throws Throwable{
+		Optional<UserEntity> user = this.users.readById(userSmartspace+"#"+userEmail);
 		if ((user.isPresent() == false) || (user.isPresent() && user.get().getRole() == UserRole.ADMIN))
 			throw new NotAUserException("Only Users are allowed to perform this action!");
 		return pjp.proceed();		

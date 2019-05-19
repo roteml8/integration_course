@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import smartspace.aop.AdminCheck;
+import smartspace.aop.MyLogger;
 import smartspace.dao.EnhancedActionDao;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
@@ -70,7 +72,9 @@ public class ActionServicelmpl implements ActionService {
 	
 
 	@Override
-	public List<ActionEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
+	@MyLogger
+	@AdminCheck
+	public List<ActionEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page) {
 		return this.actionDao
 				.readAll("key", size, page);
 	}
@@ -81,11 +85,13 @@ public class ActionServicelmpl implements ActionService {
 	}
 	
 	@Override
-	public List<ActionEntity> importActions(ActionEntity[] actions, String adminSmartspace, String adminEmail) {
+	@MyLogger
+	@AdminCheck
+	public List<ActionEntity> importActions(String adminSmartspace, String adminEmail, ActionEntity[] actions) {
 
-		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
-			throw new NotAnAdminException(" actions!");
-		}
+//		if (!userDao.isAdmin(adminSmartspace+"#"+adminEmail)) {
+//			throw new NotAnAdminException(" actions!");
+//		}
 		int count=0;
 		for (ActionEntity a: actions)
 		{

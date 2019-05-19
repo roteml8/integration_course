@@ -13,8 +13,8 @@ import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.infra.NotAPlayerException;
 
-@Component
-@Aspect
+//@Component
+//@Aspect
 public class PlayerGateway {
 	
 	private EnhancedUserDao<String> users;
@@ -25,7 +25,7 @@ public class PlayerGateway {
 		this.users=users;
 	}
 	
-	@Around("@annotation(smartspace.aop.ManagerCheck) && args(smartspace,email,..)")
+	@Around("@annotation(smartspace.aop.PlayerCheck) && args(smartspace,email,..)")
 	public Object logName (ProceedingJoinPoint pjp, String smartspace, String email) throws Throwable{
 		Optional<UserEntity> user = this.users.readById(smartspace+"#"+email);
 		if ((user.isPresent() == false) || (user.isPresent() && user.get().getRole() != UserRole.PLAYER))

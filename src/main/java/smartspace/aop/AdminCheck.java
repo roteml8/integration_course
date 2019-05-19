@@ -6,8 +6,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-//@Retention(RUNTIME)
-//@Target(METHOD)
-public @interface PlayerCheck {
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface AdminCheck {
 
 }

@@ -62,7 +62,7 @@ public class ElementController {
 
 		}
 			
-		return this.elementService.importElements(toImport, adminSmartspace, adminEmail)
+		return this.elementService.importElements(adminSmartspace, adminEmail, toImport)
 				.stream()
 				.map(ElementBoundary::new)
 				.collect(Collectors.toList())
@@ -117,7 +117,7 @@ public class ElementController {
 			@PathVariable("elementId") String elementId){
 
 		this.elementService
-			.updateElement(elementBoundry.convertToEntity(), managerSmartspace, managerEmail, elementSmartspace, elementId);
+			.updateElement(managerSmartspace, managerEmail, elementBoundry.convertToEntity(), elementSmartspace, elementId);
 	}
 	
 	@RequestMapping(
