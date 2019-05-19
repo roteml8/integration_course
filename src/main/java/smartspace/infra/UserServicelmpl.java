@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import smartspace.aop.MyLogger;
+import smartspace.aop.UserCheck;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.UserEntity;
 
@@ -118,11 +121,15 @@ public class UserServicelmpl implements UserService {
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public List<UserEntity> getUsingPagination(int size, int page) {
 		return this.userDao.readAll("key",size,page);
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public void update(UserEntity userEntity, String key) {
 		userEntity.setKey(key);
 		//try {

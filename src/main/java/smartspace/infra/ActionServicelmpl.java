@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;  
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,8 @@ import smartspace.dao.EnhancedActionDao;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
+import smartspace.data.UserEntity;
+import smartspace.data.UserRole;
 import smartspace.plugin.Plugin;
 
 
@@ -107,7 +110,10 @@ public class ActionServicelmpl implements ActionService {
 	
 	@Override
 	public ActionEntity invoke(ActionEntity action) {
- 
+		
+		Optional<UserEntity> entity = this.userDao.readById(action.getPlayerSmartspace()+"#"+action.getPlayerEmail());
+		if (entity.isPresent() == false || entity.get().getRole()!= UserRole.PLAYER)
+			throw new NotAPlayerException("Only players are allowed to perform this action!");
 		if(valiadateInvoke(action) == false)
 		{
 			throw new FailedValidationException(action.getActionType());

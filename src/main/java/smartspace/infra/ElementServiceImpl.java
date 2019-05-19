@@ -3,6 +3,7 @@ package smartspace.infra;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Service;
 import smartspace.aop.ManagerCheck;
 import smartspace.aop.MeasureElapsedTime;
 import smartspace.aop.MyLogger;
+import smartspace.aop.UserCheck;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
+import smartspace.data.UserRole;
 
 @Service
 public class ElementServiceImpl implements ElementService {
@@ -109,8 +112,12 @@ public class ElementServiceImpl implements ElementService {
 	}
 	
 	  @Override 
+	  @MyLogger
+	  @UserCheck
 	  public List<ElementEntity> getUsingPagination(String userSmartspace, String userEmail, int size, int page) {
-		  	return this.dao.readAll("key", size, page);
+		  if (this.userDao.isPlayer(userSmartspace+"#"+userEmail)) 
+			  return this.dao.readElementWithExpired(false, size, page);
+		  return this.dao.readAll("key", size, page);
 	  }
 
 	@Override
@@ -141,24 +148,47 @@ public class ElementServiceImpl implements ElementService {
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public ElementEntity getElement(String userSmartspace, String userEmail, String elementSmartspace,
 			String elementId) {
-		return this.dao.readById(elementSmartspace+"#"+elementId).orElseThrow(() -> 
-		new RuntimeException("No such element in the DB!"));
-
+		ElementEntity e = this.dao.readById(elementSmartspace+"#"+elementId).orElseThrow(()->new RuntimeException(
+				"No such element in DB!"));
+		if (e.isExpired() == true)
+		{
+			if (this.userDao.isManager(userSmartspace+"#"+userEmail))
+				return e;
+			else
+				return null;
+		}
+		return e;
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public List<ElementEntity> getByName(String userSmartspace, String userEmail, String value, int size, int page){ 
-		return this.dao.readElementWithName(value, size, page);
+
+		List<ElementEntity> result = this.dao.readElementWithName(value, size, page);
+		if (this.userDao.isPlayer(userSmartspace+"#"+userEmail))
+			return filterExpiredElements(result);
+		return result;
+		
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public List<ElementEntity> getByType(String userSmartspace, String userEmail, String value, int size, int page) {
-		return this.dao.readElementWithType(value, size, page);
+		  List<ElementEntity> result = this.dao.readElementWithType(value, size, page);
+			if (this.userDao.isPlayer(userSmartspace+"#"+userEmail))
+				return filterExpiredElements(result);
+			return result;
 	}
 
 	@Override
+	@MyLogger
+	@UserCheck
 	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, double x, double y, int distance,
 			int size, int page) {
 		List<ElementEntity> result = new ArrayList<>();
@@ -167,6 +197,8 @@ public class ElementServiceImpl implements ElementService {
 			for (double lng = y-distance; lng<=y+distance; lng++)
 				result.addAll(this.dao.readElementWithLocation(new Location(lat,lng), size, page));
 		}
+		if (this.userDao.isPlayer(userSmartspace+"#"+userEmail))
+			return filterExpiredElements(result);
 		return result;
 
 	}

@@ -33,5 +33,9 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	public boolean isAdmin(Key key);
 	
 	public UserEntity importUser (UserEntity userEntity);
+
+	boolean isManager(String key);
+
+	boolean isPlayer(String key);
 	
 }

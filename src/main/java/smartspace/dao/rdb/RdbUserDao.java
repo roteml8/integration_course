@@ -178,5 +178,28 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		else
 			return false;
 	}
+	
+	@Override
+	public boolean isManager(String key) {
+		UserEntity existing = this.readById(key).orElse(null);
+
+		// if the user is in the UserDao and it's UserRole is admin return true.
+		if (existing != null && existing.getRole() == UserRole.MANAGER)
+			return true;
+		else
+			return false;
+	}
+	
+	@Override
+	public boolean isPlayer(String key) {
+		UserEntity existing = this.readById(key).orElse(null);
+
+		// if the user is in the UserDao and it's UserRole is admin return true.
+		if (existing != null && existing.getRole() == UserRole.PLAYER)
+			return true;
+		else
+			return false;
+	}
+
 
 }
