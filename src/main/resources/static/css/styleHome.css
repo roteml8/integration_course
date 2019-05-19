@@ -21,9 +21,7 @@ body {background-color:#0067A9;font-family: 'Roboto', sans-serif;
 
 h1{ margin: 0; }
 #contact { 
-  -webkit-user-select: none; /* Chrome/Safari */        
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+ */
+
   margin: 4em auto;
   width: 100px; 
   height: 30px; 
@@ -66,6 +64,26 @@ input, textarea {
   padding: .4em;
 }
 textarea { height: 80px; resize: none; }
+.datalist
+{
+background-color: black;
+color:white;	
+}
+select{
+	url('https://bia.lighting/wp-content/uploads/2016/04/Sign-Up-Background.png')
+	width: 100%;
+	border-radius: 10px;
+	box-sizing: border-box;
+	border: none;
+	outline: none;
+	font-weight: 100;
+	font-size: 16px;
+	border-bottom: 1px solid white;
+	margin: 5px;
+	color: white;
+	background-color: black;
+	padding:12px 5px;
+}
 
 .formBtn { 
   width: 140px;
@@ -96,14 +114,6 @@ cursor:move; cursor:-webkit-grab; cursor:-moz-grab; cursor:grab;}
 .cards .is-moving {background-color:white;color:black}
 
 
-.noselect {
-  -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
 
 
 .gu-mirror {
@@ -118,12 +128,7 @@ transform: rotate(5deg);
 .gu-hide {
   display: none !important;
 }
-.gu-unselectable {
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-  user-select: none !important;
-}
+
 .gu-transit {
   opacity: 0.4;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
