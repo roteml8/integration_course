@@ -18,7 +18,8 @@ function edituser(){
 	     contentType: 'application/json',
 	     success: function (data) {
 	    	// $('#target').html(data.msg);
-	         
+	    	 document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
+	       	 +getQueryVariable('usersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('useremail');
 	     },
 	     data: JSON.stringify(person)
 	 });
@@ -30,6 +31,9 @@ function edituser(){
 
 
 window.onload=function (){
+
+	 var points = document.getElementById("points");
+	 points.style.display = 'none';
 	$.ajax({
 		  url: '/smartspace/users/login'+'/'+getQueryVariable('usersmartspace')+'/'+ getQueryVariable('useremail'),
 		  type: 'GET',
