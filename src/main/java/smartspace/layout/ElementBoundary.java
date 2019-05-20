@@ -95,8 +95,11 @@ public class ElementBoundary {
 		}
 		*/
 		Location l = new Location();
-		l.setX(this.latlng.get("lat"));
-		l.setY(this.latlng.get("lng"));
+		if (latlng!=null && latlng.get("lat")!= null && latlng.get("lng")!=null)
+		{
+			l.setX(this.latlng.get("lat"));
+			l.setY(this.latlng.get("lng"));
+		}
 		entity.setLocation(l);
 		entity.setName(name);
 		entity.setType(elementType);
