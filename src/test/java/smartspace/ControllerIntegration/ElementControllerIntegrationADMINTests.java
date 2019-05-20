@@ -395,7 +395,7 @@ public class ElementControllerIntegrationADMINTests {
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class,
 					"2019B.Amitz4.SmartSpace", "Email",
 					0, 10);
@@ -432,7 +432,7 @@ public class ElementControllerIntegrationADMINTests {
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace", "Email",
 					0, 10);
@@ -472,7 +472,7 @@ public class ElementControllerIntegrationADMINTests {
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl +"{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl +"{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace", "Email",
 					0, 10);
@@ -525,10 +525,10 @@ public class ElementControllerIntegrationADMINTests {
 		// WHEN I GET elements of size 10 and page 2
 		ElementBoundary[] result = this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace", "Email",
-					1, 2);
+					1, 10);
 		
 		// THEN the result contains a single element (last message)
 		assertThat(result)
@@ -554,7 +554,7 @@ public class ElementControllerIntegrationADMINTests {
 		ElementBoundary[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class, 
 					"2019B.Amitz4.SmartSpace", "Email",
 					1, 10);

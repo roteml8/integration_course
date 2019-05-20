@@ -136,7 +136,7 @@ public class ActionControllerIntegrtationADMINTests {
 		ActionBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ActionBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
@@ -309,9 +309,9 @@ public class ActionControllerIntegrtationADMINTests {
 		ActionBoundary[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}",
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}",
 					ActionBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 10);
 		
 		assertThat(result)
 			.isEmpty();

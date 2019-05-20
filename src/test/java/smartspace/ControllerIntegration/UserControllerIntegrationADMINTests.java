@@ -396,7 +396,7 @@ public class UserControllerIntegrationADMINTests {
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
@@ -425,7 +425,7 @@ public class UserControllerIntegrationADMINTests {
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
@@ -463,7 +463,7 @@ public class UserControllerIntegrationADMINTests {
 		UserBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					UserBoundary[].class, 
 					"2019B.Amitz4.SmartSpace","Email",0, 10);
 	
@@ -502,9 +502,9 @@ public class UserControllerIntegrationADMINTests {
 		// WHEN I GET user of size 1 and page 2
 		UserBoundary[] result = this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					UserBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 10);
 		
 		// THEN the result contains a single user
 		assertThat(result)
@@ -520,15 +520,15 @@ public class UserControllerIntegrationADMINTests {
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
 		IntStream
-			.range(0, 10)
+			.range(0, 9)
 			.forEach(i->this.userDao.create(new UserEntity("user" + i)));
 		
-		String[] result = 
+		UserBoundary[] result = 
 		  this.restTemplate
 			.getForObject(
-					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
-					String[].class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 2);
+					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
+					UserBoundary[].class, 
+					"2019B.Amitz4.SmartSpace","tom@gmail.com",1, 10);
 		
 		assertThat(result)
 			.isEmpty();
