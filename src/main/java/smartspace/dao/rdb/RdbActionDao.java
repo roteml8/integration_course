@@ -220,8 +220,6 @@ public class RdbActionDao implements EnhancedActionDao {
 	@Override
 	@Transactional
 	public ActionEntity importAction(ActionEntity actionEntity) {
-		if (this.actionCrud.existsById(actionEntity.getKey()))
-			this.deleteByKey(actionEntity.getKey());
 		ActionEntity rv = this.actionCrud.save(actionEntity);
 		return rv;
 	}

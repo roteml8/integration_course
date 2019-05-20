@@ -138,7 +138,7 @@ public class ActionControllerIntegrtationADMINTests {
 			.getForObject(
 					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					ActionBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","amit@gmail.com",0, 10);
+					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
 		assertThat(response)
 			.hasSize(size);
@@ -301,6 +301,11 @@ public class ActionControllerIntegrtationADMINTests {
 					,  this.generator.getAction().getPlayerSmartspace()
 					,  moreAttributes)));
 	
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("tom@gmail.com");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
 		ActionBoundary[] result = 
 		  this.restTemplate
 			.getForObject(

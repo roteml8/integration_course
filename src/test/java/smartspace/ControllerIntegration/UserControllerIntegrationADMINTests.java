@@ -398,7 +398,7 @@ public class UserControllerIntegrationADMINTests {
 			.getForObject(
 					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
+					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
 		assertThat(response)
 			.hasSize(size+1);
@@ -427,7 +427,7 @@ public class UserControllerIntegrationADMINTests {
 			.getForObject(
 					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&psize={size}", 
 					UserBoundary[].class, 
-					"2019B.Amitz4.SmartSpace","tom@gmail.com",0, 10);
+					"2019B.Amitz4.SmartSpace","Email",0, 10);
 		
 		assertThat(response)
 			.usingElementComparatorOnFields("key")
@@ -514,6 +514,11 @@ public class UserControllerIntegrationADMINTests {
 	
 	@Test
 	public void testGetAllUsersUsingPaginationOfSecondNonExistingPage() throws Exception{
+		UserEntity admin = new UserEntity();
+		admin.setUserEmail("tom@gmail.com");
+		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
 		IntStream
 			.range(0, 10)
 			.forEach(i->this.userDao.create(new UserEntity("user" + i)));

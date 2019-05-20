@@ -8,7 +8,7 @@ public interface ElementService {
 
 	public List<ElementEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page);
 
-	void updateElement(String managerSmartspace, String managerEmail, ElementEntity element, String elementSmartspace, String elementId);
+	public void updateElement(String managerSmartspace, String managerEmail, ElementEntity element, String elementSmartspace, String elementId);
 
 	public ElementEntity newElement(String managerSmartspace, String managerEmail, ElementEntity entity);
 

@@ -125,7 +125,7 @@ public class ElementControllerIntegrationPLAYERTests {
 		user.setRole(UserRole.PLAYER);
 		this.userDao.create(user);
 
-		// WHEN I POST new element with an element boundary with null key
+		// WHEN I POST new element with an element boundary with null key with the player's key
 		ElementEntity element = generator.getElement();
 
 		ElementBoundary elementBoundary = new ElementBoundary(element);
@@ -137,27 +137,15 @@ public class ElementControllerIntegrationPLAYERTests {
 				ElementBoundary.class,
 				user.getUserSmartspace(),
 				user.getUserEmail());
+		
+		// THEN the test ends with exception 
 
-//		// THEN the element database contains a single element
-//		// AND this element's  fields are exactly the same as the fields in element except for elementSmartspace and creationTimeDate
-//		// AND his smartspace field is the same as the local project's smartspace and he has a valid Id.
-//		// AND the received boundary from the post is the same as the entity in the DB
-//
-//		List<ElementEntity> rv = this.elementDao.readAll();
-//		assertThat(rv).hasSize(1);
-//		
-//		assertThat(rv.get(0)).isNotNull()
-//				.extracting("elementSmartspace", "location", "name", "type", "expired", "creatorSmartspace", "creatorEmail")
-//				.containsExactly(this.mySmartspace, element.getLocation(), element.getName(), element.getType(), false,
-//						element.getCreatorSmartSpace(), element.getCreatorEmail());
-//		assertThat(rv.get(0).getCreationTimeDate()).isNotEqualTo(element.getCreationTimeDate());
-//		assertThat(rv.get(0).getElementid()).isNotNull().isGreaterThan("0");
-//		assertThat(rv.get(0)).isEqualToIgnoringGivenFields(recivedBoundary.convertToEntity(), "creationTimeStamp");
+
 	}
 	
 	@Test 
 	public void testGetElements() throws Exception {
-		// GIVEN the element database is empty
+		// GIVEN the element database has two elements - one expired and second not expired with the same name
 		// AND the user database has a player
 		
 		UserEntity user = userGenerator.getUser();
@@ -165,24 +153,28 @@ public class ElementControllerIntegrationPLAYERTests {
 		this.userDao.create(user);
 		ElementEntity element1 = generator.getElement();
 		element1.setExpired(true);
+		element1.setName("test");
 		ElementEntity element2 = generator.getElement();
 		element2.setExpired(false);
+		element2.setName("test");
 		this.elementDao.create(element1);
 		this.elementDao.create(element2);
 		ElementBoundary b1 = new ElementBoundary(element1);
 		ElementBoundary b2 = new ElementBoundary(element2);
 
-		// WHEN I POST new element with an element boundary with null key
+		// WHEN I GET elements by the specific name with user's key
 
 		ElementBoundary[] response = 
 		this.restTemplate
 			.getForObject(
-					this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
+					this.baseUrl + this.userKeyUrl + this.getElementsByNameUrl, 
 					ElementBoundary[].class, 
 					user.getUserSmartspace(),
 					user.getUserEmail(),
+					"test",
 					0,
-					10);
+					11);
+		// THEN the result contains only the unexpired element
 		assertThat(response).hasSize(1).usingElementComparatorOnFields("key").contains(b2).doesNotContain(b1);
 	}
 

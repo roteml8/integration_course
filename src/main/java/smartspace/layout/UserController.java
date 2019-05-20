@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import smartspace.data.UserEntity;
 import smartspace.infra.FailedValidationException;
 import smartspace.infra.ImportFromLocalException;
+import smartspace.infra.NotAUserException;
 import smartspace.infra.EntityNotInDBException;
 import smartspace.infra.NotAnAdminException;
 import smartspace.infra.UserService;
@@ -154,6 +155,17 @@ public class UserController {
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	public ErrorMessage handleException (ImportFromLocalException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ErrorMessage handleException (NotAUserException e){
 		String message = e.getMessage();
 		if (message == null) {
 			message = "The name you have provided is invalid";

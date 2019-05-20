@@ -53,6 +53,7 @@ public class ElementControllerIntegrationMANAGARTests {
 	private UserRole userRoleToCheck;
 	private UserEntity myManager;
 	
+	private final String adminKeyUrl = "/{adminSmartspace}/{adminEmail}";
 	private final String managerKeyUrl = "/{managerSmartspace}/{managerEmail}";
 	private final String userKeyUrl = "/{userSmartspace}/{userEmail}";
 	private final String elementKeyUrl = "/{elementSmartspace}/{elementId}";
@@ -290,9 +291,9 @@ public class ElementControllerIntegrationMANAGARTests {
 	@Test(expected = HttpClientErrorException.class)
 	public void testPostNewElementNotManager() throws Exception {
 		// GIVEN the element database is empty
-		// AND the user database has a manager
+		// AND the user database has a player
 
-		// WHEN I POST new element with an element boundary with null key
+		// WHEN I POST new element with an element boundary with null key and player's key
 		ElementEntity element = generator.getElement();
 		UserEntity user = new UserEntity();
 		user.setRole(UserRole.PLAYER);
@@ -308,6 +309,8 @@ public class ElementControllerIntegrationMANAGARTests {
 				ElementBoundary.class,
 				user.getUserSmartspace(),
 				user.getUserEmail());
+		
+		// THEN the test ends with exception 
 
 	}
 
@@ -378,7 +381,10 @@ public class ElementControllerIntegrationMANAGARTests {
 	public void testGetAllElementsUsingPaginationAndPost() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
-		// AND user dao contains a manager 
+		// AND user dao contains a manager and an admin
+		UserEntity admin = userGenerator.getUser();
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
 				int size = 3;
 				
 				List<ElementBoundary> all = new ArrayList<>();
@@ -399,10 +405,10 @@ public class ElementControllerIntegrationMANAGARTests {
 				ElementBoundary[] response = 
 				this.restTemplate
 					.getForObject(
-							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
+							this.baseUrl + this.adminKeyUrl + this.pageAndKeyUrl, 
 							ElementBoundary[].class, 
-							this.myManager.getUserSmartspace(),
-							this.myManager.getUserEmail(),
+							admin.getUserSmartspace(),
+							admin.getUserEmail(),
 							0, 10);
 				
 				// THEN I receive the exact 3 elements written to the database
@@ -416,7 +422,7 @@ public class ElementControllerIntegrationMANAGARTests {
 					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
 	
-	@Test
+	@Test (expected = HttpClientErrorException.class)
 	public void testGetElementsUsingPagination() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
@@ -442,15 +448,15 @@ public class ElementControllerIntegrationMANAGARTests {
 							this.myManager.getUserEmail(),
 							0, 10);
 				
-				// THEN I receive the exact 3 elements written to the database
-				for (int i = 0; i<size; i++)
-				{
-					arr[i] = response[i].convertToEntity();
-				}
-				
-				assertThat(arr)
-					.usingElementComparatorOnFields("key")
-					.containsExactlyElementsOf(this.elementDao.readAll());
+				// THEN the test ends with exception (unauthorized)
+//				for (int i = 0; i<size; i++)
+//				{
+//					arr[i] = response[i].convertToEntity();
+//				}
+//				
+//				assertThat(arr)
+//					.usingElementComparatorOnFields("key")
+//					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
 	
 	
@@ -458,7 +464,10 @@ public class ElementControllerIntegrationMANAGARTests {
 	public void testPostAndGetElementsUsingPagination() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
-		// AND user dao contains a manager 
+		// AND user dao contains a manager and an admin
+		UserEntity admin = userGenerator.getUser();
+		admin.setRole(UserRole.ADMIN);
+		this.userDao.create(admin);
 				int size = 3;
 				
 				List<ElementBoundary> all = new ArrayList<>();
@@ -481,8 +490,8 @@ public class ElementControllerIntegrationMANAGARTests {
 					.getForObject(
 							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
 							ElementBoundary[].class, 
-							this.myManager.getUserSmartspace(),
-							this.myManager.getUserEmail(),
+							admin.getUserSmartspace(),
+							admin.getUserEmail(),
 							0, 10);
 				
 				// THEN I receive the exact 3 elements written to the database

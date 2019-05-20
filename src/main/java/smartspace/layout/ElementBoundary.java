@@ -34,8 +34,11 @@ public class ElementBoundary {
 		this.creator.put("email",entity.getCreatorEmail());
 		this.creator.put("smartspace",entity.getCreatorSmartSpace());
 		this.latlng = new HashMap<>();
-		this.latlng.put("lat", Double.valueOf(entity.getLocation().getX()));
-		this.latlng.put("lng", Double.valueOf(entity.getLocation().getY()));
+//		this.latlng.put("lat", Double.valueOf(entity.getLocation().getX()));
+//		this.latlng.put("lng", Double.valueOf(entity.getLocation().getY()));
+		this.latlng.put("lat",entity.getLocation().getX());
+		this.latlng.put("lng", entity.getLocation().getY());
+
 		this.name = entity.getName();
 		this.elementType = entity.getType();
 		this.expired = entity.isExpired();

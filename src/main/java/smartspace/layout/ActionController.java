@@ -21,6 +21,7 @@ import smartspace.infra.ActionService;
 import smartspace.infra.EntityNotInDBException;
 import smartspace.infra.FailedValidationException;
 import smartspace.infra.ImportFromLocalException;
+import smartspace.infra.NotAPlayerException;
 import smartspace.infra.NotAnAdminException;
 import smartspace.infra.UnsupportedActionTypeException;
 
@@ -166,6 +167,17 @@ public class ActionController {
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	public ErrorMessage handleException (ImportFromLocalException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ErrorMessage handleException (NotAPlayerException e){
 		String message = e.getMessage();
 		if (message == null) {
 			message = "The name you have provided is invalid";

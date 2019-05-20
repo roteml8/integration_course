@@ -290,7 +290,7 @@ public class ElementController {
 	}
 	
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ErrorMessage handleException (NotAManagerException e){
 		String message = e.getMessage();
 		if (message == null) {
@@ -301,7 +301,7 @@ public class ElementController {
 	}
 	
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ErrorMessage handleException (NotAPlayerException e){
 		String message = e.getMessage();
 		if (message == null) {
@@ -312,7 +312,7 @@ public class ElementController {
 	}
 	
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ErrorMessage handleException (NotAUserException e){
 		String message = e.getMessage();
 		if (message == null) {
