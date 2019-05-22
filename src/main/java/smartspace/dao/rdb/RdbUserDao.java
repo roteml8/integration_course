@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedUserDao;
+import smartspace.data.ActionEntity;
+import smartspace.data.ElementEntity;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 
@@ -26,6 +28,21 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public RdbUserDao(UserCrud userCrud) {
 		super();
 		this.userCrud = userCrud;
+		if(this.userCrud.count() > 0) {
+			List<UserEntity> allUsers= this.userCrud.
+					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			
+			List<UserEntity> filteredUsersBySmartspace = new ArrayList<>();
+			for(UserEntity user : allUsers) {
+				user.setKey(user.getKey());
+				if(user.getUserSmartspace().equals(smartspace)) {
+					filteredUsersBySmartspace.add(user);
+				}
+			}
+			
+			GeneratedId.setActionId(filteredUsersBySmartspace.size());
+//			System.err.println(filteredActionsBySmartspace.size());
+		}
 
 	}
 
@@ -43,7 +60,6 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public UserEntity create(UserEntity userEntity) {
 
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
-
 		userEntity.setKey(smartspace + "#" + userEntity.getUserEmail());
 
 		if (!this.userCrud.existsById(userEntity.getKey())) {
@@ -65,8 +81,12 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<UserEntity> readById(String userkey) {
-
-		return this.userCrud.findById(userkey);
+		Optional<UserEntity> u = this.userCrud.findById(userkey);
+		if(u.isPresent()) {
+			u.get().setKey(userkey);
+		}
+		return u;
+		
 	}
 
 	@Override
@@ -77,6 +97,9 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 
 		// SQL: SELECT
 		this.userCrud.findAll().forEach(rv::add);
+		for(int i = 0; i < rv.size(); i++) {
+			rv.get(i).setKey(rv.get(i).getKey());
+		}
 
 		return rv;
 
@@ -87,7 +110,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public void update(UserEntity userEntity) {
 		UserEntity existing = this.readById(userEntity.getKey())
 				.orElseThrow(() -> new RuntimeException("no userEntity to update"));
-
+		
 		if (userEntity.getAvatar() != null) {
 			existing.setAvatar(userEntity.getAvatar());
 		}
@@ -97,13 +120,15 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		if (userEntity.getUserEmail() != null) {
 			existing.setUserEmail(userEntity.getUserEmail());
 		}
+
 		if (userEntity.getUsername() != null) {
 			existing.setUsername(userEntity.getUsername());
 		}
+		
 		if (userEntity.getUserSmartspace() != null) {
 			existing.setUserSmartspace(userEntity.getUserSmartspace());
 		}
-
+		
 		// SQL: UPDATE
 		this.userCrud.save(existing);
 	}
@@ -117,55 +142,141 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readAll(int size, int page) {
-		return this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		List<UserEntity> list = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setKey(list.get(i).getKey());
+		}
+		return list;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readAll(String sortBy, int size, int page) {
-		return this.userCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
+		List<UserEntity> list = this.userCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setKey(list.get(i).getKey());
+		}
+		return list;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithNameContaining(String text, int size, int page) {
-		return this.userCrud.findAllByUsernameLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getUsername() != null) {
+				if(user.getUsername().contains(text)) {
+					user.setKey(user.getKey());
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithEmailContaining(String text, int size, int page) {
-		return this.userCrud.findAllByUserEmailLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getUserEmail() != null) {
+				if(user.getUserEmail() .contains(text)) {
+					user.setKey(user.getKey());
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithAvaterContaining(String text, int size, int page) {
-		return this.userCrud.findAllByAvatarLike("%" + text + "%", PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getAvatar() != null) {
+				if(user.getAvatar().contains(text)) {
+					user.setKey(user.getKey());
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithRole(UserRole role, int size, int page) {
-		return this.userCrud.findAllByRoleLike(role, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getRole() != null) {
+				if(user.getRole() == role) {
+					user.setKey(user.getKey());
+					filteredUsers.add(user);
+				}	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPoints(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLike(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() == points) {
+				user.setKey(user.getKey());
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsMore(long points, int size, int page) {
-		return this.userCrud.findAllByPointsGreaterThanEqual(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() > points) {
+				user.setKey(user.getKey());
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserEntity> readUserWithPointsLess(long points, int size, int page) {
-		return this.userCrud.findAllByPointsLessThanEqual(points, PageRequest.of(page, size));
+		List<UserEntity> allUsers = this.userCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<UserEntity> filteredUsers = new ArrayList<>();
+		
+		for(UserEntity user : allUsers) {
+			if(user.getPoints() < points) {
+				user.setKey(user.getKey());
+				filteredUsers.add(user);	
+			}
+		}
+		return filteredUsers;
 	}
 
 	@Override
@@ -200,6 +311,5 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		else
 			return false;
 	}
-
 
 }

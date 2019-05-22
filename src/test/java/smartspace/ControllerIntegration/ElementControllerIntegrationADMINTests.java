@@ -411,7 +411,7 @@ public class ElementControllerIntegrationADMINTests {
 		// GIVEN the database contains 3 elements and user dao contains an admin 
 		int size = 3;
 		UserEntity admin = new UserEntity();
-		admin.setUserEmail("Email");
+		admin.setUserEmail("Email@gmail.com");
 		admin.setUserSmartspace("2019B.Amitz4.SmartSpace");
 		admin.setRole(UserRole.ADMIN);
 		this.userDao.create(admin);
@@ -423,10 +423,14 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
+			
+			//TODO this makes me sick, need to find a nicer solution
+			e.setKey(e.getElementSmartSpace() + "#" + e.getElementid());
+			
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}
-		this.elementService.importElements("2019B.Amitz4.SmartSpace", "Email", arr);
+		this.elementService.importElements("2019B.Amitz4.SmartSpace", "Email@gmail.com", arr);
 		
 		// WHEN I GET elements of size 10 and page 0
 		ElementBoundary[] response = 
@@ -434,7 +438,7 @@ public class ElementControllerIntegrationADMINTests {
 			.getForObject(
 					this.baseUrl + "{adminSmartspace}/{adminEmail}?page={page}&size={size}", 
 					ElementBoundary[].class, 
-					"2019B.Amitz4.SmartSpace", "Email",
+					"2019B.Amitz4.SmartSpace", "Email@gmail.com",
 					0, 10);
 		
 		// THEN I receive the exact 3 elements written to the database
@@ -460,6 +464,10 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
+			
+			//TODO this makes me sick, need to find a nicer solution
+			e.setKey(e.getElementSmartSpace() + "#" + e.getElementid());
+			
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}
@@ -499,6 +507,10 @@ public class ElementControllerIntegrationADMINTests {
 			ElementEntity e = generator.getElement();
 			e.setElementSmartSpace("Space"+i);
 			e.setElementid(String.valueOf(i));
+			
+			//TODO this makes me sick, need to find a nicer solution
+			e.setKey(e.getElementSmartSpace() + "#" + e.getElementid());
+			
 			arr[i] = e;
 			all.add(new ElementBoundary(e));
 		}

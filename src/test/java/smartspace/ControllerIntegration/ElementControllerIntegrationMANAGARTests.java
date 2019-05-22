@@ -211,6 +211,7 @@ public class ElementControllerIntegrationMANAGARTests {
 		updatedElement.setCreatorEmail(this.myManager.getUserEmail());
 		updatedElement.setCreatorSmartSpace(this.myManager.getUserSmartspace());
 		
+		
 		ElementBoundary elementBoundary = new ElementBoundary(updatedElement);
 		elementBoundary.setKey(null);
 		

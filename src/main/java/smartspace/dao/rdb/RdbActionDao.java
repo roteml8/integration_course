@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import smartspace.dao.EnhancedActionDao;
 import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
-import smartspace.data.UserEntity;
 
 import org.springframework.data.domain.Sort.Direction;
 
@@ -22,16 +22,30 @@ import org.springframework.data.domain.Sort.Direction;
 @Repository
 public class RdbActionDao implements EnhancedActionDao {
 
-	private ActionCrud actionCrud;
 	private String smartspace;
-	private GenericIdGeneratorCrud genericActionIdGeneratorCrud; 
+	
+	private ActionCrud actionCrud;
+
 	
 	@Autowired
-	public  RdbActionDao(ActionCrud actionCrud,
-			GenericIdGeneratorCrud genericActionIdGeneratorCrud) {
+	public  RdbActionDao(ActionCrud actionCrud) {
 		super();
 	this.actionCrud=actionCrud;
-	this.genericActionIdGeneratorCrud = genericActionIdGeneratorCrud;
+	if(this.actionCrud.count() > 0) {
+		List<ActionEntity> allActions= this.actionCrud.
+				findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+		
+		List<ActionEntity> filteredActionsBySmartspace = new ArrayList<>();
+		for(ActionEntity action : allActions) {
+			action.setKey(action.getKey());
+			System.err.println("1" + this.smartspace);
+			if(action.getActionSmartspace().equals(smartspace)) {
+				filteredActionsBySmartspace.add(action);
+			}
+		}
+		
+		GeneratedId.setActionId(filteredActionsBySmartspace.size());
+	}
 	}
 	
 	@Value("${smartspace.name:smartspace}")
@@ -44,13 +58,15 @@ public class RdbActionDao implements EnhancedActionDao {
 	@Transactional
 	public ActionEntity create(ActionEntity action) {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
-
-		GenericIdGenerator nextId = 
-				this.genericActionIdGeneratorCrud.save(new GenericIdGenerator());
-
-		action.setKey(smartspace + "#" + nextId.getId());
-		this.genericActionIdGeneratorCrud.delete(nextId);
-
+//		GenericIdGenerator nextId = 
+//				this.genericActionIdGeneratorCrud.save(new GenericIdGenerator());
+		
+		long number = GeneratedId.getNextActionValue();
+//		action.setActionId("" + number);
+//		action.setActionSmartspace(smartspace);
+		
+		action.setKey(smartspace + "#" + number);
+//		this.genericActionIdGeneratorCrud.delete(nextId);
 		if (!this.actionCrud.existsById(action.getKey())) {
 			ActionEntity rv = this.actionCrud.save(action);
 			return rv;
@@ -58,14 +74,18 @@ public class RdbActionDao implements EnhancedActionDao {
 		else {
 			throw new RuntimeException("elementEntity already exists with key: " + action.getKey());
 		}
-
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<ActionEntity> readById(String actionKey) {
 		// SQL: SELECT
-		return this.actionCrud.findById(actionKey);
+		Optional<ActionEntity> optional = this.actionCrud.findById(actionKey);
+		
+		if(optional.isPresent()) {
+			optional.get().setKey(actionKey);
+		}
+		return optional;
 
 	}
 	
@@ -105,9 +125,7 @@ public class RdbActionDao implements EnhancedActionDao {
 			existing.setMoreAttributes(actionEntity.getMoreAttributes());
 
 		}
-
-
-			
+	
 		// SQL: UPDATE
 		this.actionCrud.save(existing);
 	}
@@ -120,9 +138,12 @@ public class RdbActionDao implements EnhancedActionDao {
         List<ActionEntity> rv = new ArrayList<>();
 		
 		// SQL: SELECT
-		this.actionCrud.findAll()
-			.forEach(rv::add);
+		this.actionCrud.findAll().forEach(rv::add);
 		
+		for(int i = 0; i < rv.size(); i++) {
+			rv.get(i).setKey(rv.get(i).getKey());
+		}
+
 		return rv;
 	
 	}
@@ -146,75 +167,144 @@ public class RdbActionDao implements EnhancedActionDao {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readAll(String sortBy, int size, int page) {
-		return this.actionCrud
+		List<ActionEntity> rv = this.actionCrud
 				.findAll(PageRequest.of(
 						page, size, 
 						Direction.ASC, sortBy))
 				.getContent();
+		
+		for(int i = 0; i < rv.size(); i++) {
+			rv.get(i).setKey(rv.get(i).getKey());
+		}
+
+		return rv;
 	}
-
-	
-
-
 
 	
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readActionWithPlayerEmailContaining(String text, int size, int page) {
-		return this.actionCrud
-				.findAllByPlayerSmartspaceLike(
-						"%" + text + "%",
-						PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getPlayerEmail() != null) {
+				if(action.getPlayerEmail().contains(text)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readActionWithPlayerSmartspaceContaining(String text, int size, int page) {
-		return this.actionCrud
-				.findAllByPlayerSmartspaceLike(
-						"%" + text + "%",
-						PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getPlayerSmartspace() != null) {
+				if(action.getPlayerSmartspace().contains(text)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readActionWithElementSmartspaceContaining(String text, int size, int page) {
-		return this.actionCrud
-				.findAllByElementSmartspaceLike(
-						"%" + text + "%",
-						PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getElementSmartspace() != null) {
+				if(action.getElementSmartspace().contains(text)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readActionWithElementIdContaining(String text, int size, int page) {
-		return this.actionCrud
-				.findAllByElementIdLike(
-						"%" + text + "%",
-						PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getElementId() != null) {
+				if(action.getElementId().contains(text)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
-
-
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readActionWithActionTypeContaining(String text, int size, int page) {
-		return this.actionCrud
-				.findAllByActionTypeLike(
-						"%" + text + "%",
-						PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getActionType() != null) {
+				if(action.getActionType().contains(text)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readElementWithCreationTimestamp(Date stamp, int size, int page) {
-		return this.actionCrud.findAllByCreationTimestampLike(stamp, PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getCreationTimestamp() != null) {
+				if(action.getActionType().equals(stamp)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActionEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
-		return this.actionCrud.findAllByMoreAttributesLike(moreAttributes, PageRequest.of(page, size));
+		List<ActionEntity> allActions = this.actionCrud.findAll(PageRequest.of(page, size)).getContent();
+		
+		List<ActionEntity> filteredActions = new ArrayList<>();
+		
+		for(ActionEntity action : allActions) {
+			if(action.getMoreAttributes() != null) {
+				if(action.getMoreAttributes().equals(moreAttributes)) {
+					action.setKey(action.getKey());
+					filteredActions.add(action);
+				}	
+			}
+		}
+		return filteredActions;	
 	}
 
 	@Override

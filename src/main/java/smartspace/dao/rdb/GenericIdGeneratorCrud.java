@@ -1,8 +1,6 @@
 package smartspace.dao.rdb;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import org.springframework.data.repository.CrudRepository;
-
-public interface GenericIdGeneratorCrud 
-	extends CrudRepository<GenericIdGenerator, Long>{
-
+public interface GenericIdGeneratorCrud
+	extends PagingAndSortingRepository<GenericIdGenerator, Long>{
 }

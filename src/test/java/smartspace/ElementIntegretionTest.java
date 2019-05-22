@@ -394,7 +394,8 @@ public class ElementIntegretionTest {
 		
 		ElementEntity element = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
 		ElementEntity elementInDB1 = this.dao.create(element);
-		ElementEntity elementInDB2 = this.dao.create(element);
+		ElementEntity element2 = this.factory.createNewElement(name, type, location, creationTimeStamp, creatorEmail, creatorSmartspace, expired, moreAttributes);
+		ElementEntity elementInDB2 = this.dao.create(element2);
 		
 		
 		// AND delete the first created element from the dao

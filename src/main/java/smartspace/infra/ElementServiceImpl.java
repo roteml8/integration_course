@@ -126,6 +126,10 @@ public class ElementServiceImpl implements ElementService {
 			String elementSmartspace, String elementId) {
 		element.setElementSmartSpace(elementSmartspace);
 		element.setElementid(elementId);
+		
+		//TODO this makes me sick, need to find a nicer solution
+		element.setKey(elementSmartspace + "#" + elementId);
+		
 		this.dao.update(element);
 	}
 
