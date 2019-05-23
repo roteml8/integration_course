@@ -6,7 +6,7 @@ import smartspace.data.ElementEntity;
 public interface ElementService {
 	public List<ElementEntity> importElements(String adminSmartspace, String adminEmail, ElementEntity[] elements);
 
-	public List<ElementEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page);
+	public List<ElementEntity> exportElements(String adminSmartspace, String adminEmail, int size, int page);
 
 	public void updateElement(String managerSmartspace, String managerEmail, ElementEntity element, String elementSmartspace, String elementId);
 
@@ -23,4 +23,6 @@ public interface ElementService {
 
 	public List<ElementEntity> getByLocation(String userSmartspace, String userEmail, double x, double y,
 			int distance, int size, int page);
+
+	public List<ElementEntity> getAllElementsUsingPagination(String userSmartspace, String userEmail, int size, int page);
 }

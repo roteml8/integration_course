@@ -114,8 +114,17 @@ public class ElementServiceImpl implements ElementService {
 	  @Override 
 	  @MyLogger
 	  @AdminCheck
-	  public List<ElementEntity> getUsingPagination(String adminSmartspace, String adminEmail, int size, int page) {
+	  public List<ElementEntity> exportElements(String adminSmartspace, String adminEmail, int size, int page) {
 		  return this.dao.readAll("key", size, page);
+	  }
+	  
+	  @Override 
+	  @MyLogger
+	  @UserCheck
+	  public List<ElementEntity> getAllElementsUsingPagination(String userSmartspace, String userEmail, int size, int page) {
+		  if (this.userDao.isManager(userSmartspace+"#"+userEmail))
+			  return this.dao.readAll("key", size, page);
+		  return this.dao.readElementWithExpired(false, size, page);
 	  }
 
 	@Override

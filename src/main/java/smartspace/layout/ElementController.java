@@ -72,17 +72,35 @@ public class ElementController {
 	
 				
 	@RequestMapping(
-			path=baseAdminUrl+adminKeyUrl,
+			path=baseUrl+userKeyUrl,
 			method=RequestMethod.GET,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public ElementBoundary[] getUsingPagination (
+			@RequestParam(name="size", required=false, defaultValue="10") int size,
+			@RequestParam(name="page", required=false, defaultValue="0") int page,
+			@PathVariable("userSmartspace") String userSmartspace,
+			@PathVariable("userEmail") String userEmail){
+		return 
+			this.elementService
+			.getAllElementsUsingPagination(userSmartspace, userEmail, size, page)
+			.stream()
+			.map(ElementBoundary::new)
+			.collect(Collectors.toList())
+			.toArray(new ElementBoundary[0]);
+	}
+	
+	@RequestMapping(
+			path=baseAdminUrl+adminKeyUrl,
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ElementBoundary[] exportElements (
 			@RequestParam(name="size", required=false, defaultValue="10") int size,
 			@RequestParam(name="page", required=false, defaultValue="0") int page,
 			@PathVariable("adminSmartspace") String adminSmartspace,
 			@PathVariable("adminEmail") String adminEmail){
 		return 
 			this.elementService
-			.getUsingPagination(adminSmartspace, adminEmail, size, page)
+			.exportElements(adminSmartspace, adminEmail, size, page)
 			.stream()
 			.map(ElementBoundary::new)
 			.collect(Collectors.toList())
@@ -175,7 +193,7 @@ public class ElementController {
 		case "":{
 			return 
 			this.elementService
-			.getUsingPagination(userSmartspace, userEmail, size, page)
+			.exportElements(userSmartspace, userEmail, size, page)
 			.stream()
 			.map(ElementBoundary::new)
 			.collect(Collectors.toList())
