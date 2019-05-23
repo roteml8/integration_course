@@ -303,14 +303,20 @@ public class ElementControllerIntegrationMANAGARTests {
 		this.userDao.create(user);
 		ElementBoundary elementBoundary = new ElementBoundary(element);
 		elementBoundary.setKey(null);
-
+		
+		try 
+		{
 		this.restTemplate.postForObject(
 				this.baseUrl + this.managerKeyUrl,
 				elementBoundary,
 				ElementBoundary.class,
 				user.getUserSmartspace(),
 				user.getUserEmail());
-		
+		}
+		catch(HttpClientErrorException exception) {
+			assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+			throw exception;
+		}
 		// THEN the test ends with exception 
 
 	}
@@ -382,10 +388,7 @@ public class ElementControllerIntegrationMANAGARTests {
 	public void testGetAllElementsUsingPaginationAndPost() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
-		// AND user dao contains a manager and an admin
-		UserEntity admin = userGenerator.getUser();
-		admin.setRole(UserRole.ADMIN);
-		this.userDao.create(admin);
+		// AND user dao contains a manager 
 				int size = 3;
 				
 				List<ElementBoundary> all = new ArrayList<>();
@@ -406,10 +409,10 @@ public class ElementControllerIntegrationMANAGARTests {
 				ElementBoundary[] response = 
 				this.restTemplate
 					.getForObject(
-							this.baseUrl + this.adminKeyUrl + this.pageAndKeyUrl, 
+							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
 							ElementBoundary[].class, 
-							admin.getUserSmartspace(),
-							admin.getUserEmail(),
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
 							0, 10);
 				
 				// THEN I receive the exact 3 elements written to the database
@@ -423,7 +426,7 @@ public class ElementControllerIntegrationMANAGARTests {
 					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
 	
-	@Test (expected = HttpClientErrorException.class)
+	@Test
 	public void testGetElementsUsingPagination() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
@@ -449,15 +452,15 @@ public class ElementControllerIntegrationMANAGARTests {
 							this.myManager.getUserEmail(),
 							0, 10);
 				
-				// THEN the test ends with exception (unauthorized)
-//				for (int i = 0; i<size; i++)
-//				{
-//					arr[i] = response[i].convertToEntity();
-//				}
-//				
-//				assertThat(arr)
-//					.usingElementComparatorOnFields("key")
-//					.containsExactlyElementsOf(this.elementDao.readAll());
+				// THEN I receive the exact 3 elements written to the database
+				for (int i = 0; i<size; i++)
+				{
+					arr[i] = response[i].convertToEntity();
+				}
+				
+				assertThat(arr)
+					.usingElementComparatorOnFields("key")
+					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
 	
 	
@@ -465,10 +468,7 @@ public class ElementControllerIntegrationMANAGARTests {
 	public void testPostAndGetElementsUsingPagination() throws Exception {
 		
 		// GIVEN the database contains 3 elements 
-		// AND user dao contains a manager and an admin
-		UserEntity admin = userGenerator.getUser();
-		admin.setRole(UserRole.ADMIN);
-		this.userDao.create(admin);
+		// AND user dao contains a manager 
 				int size = 3;
 				
 				List<ElementBoundary> all = new ArrayList<>();
@@ -491,8 +491,8 @@ public class ElementControllerIntegrationMANAGARTests {
 					.getForObject(
 							this.baseUrl + this.userKeyUrl + this.pageAndKeyUrl, 
 							ElementBoundary[].class, 
-							admin.getUserSmartspace(),
-							admin.getUserEmail(),
+							this.myManager.getUserSmartspace(),
+							this.myManager.getUserEmail(),
 							0, 10);
 				
 				// THEN I receive the exact 3 elements written to the database
@@ -505,6 +505,7 @@ public class ElementControllerIntegrationMANAGARTests {
 					.usingElementComparatorOnFields("key")
 					.containsExactlyElementsOf(this.elementDao.readAll());
 	}
+	
 	
 	@Test
 	public void testGetElementsByName() throws Exception {
