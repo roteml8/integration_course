@@ -91,6 +91,9 @@ public class ElementServiceImpl implements ElementService {
 	}
 	
 	private boolean validateNew(ElementEntity entity) {
+		if(entity.getMoreAttributes() != null && entity.getMoreAttributes().get("deadline") != null 
+				&& new Date().after((Date)entity.getMoreAttributes().get("deadline")))
+			return false;
 		return entity.getCreatorEmail() != null && 
 				!entity.getCreatorEmail().trim().isEmpty() &&
 				entity.getCreatorSmartSpace() != null && 
