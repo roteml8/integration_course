@@ -59,7 +59,7 @@ class ProgressReportForManagers {
 		
 		List <UserEntity>  managers = userDao.readUserWithRole(UserRole.MANAGER, defaultSize, defaultPage);
 		List <ElementEntity>  elements = elementDao.readAll();
-		
+				
 		for(UserEntity manager : managers)
 		{
 			mailSender.sendMail(

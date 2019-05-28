@@ -13,16 +13,16 @@ import java.util.Properties;
 @Component
 public class SendEmailTLS {
 	
-	private String username ; // = "smartVisionAmit@gmail.com";
-    private String password ; // = "smartvision123";
+	private String username ; 
+    private String password ;
 	private String smartspace;
     
-    @Value("${smartspace.emailUser:smartspace@gmail.com}")
+    @Value("${smartspace.emailUser:smartspaceb@gmail.com}")
 	public void setUsername(String username) {
 		this.username = username;
 	}
     
-    @Value("${smartspace.emailPassword:12345678}")
+    @Value("${smartspace.emailPassword:smartspace123}")
 	public void setPassword(String password) {
 		this.password = password;
 	}
