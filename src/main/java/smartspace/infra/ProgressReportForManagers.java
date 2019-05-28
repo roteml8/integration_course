@@ -1,4 +1,4 @@
-package smartspace.data.util;
+package smartspace.infra;
 
 import java.util.List;
 
