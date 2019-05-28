@@ -1,7 +1,5 @@
 package smartspace.plugin;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +23,26 @@ public class UpdateTaskStatusPlugin implements Plugin{
 	@Override
 	public ActionEntity process(ActionEntity actionStatusChangeEntity) {
 		String taskKey= actionStatusChangeEntity.getElementSmartspace() + "#" + actionStatusChangeEntity.getElementId();
-	
 		//check if the element is task
+		
 		if(!elementDao.readById(taskKey).get().getType().equals("Task"))
 			throw new RuntimeException("this element type is not Task!");
-		
+
 		//need to get the status task
-		Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
-		double newLoction = op.get().getLocation().getX();
+	//	Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
 		
-		//the new location 
+		//the new location
 		Location location = new Location();
-		location.setX(newLoction+1);
-		location.setY(op.get().getLocation().getY());	
-		
+		double x = Double.parseDouble( (String) actionStatusChangeEntity.getMoreAttributes().get("location"));
+		location.setX(x);
+	//	location.setY(op.get().getLocation().getY());	
+	
 		//updateElement is the new task with the current col
 		ElementEntity updateElement = new ElementEntity();
-		updateElement = elementDao.readById(taskKey).get();
+		//updateElement = elementDao.readById(taskKey).get();
 		updateElement.setLocation(location);
 		updateElement.setKey(taskKey);
+	 
 		this.elementDao.update(updateElement);
 		return actionStatusChangeEntity;
 	}

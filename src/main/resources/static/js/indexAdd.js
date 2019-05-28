@@ -11,7 +11,7 @@ function addelement(){
         }
  
 $.ajax({
-    url: '/smartspace/elements'+'/'+getQueryVariable('managersmartspace')+'/'+ $("#userEmailogin").val(),
+    url: '/smartspace/elements'+'/'+getQueryVariable('managersmartspace')+'/'+ getQueryVariable('manageremail'),
     type: 'post',
     dataType: 'json',
     contentType: 'application/json',

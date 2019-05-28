@@ -19,16 +19,19 @@ document.getElementById("elementselectType").disabled=false;
 
 
 window.onload=function (){
-
 	
 	 var archive = document.getElementById("board4");
 	 var add = document.getElementById("contact");
+
+	 var editelement = document.getElementById("contact");
+	 editelement.style.display = 'none'; 
 	 add.style.display = 'none'; 
 	 archive.style.display = 'none'; 
+       
 	 if(getQueryVariable('role')=="ADMIN"){
 		       
 		 $.ajax({
-			  url: '/smartspace/admin/elements/'+$("#userSmartspace").val()+'/'+ $("#userEmailogin").val(),
+			  url: '/smartspace/admin/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail'),
 			  type: 'GET',
 			  data:'',
 			  success: function(data) {
@@ -45,9 +48,12 @@ window.onload=function (){
 		if(getQueryVariable('role')=="MANAGER"){   
 		add.style.display = 'block'; 
 		 archive.style.display = 'block';
+		 editelement.style.display = 'block';
 		}
+		
+		
 		 $.ajax({
-			  url: '/smartspace/elements/'+'/'+$("#userSmartspace").val()+'/'+ $("#userEmailogin").val(),
+			  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail'),
 			  type: 'GET',
 			  data:'',
 			  success: function(data) {
@@ -90,8 +96,10 @@ function loadElementsSelect(data){
 		var temp;
 		 var arrayVariable = [];
 		 for(i=0;i<data.length;i++){
-			 arrayVariable.push(data[i].name);
+			 
+			 arrayVariable.push(data[i].elementType);
 		 }
+		 
 		  var  arrayLength = arrayVariable.length;
 		
 
@@ -242,7 +250,7 @@ function startSelectName(){
 					 for (i = 0; i < data.length; i++) {
 					   temp = document.createElement('div');
 					   temp.className = 'card';
-					  
+           					  
 					   temp.id=data[i].key.id;
 					   temp.innerHTML += "<span class="+"cardtitle >"+ data[i].name+"</span>";
 					   temp.ondragover='false'
@@ -333,19 +341,20 @@ function newStatus(target) {
 
 
 drake.on('drop', function(el, target) {
+	 
+	var element ;
+	for(i=0;i<allelements.length;i++){
+		if(allelements[i].key.id==el.id){
+			element=allelements[i];
+		}
+	}
   if(getQueryVariable('role')=="MANAGER"){
 var bool ;
-  var element ;
 if(target.id=='b4')
 	bool=true;
 else bool=false; 
-for(i=0;i<allelements.length;i++){
-	if(allelements[i].key.id==el.id){
-		element=allelements[i];
-		element.latlng.lat=newStatus(target);
-	}
-}
 
+element.latlng.lat=newStatus(target);
 var person = { 
         elementType: element.elementType,
         name:element.name,
@@ -371,6 +380,31 @@ $.ajax({
   data: JSON.stringify(person)
 });
   
+  }else if(getQueryVariable('role')=="PLAYER"){
+	 var x= (newStatus(target)).toFixed(2);
+         
+	  var person = { 
+		        type: "UpdateTaskStatus",
+		     element:{id:element.key.id,smartspace:element.key.smartspace},
+		        player: {smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
+		          properties:{location:x}
+		    }
+	  
+	  
+	  
+
+	  
+	  $.ajax({
+	        url: '/smartspace/actions',
+	        type: 'post',
+	        dataType: 'json',
+	        contentType: 'application/json',
+	        success: function (data) {
+	        	
+	            $('#target').html(data.msg);
+	        },
+	        data: JSON.stringify(person)
+	    });  
   }
 
 });

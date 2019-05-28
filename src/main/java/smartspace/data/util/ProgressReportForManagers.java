@@ -46,8 +46,8 @@ class ProgressReportForManagers {
 	 private static final Logger logger = LoggerFactory.getLogger(ProgressReportForManagers.class); //for testing
 	 private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //for testing
 	
-	//@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
-	@Scheduled(cron = "0 * * * * ?") //executed every minute. for testing.
+	@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
+	//@Scheduled(cron = "0 * * * * ?") //executed every minute. for testing.
 	public void informManagers()
 	{
 		

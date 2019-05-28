@@ -10,19 +10,19 @@ import smartspace.data.ActionEntity;
 
 public class ActionBoundary {
 	
-	private Map<String,String> key;
+	private Map<String,String> actionKey;
 	private Map<String,String> element;
 	private Map<String,String> player;
-	private String actionType;
-	private Date creationTimeStamp;
-	private Map<String, Object> moreAttributes;
+	private String type;
+	private Date created;
+	private Map<String, Object> properties;
 	
 	public Map<String, String> getKey() {
-		return key;
+		return actionKey;
 	}
 
 	public void setKey(Map<String, String> key) {
-		this.key = key;
+		this.actionKey = key;
 	}
 
 	public Map<String, String> getElement() {
@@ -41,28 +41,28 @@ public class ActionBoundary {
 		this.player = player;
 	}
 
-	public String getActionType() {
-		return actionType;
+	public String getType() {
+		return type;
 	}
 
-	public void setActionType(String actionType) {
-		this.actionType = actionType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Date getCreationTimeStamp() {
-		return creationTimeStamp;
+		return created;
 	}
 
 	public void setCreationTimeStamp(Date creationTimeStamp) {
-		this.creationTimeStamp = creationTimeStamp;
+		this.created = creationTimeStamp;
 	}
 
-	public Map<String, Object> getMoreAttributes() {
-		return moreAttributes;
+	public Map<String, Object> getProperties() {
+		return properties;
 	}
 
-	public void setMoreAttributes(Map<String, Object> moreAttributes) {
-		this.moreAttributes = moreAttributes;
+	public void setProperties(Map<String, Object> moreAttributes) {
+		this.properties = moreAttributes;
 	}
 
 
@@ -73,28 +73,30 @@ public class ActionBoundary {
 	
 	public ActionBoundary (ActionEntity entity) {
 		
-		this.key = new HashMap<>();
-		this.key.put("id", entity.getActionId());
-		this.key.put("smartspace", entity.getActionSmartspace());
-		this.element = new HashMap<>();
+		this.actionKey = new HashMap<>();
+		this.actionKey.put("id", entity.getActionId());
+		this.actionKey.put("smartspace", entity.getActionSmartspace());	
+		this.type = entity.getActionType();
+		this.created = entity.getCreationTimestamp();
+		this.element = new HashMap<>();	
 		this.element.put("smartspace", entity.getElementSmartspace());
 		this.element.put("id", entity.getElementId());
 		this.player = new HashMap<>();
 		this.player.put("smartspace",entity.getPlayerSmartspace());
 		this.player.put("email", entity.getPlayerEmail());
-		this.actionType = entity.getActionType();
-		this.creationTimeStamp = entity.getCreationTimestamp();
-		this.moreAttributes = entity.getMoreAttributes();
+
+		this.properties = entity.getMoreAttributes();
 		
 	}
 
 	
 	public ActionEntity convertToEntity() {
 		ActionEntity entity = new ActionEntity();
-		if (key != null && key.get("smartspace")!= null && key.get("id")!= null
-				&&!key.get("smartspace").trim().isEmpty()
-				&&!key.get("id").trim().isEmpty() )
-			entity.setKey(key.get("smartspace")+"#"+key.get("id"));
+		System.err.println(properties);
+		if (actionKey != null && actionKey.get("smartspace")!= null && actionKey.get("id")!= null
+				&&!actionKey.get("smartspace").trim().isEmpty()
+				&&!actionKey.get("id").trim().isEmpty() )
+			entity.setKey(actionKey.get("smartspace")+"#"+actionKey.get("id"));
 		//entity.setKey(key.get("smartspace")+"#"+key.get("email"));
 		if (element != null && element.get("smartspace")!= null && element.get("id")!= null) {
 			entity.setElementId(element.get("id"));
@@ -104,12 +106,12 @@ public class ActionBoundary {
 			entity.setPlayerEmail(player.get("email"));
 			entity.setPlayerSmartspace(player.get("smartspace"));
 		}
-
-		entity.setActionType(actionType);
-		entity.setCreationTimestamp(creationTimeStamp);
+           
+		entity.setActionType(type);
+		entity.setCreationTimestamp(created);
 		
 		//if(moreAttributes != null)
-			entity.setMoreAttributes(moreAttributes);
+			entity.setMoreAttributes(properties);
 		//else
 			//entity.setMoreAttributes(new HashMap<>());
 		

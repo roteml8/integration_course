@@ -2,7 +2,7 @@
 
 var user;
 function edituser(){
-	console.log('gg');
+	var username;
 	var person = { 
 	        key:{ smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
 	        role:$("#role").val(),
@@ -18,13 +18,13 @@ function edituser(){
 	     contentType: 'application/json',
 	     success: function (data) {
 	    	// $('#target').html(data.msg);
-	    	 document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
-	       	 +getQueryVariable('usersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('useremail');
+	    username=data.username;
 	     },
 	     data: JSON.stringify(person)
 	 });
-
-
+	if(!username)
+	 document.location.href="http://localhost:8089/indexHome.html?"+"username="+username+"&usersmartspace="
+   	 +getQueryVariable('usersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('useremail');
 
 }
 

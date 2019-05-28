@@ -2,6 +2,7 @@ package smartspace.infra;
 
 import java.util.ArrayList;
 
+
 import java.util.Date;  
 
 import java.util.List;
@@ -116,15 +117,14 @@ public class ActionServicelmpl implements ActionService {
 	
 	@Override
 	public ActionEntity invoke(ActionEntity action) {
-		
 		Optional<UserEntity> entity = this.userDao.readById(action.getPlayerSmartspace()+"#"+action.getPlayerEmail());
 		if (entity.isPresent() == false || entity.get().getRole()!= UserRole.PLAYER)
 			throw new NotAPlayerException("Only players are allowed to perform this action!");
 		if(valiadateInvoke(action) == false)
 		{
-			throw new FailedValidationException(action.getActionType());
+       			throw new FailedValidationException(action.getActionType());
 		}
-		
+	
 		try {
 			String type = action.getActionType();
 			String className =
@@ -132,18 +132,20 @@ public class ActionServicelmpl implements ActionService {
 					+ type.toUpperCase().charAt(0) 
 					+ type.substring(1, type.length())
 					+ "Plugin";
+			
 			Class<?> theClass = Class.forName(className);
+		
 			Plugin plugin = (Plugin) this.ctx.getBean(theClass);
 			
 			action.setCreationTimestamp(new Date());
 			action = plugin.process(action);
 			
-		//	this.actionDao.create(action);
+			//this.actionDao.create(action);
 		//	return action;
 			return this.actionDao.create(action);
 		} catch (Exception e) {
-			//throw new UnsupportedActionTypeException(e);
-			throw new UnsupportedActionTypeException(action.getActionType());
+			throw new RuntimeException(e);
+		//	throw new UnsupportedActionTypeException(action.getActionType());
 		}
 	}
 	

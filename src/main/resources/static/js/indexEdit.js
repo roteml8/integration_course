@@ -74,7 +74,7 @@ function edit(){
             latlng:{lat:x,lng:$("#y").val()},
               elementProperties:{lastkey:$("#attribute").val()}
         }
- 
+ var user;
 	$.ajax({
 		  url: '/smartspace/elements'+'/'+getQueryVariable('managersmartspace')+'/'+getQueryVariable('manageremail')+'/'+
 		  allelements[elementId].key.smartspace +'/'+allelements[elementId].key.id,
@@ -84,13 +84,13 @@ function edit(){
 		  success: function (data) {
 			  
 		   //   $('#target').html(data.msg);
-		      document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
-		    	 +getQueryVariable('managersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('manageremail');
+		     user =data.usernme;
 		  },
 		  data: JSON.stringify(person)
 		});
-	
-	
+	if(!user)
+	document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
+	 +getQueryVariable('managersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('manageremail');
 }
 
 $('#elementselect').change(function() {

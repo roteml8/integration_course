@@ -136,10 +136,10 @@ public class ActionControllerIntegrtationPLAYERTests {
 		
 		//THEN the jason i receive is the same as the input boundary except for the key, creationTImeStamp and moreAttributes fields
 		//AND moreAtrributes got the echo signature
-		assertThat(recivedBoundary).isNotNull().isEqualToIgnoringGivenFields(bound, "key","creationTimeStamp","moreAttributes");
+		assertThat(recivedBoundary).isNotNull().isEqualToIgnoringGivenFields(bound, "actionKey","created","properties");
 		Map<String,Object> attributes = new HashMap<String,Object>();
 		attributes.put("echo", "echo");
-		assertThat(recivedBoundary.getMoreAttributes()).isEqualTo(attributes);
+		assertThat(recivedBoundary.getProperties()).isEqualTo(attributes);
 		assertThat(recivedBoundary.getCreationTimeStamp()).isNotNull();
 		assertThat(recivedBoundary.getKey()).isNotNull();
 		assertThat(Long.parseLong((String) recivedBoundary.getKey().get("id"))).isGreaterThan(0);

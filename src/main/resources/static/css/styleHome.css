@@ -38,7 +38,6 @@ h1{ margin: 0; }
 #contact:active { background: #444; }
 
 #contactForm { 
-  display: none;
 
   border: 6px solid salmon; 
   padding: 2em;
@@ -135,5 +134,13 @@ transform: rotate(5deg);
   filter: alpha(opacity=20);
 }
 
-
+#outer
+{
+    width:100%;
+    text-align: center;
+}
+.inner
+{
+    display: inline-block;
+}
 
