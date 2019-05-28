@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 
 @Repository
-public class RdbActionDao implements EnhancedActionDao {
+public class RdbActionDao implements EnhancedActionDao,InitializingBean {
 
 	private String smartspace;
 	
@@ -31,21 +32,7 @@ public class RdbActionDao implements EnhancedActionDao {
 	public  RdbActionDao(ActionCrud actionCrud) {
 		super();
 	this.actionCrud=actionCrud;
-	if(this.actionCrud.count() > 0) {
-		List<ActionEntity> allActions= this.actionCrud.
-				findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
-		
-		List<ActionEntity> filteredActionsBySmartspace = new ArrayList<>();
-		for(ActionEntity action : allActions) {
-			action.setKey(action.getKey());
-			System.err.println("1" + this.smartspace);
-			if(action.getActionSmartspace().equals(smartspace)) {
-				filteredActionsBySmartspace.add(action);
-			}
-		}
-		
-		GeneratedId.setActionId(filteredActionsBySmartspace.size());
-	}
+
 	}
 	
 	@Value("${smartspace.name:smartspace}")
@@ -74,6 +61,26 @@ public class RdbActionDao implements EnhancedActionDao {
 		else {
 			throw new RuntimeException("elementEntity already exists with key: " + action.getKey());
 		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(this.actionCrud.count() > 0) {
+			List<ActionEntity> allActions= this.actionCrud.
+					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			
+			List<ActionEntity> filteredActionsBySmartspace = new ArrayList<>();
+			for(ActionEntity action : allActions) {
+				action.setKey(action.getKey());
+				System.err.println("1" + this.smartspace);
+				if(action.getActionSmartspace().equals(smartspace)) {
+					filteredActionsBySmartspace.add(action);
+				}
+			}
+			
+			GeneratedId.setActionId(filteredActionsBySmartspace.size());
+		}
+		
 	}
 	
 	@Override
@@ -317,6 +324,8 @@ public class RdbActionDao implements EnhancedActionDao {
 	private void deleteByKey(String key) {
 		this.actionCrud.deleteById(key);		
 	}
+
+	
 	
 	
 

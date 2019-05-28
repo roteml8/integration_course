@@ -1,11 +1,12 @@
 package smartspace.dao.rdb;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -14,42 +15,31 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedElementDao;
-import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
 import smartspace.data.Location;
 
 @Repository
-public class RdbElementDao implements EnhancedElementDao<String> {
+public class RdbElementDao implements EnhancedElementDao<String> , InitializingBean {
 
 	private String smartspace;
 	private ElementCrud elementCrud;
-
-	@Autowired
-	public RdbElementDao(ElementCrud elementCrud) {
-		super();
-		this.elementCrud = elementCrud;
-		if(this.elementCrud.count() > 0) {
-			List<ElementEntity> allElements= this.elementCrud.
-					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
-			
-			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
-			for(ElementEntity element : allElements) {
-				element.setKey(element.getKey());
-				System.err.println("1" + this.smartspace);
-				if(element.getElementSmartSpace().equals(smartspace)) {
-					filteredElementsBySmartspace.add(element);
-				}
-			}			
-			GeneratedId.setElementId(filteredElementsBySmartspace.size());
-//			System.err.println(filteredActionsBySmartspace.size());
-		}
-	}
 
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
 	}
 
+	
+	@Autowired
+	public RdbElementDao(ElementCrud elementCrud) {
+		super();
+		this.elementCrud = elementCrud;
+		
+//			System.err.println(filteredActionsBySmartspace.size());
+		
+	}
+
+	
 	@Override
 	@Transactional
 	public ElementEntity create(ElementEntity elementEntity) {
@@ -73,6 +63,25 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 			throw new RuntimeException("elementEntity already exists with key: " + elementEntity.getKey());
 		}
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(this.elementCrud.count() > 0) {
+			List<ElementEntity> allElements= this.elementCrud.
+					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			
+			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
+			for(ElementEntity element : allElements) {
+				element.setKey(element.getKey());
+				System.err.println("1" + smartspace);
+				if(element.getElementSmartSpace().equals(smartspace)) {
+					filteredElementsBySmartspace.add(element);
+				}
+			}			
+			GeneratedId.setElementId(filteredElementsBySmartspace.size());
+		}
+	}
+	
 	
 	@Transactional
 	public ElementEntity importElement(ElementEntity elementEntity) {
@@ -336,5 +345,8 @@ public class RdbElementDao implements EnhancedElementDao<String> {
 		return filteredElements;
 
 	}
+
+
+	
 
 }

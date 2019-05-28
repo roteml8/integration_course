@@ -28,21 +28,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	public RdbUserDao(UserCrud userCrud) {
 		super();
 		this.userCrud = userCrud;
-		if(this.userCrud.count() > 0) {
-			List<UserEntity> allUsers= this.userCrud.
-					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
-			
-			List<UserEntity> filteredUsersBySmartspace = new ArrayList<>();
-			for(UserEntity user : allUsers) {
-				user.setKey(user.getKey());
-				if(user.getUserSmartspace().equals(smartspace)) {
-					filteredUsersBySmartspace.add(user);
-				}
-			}
-			
-			GeneratedId.setActionId(filteredUsersBySmartspace.size());
-//			System.err.println(filteredActionsBySmartspace.size());
-		}
+		
 
 	}
 

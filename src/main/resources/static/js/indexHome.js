@@ -382,12 +382,13 @@ $.ajax({
   
   }else if(getQueryVariable('role')=="PLAYER"){
 	 var x= (newStatus(target)).toFixed(2);
+         console.log(element.elementProperties);
          
 	  var person = { 
 		        type: "UpdateTaskStatus",
 		     element:{id:element.key.id,smartspace:element.key.smartspace},
 		        player: {smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
-		          properties:{location:x}
+		          properties:{location:x,useremail:element.elementProperties.useremail,useremail2:element.elementProperties.useremail2 }
 		    }
 	  
 	  

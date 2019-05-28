@@ -24,11 +24,16 @@ public class UpdateTaskStatusPlugin implements Plugin{
 	public ActionEntity process(ActionEntity actionStatusChangeEntity) {
 		String taskKey= actionStatusChangeEntity.getElementSmartspace() + "#" + actionStatusChangeEntity.getElementId();
 		//check if the element is task
-		
+		String useremail=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail");
+		String useremail2=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail2");
 		if(!elementDao.readById(taskKey).get().getType().equals("Task"))
 			throw new RuntimeException("this element type is not Task!");
-
-		//need to get the status task
+		
+		System.err.println(actionStatusChangeEntity.getPlayerEmail());
+		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
+				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
+			throw new RuntimeException("this player type is not belong to this element!");
+			//need to get the status task
 	//	Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
 		
 		//the new location

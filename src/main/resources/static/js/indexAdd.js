@@ -7,7 +7,7 @@ function addelement(){
             created:new Date(),
             creator: {email:getQueryVariable('manageremail'),smartspace:getQueryVariable('managersmartspace')},
             latlng:{lat:0.0,lng:$("#y").val()},
-              elementProperties:{lastkey:$("#attribute").val()}
+              elementProperties:{useremail:$("#user1").val(),useremail2:$("#user2").val()}
         }
  
 $.ajax({
@@ -27,8 +27,6 @@ $.ajax({
 	
 	
 }
-
-
 
 
 
