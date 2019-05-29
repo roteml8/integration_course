@@ -62,16 +62,29 @@ class ProgressReportForManagers {
 				
 		for(UserEntity manager : managers)
 		{
+			String managersElements = elementDao.readElementWithCreatorEmail(manager.getUserEmail(), 10, 0).toString();
+			if(managersElements.isEmpty())
+			{
+				mailSender.sendMail(
+						manager.getUserEmail(),
+						"This is an automated tesk progress report for: " + manager.getUsername(),
+						"Well done! All tesks completed. What am i paying you for? Go think about more stuff to do");
+			}
+			else
+			{
 			mailSender.sendMail(
 					manager.getUserEmail(),
 					"This is an automated tesk progress report for: " + manager.getUsername(),
 					elementDao.readElementWithCreatorEmail(manager.getUserEmail(), 10, 0).toString());
+			}
 		}
 		
+		/*
 		for(ElementEntity element : elements)
 		{
 			
 		}
+		*/
 	}
 
 }
