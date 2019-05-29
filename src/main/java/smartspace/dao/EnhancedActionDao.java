@@ -30,9 +30,7 @@ public interface EnhancedActionDao extends ActionDao{
 
 	public ActionEntity importAction (ActionEntity actionEntity);
 
-	Optional<ActionEntity> readById(String actionKey);
 
-	void update(ActionEntity actionEntity);
 	
 	
 }

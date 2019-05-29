@@ -83,59 +83,6 @@ public class RdbActionDao implements EnhancedActionDao,InitializingBean {
 		
 	}
 	
-	@Override
-	@Transactional(readOnly = true)
-	public Optional<ActionEntity> readById(String actionKey) {
-		// SQL: SELECT
-		Optional<ActionEntity> optional = this.actionCrud.findById(actionKey);
-		
-		if(optional.isPresent()) {
-			optional.get().setKey(actionKey);
-		}
-		return optional;
-
-	}
-	
-
-	@Override
-	@Transactional
-	public void update(ActionEntity actionEntity) {
-		ActionEntity existing = this.readById(actionEntity.getKey())
-				.orElseThrow(() -> new RuntimeException("no element entity to update"));
-
-		if (actionEntity.getElementSmartspace() != null) {
-			existing.setElementSmartspace(actionEntity.getElementSmartspace());
-		}
-		if (actionEntity.getActionSmartspace() != null) {
-			existing.setActionSmartspace(actionEntity.getActionSmartspace());
-		}
-		if (actionEntity.getActionId() != null) {
-			existing.setActionId(actionEntity.getActionId());
-		}
-		if (actionEntity.getElementId() != null) {
-			existing.setElementId(actionEntity.getElementId());
-		}
-		if (actionEntity.getPlayerSmartspace() != null) {
-			existing.setPlayerSmartspace(actionEntity.getPlayerSmartspace());
-		}
-
-		if (actionEntity.getPlayerEmail() != null) {
-			existing.setPlayerEmail(actionEntity.getPlayerEmail());
-		}
-		if (actionEntity.getActionType() != null) {
-			existing.setActionType(actionEntity.getActionType());
-		}
-		if (actionEntity.getCreationTimestamp() != null) {
-			existing.setCreationTimestamp(actionEntity.getCreationTimestamp());
-		}
-		if (actionEntity.getMoreAttributes() != null) {
-			existing.setMoreAttributes(actionEntity.getMoreAttributes());
-
-		}
-	
-		// SQL: UPDATE
-		this.actionCrud.save(existing);
-	}
 
 
 	@Override
