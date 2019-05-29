@@ -1,8 +1,8 @@
 var drake=dragula([
 	document.getElementById('b1'),
 	document.getElementById('b2'),
-  document.getElementById('b3'),
-  document.getElementById('b4')
+    document.getElementById('b3'),
+    document.getElementById('b4')
   
 ])
 
@@ -23,8 +23,6 @@ window.onload=function (){
 	 var archive = document.getElementById("board4");
 	 var add = document.getElementById("contact");
 
-	 var editelement = document.getElementById("contact");
-	 editelement.style.display = 'none'; 
 	 add.style.display = 'none'; 
 	 archive.style.display = 'none'; 
        
@@ -46,9 +44,7 @@ window.onload=function (){
 			});
 	}else {
 		if(getQueryVariable('role')=="MANAGER"){   
-		add.style.display = 'block'; 
 		 archive.style.display = 'block';
-		 editelement.style.display = 'block';
 		}
 		
 		
@@ -167,7 +163,7 @@ function startSelect(){
 	    var myNode4 = document.getElementById('b4');
 	    remove(myNode4);
 	    
-	    if(value=="All"){
+	    if(value=="All--type"){
 	    	loadCards(allelements);
 	    }else{
 			 $.ajax({
@@ -231,7 +227,7 @@ function startSelectName(){
 	    var myNode4 = document.getElementById('b4');
 	    remove(myNode4);
 	    
-	    if(value=="All"){
+	    if(value=="All--name"){
 	    	loadCards(allelements);
 	    }else{
 			 $.ajax({

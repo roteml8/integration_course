@@ -22,6 +22,7 @@ window.onload=function (){
 
 
 function loadinputbyelement(data){
+	console.log('ff');
 	document.getElementById('elementname').value=data.name;
 
 	document.getElementById('elementtype').value=data.elementType;
@@ -31,8 +32,8 @@ function loadinputbyelement(data){
 	document.getElementById('y').value=data.latlng.lng;
 
 	document.getElementById('expired').value=data.expired;
-
-
+	document.getElementById('useremail').value=data.elementProperties.useremail;
+	document.getElementById('useremail2').value=data.elementProperties.useremail2;
 
 }
 function loadelements(data){
@@ -65,6 +66,7 @@ function edit(){
 		bool=false;
 		x=$("#x").val();	
 	}
+	
 	var person = { 
             elementType: $("#elementtype").val(),
             name:$("#elementname").val(),
@@ -72,7 +74,8 @@ function edit(){
             created:new Date(),
             creator: {email:getQueryVariable('manageremail'),smartspace:getQueryVariable('managersmartspace')},
             latlng:{lat:x,lng:$("#y").val()},
-              elementProperties:{lastkey:$("#attribute").val()}
+              elementProperties:{location:allelements[elementId].elementProperties.location
+            ,useremail:$("#useremail").val(),useremail2:$("#useremail2").val()}
         }
  var user;
 	$.ajax({
@@ -89,7 +92,7 @@ function edit(){
 		  data: JSON.stringify(person)
 		});
 	if(!user)
-	document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
+	document.location.href="http://localhost:8089/indexHome.html?"+"username="+user+"&usersmartspace="
 	 +getQueryVariable('managersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('manageremail');
 }
 
