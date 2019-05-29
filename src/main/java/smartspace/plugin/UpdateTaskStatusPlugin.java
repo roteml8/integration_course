@@ -12,6 +12,7 @@ import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
+import smartspace.data.ElementType;
 import smartspace.data.Location;
 import smartspace.data.UserEntity;
 
@@ -26,10 +27,21 @@ public class UpdateTaskStatusPlugin implements Plugin{
 	}
 
 	private EnhancedUserDao<String> userDao;
+	private int decrement;
+	private int increment;
 	
 	@Autowired
 	public void setUserDao(EnhancedUserDao<String> userDao) {
 		this.userDao=userDao;
+	}
+	@Value("${points.increment:increment}")
+	public void setIncrement(int increment) {
+		this.increment = increment;
+	}
+	
+	@Value("${points.decrement:decrement}")
+	public void setDecrement(int decrement) {
+		this.decrement = decrement;
 	}
 	
 	@Override
@@ -38,9 +50,8 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		//check if the element is task
 		String useremail=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail");
 		String useremail2=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail2");
-		if(!elementDao.readById(taskKey).get().getType().equals("Task"))
+		if(!elementDao.readById(taskKey).get().getType().equals(ElementType.TASK))
 			throw new RuntimeException("this element type is not Task!");
-		
 		System.err.println(actionStatusChangeEntity.getPlayerEmail());
 		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
 				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
@@ -56,8 +67,9 @@ public class UpdateTaskStatusPlugin implements Plugin{
 	
 		
 		//set points 
-		String key=(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
-		Optional<UserEntity> updateUser =  userDao.readById(key);
+		String key= actionStatusChangeEntity.getPlayerEmail() + "#" + actionStatusChangeEntity.getPlayerSmartspace();
+		//(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
+		UserEntity updateUser =  userDao.readById(key).get();
 		int deadline = (int) actionStatusChangeEntity.getMoreAttributes().get("deadline");
 		Date dateBefore = elementDao.readById(taskKey).get().getCreationTimeDate();
 		long deadDay = dateBefore.getTime()+deadline*24*60*60*1000;
@@ -65,11 +77,11 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		long difference = deadDay - dateBefore.getTime();
 	    float daysBetween = (difference / (1000*60*60*24));
 		if(daysBetween>deadline) {
-		//	updateUser.setPoints(updateUser.getPoints()+extra);
+			updateUser.setPoints(updateUser.getPoints()+increment);
 		}else {
-		//	updateUser.setPoints(updateUser.getPoints()-5);
+			updateUser.setPoints(updateUser.getPoints()-decrement);
 		}
-				
+		userDao.update(updateUser);
 		//updateElement is the new task with the current col
 		ElementEntity updateElement = new ElementEntity();
 		//updateElement = elementDao.readById(taskKey).get();
