@@ -1,5 +1,6 @@
 package smartspace.plugin;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -56,28 +57,32 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
 				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
 			throw new RuntimeException("this player type is not belong to this element!");
-			//need to get the status task
-	//	Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
+		//need to get the status task
+		//Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
 		
 		//the new location
 		Location location = new Location();
 		double x = Double.parseDouble( (String) actionStatusChangeEntity.getMoreAttributes().get("location"));
 		location.setX(x);
-	//	location.setY(op.get().getLocation().getY());	
+		//location.setY(op.get().getLocation().getY());	
 	
 		
 		//set points 
-		String key= actionStatusChangeEntity.getPlayerEmail() + "#" + actionStatusChangeEntity.getPlayerSmartspace();
+		String userKey= actionStatusChangeEntity.getPlayerSmartspace() + "#" + actionStatusChangeEntity.getPlayerEmail();
 		//(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
-		UserEntity updateUser =  userDao.readById(key).get();
+		UserEntity updateUser =  userDao.readById(userKey).get();
 		int deadline = (int) actionStatusChangeEntity.getMoreAttributes().get("deadline");
-		Date dateBefore = elementDao.readById(taskKey).get().getCreationTimeDate();
-		long deadDay = dateBefore.getTime()+deadline*24*60*60*1000;
-		
-		long difference = deadDay - dateBefore.getTime();
+		Date creationDate = elementDao.readById(taskKey).get().getCreationTimeDate();
+		long deadlineDay = creationDate.getTime()+deadline*24*60*60*1000;
+		Date today = Calendar.getInstance().getTime();
+		long difference =  today.getTime() - deadlineDay;
 	    float daysBetween = (difference / (1000*60*60*24));
-		if(daysBetween>deadline) {
-			updateUser.setPoints(updateUser.getPoints()+increment);
+		if(daysBetween>=0) {
+			if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+				updateUser.setPoints(updateUser.getPoints()+increment*2);
+			}else {
+				updateUser.setPoints(updateUser.getPoints()+increment);
+			}
 		}else {
 			updateUser.setPoints(updateUser.getPoints()-decrement);
 		}
@@ -87,7 +92,6 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		//updateElement = elementDao.readById(taskKey).get();
 		updateElement.setLocation(location);
 		updateElement.setKey(taskKey);
-	 
 		this.elementDao.update(updateElement);
 		return actionStatusChangeEntity;
 	}
