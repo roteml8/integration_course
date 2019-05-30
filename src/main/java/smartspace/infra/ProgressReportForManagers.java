@@ -46,8 +46,8 @@ class ProgressReportForManagers {
 	 private static final Logger logger = LoggerFactory.getLogger(ProgressReportForManagers.class); //for testing
 	 private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //for testing
 	
-	@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
-	//@Scheduled(cron = "0 * * * * ?") //executed every minute. for testing.
+	//@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
+	@Scheduled(cron = "0 * * * * ?") //executed every minute. for testing.
 	public void informManagers()
 	{
 		
@@ -62,20 +62,34 @@ class ProgressReportForManagers {
 				
 		for(UserEntity manager : managers)
 		{
-			String managersElements = elementDao.readElementWithCreatorEmail(manager.getUserEmail(), 10, 0).toString();
+			List <ElementEntity> managersElements = elementDao.readElementWithCreatorEmail(manager.getUserEmail(), defaultSize, defaultPage);
 			if(managersElements.isEmpty())
 			{
 				mailSender.sendMail(
 						manager.getUserEmail(),
 						"This is an automated tesk progress report for: " + manager.getUsername(),
-						"Well done! All tesks completed. What am i paying you for? Go think about more stuff to do");
+						"Is this a joke? You have no tesks! What am i paying you for? Go think about stuff to do.");
 			}
 			else
 			{
-			mailSender.sendMail(
-					manager.getUserEmail(),
-					"This is an automated tesk progress report for: " + manager.getUsername(),
-					elementDao.readElementWithCreatorEmail(manager.getUserEmail(), 10, 0).toString());
+				int expiredCounter = 0;
+				for(ElementEntity element : managersElements)
+					if(element.isExpired())
+						expiredCounter++;
+					
+				if(expiredCounter == managersElements.size())
+					mailSender.sendMail(
+							manager.getUserEmail(),
+							"This is an automated tesk progress report for: " + manager.getUsername(),
+							"Well done! All tesks completed. What am i paying you for? Go think about more stuff to do.");
+			
+				else
+					mailSender.sendMail(
+						manager.getUserEmail(),
+						"This is an automated tesk progress report for: " + manager.getUsername(),
+						prepareElementsForEmail
+						(elementDao.readElementWithCreatorEmail
+								(manager.getUserEmail(), defaultSize, defaultPage)));
 			}
 		}
 		
@@ -85,6 +99,23 @@ class ProgressReportForManagers {
 			
 		}
 		*/
+	}
+	
+	private String prepareElementsForEmail (List <ElementEntity>  elements)
+	{
+		String mailReadyMessageText = "";
+		for(ElementEntity element : elements)
+		{
+			mailReadyMessageText +=
+			" Element name: " + element.getName() + "\n" +
+			" Element type: " + element.getType() + "\n" +
+			" Element attributes: " + element.getMoreAttributes() + "\n" +
+			" Element location: " + element.getLocation().toString() + "\n" +
+			" Element active status: " + element.isExpired() + "\n" +
+			" Element key: " + element.getKey() + "\n\n\n";
+		}
+		
+		return mailReadyMessageText;
 	}
 
 }
