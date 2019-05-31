@@ -2,6 +2,7 @@ package smartspace.plugin;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.catalina.User;
@@ -47,16 +48,29 @@ public class UpdateTaskStatusPlugin implements Plugin{
 	
 	@Override
 	public ActionEntity process(ActionEntity actionStatusChangeEntity) {
+		
 		String taskKey= actionStatusChangeEntity.getElementSmartspace() + "#" + actionStatusChangeEntity.getElementId();
-		//check if the element is task
-		String useremail=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail");
-		String useremail2=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail2");
-		if(!elementDao.readById(taskKey).get().getType().equals(ElementType.TASK))
-			throw new RuntimeException("this element type is not Task!");
-		System.err.println(actionStatusChangeEntity.getPlayerEmail());
+		
+		//Check if the element is task
+		ElementEntity element = elementDao.readById(taskKey).get();
+		if(!element.getType().equalsIgnoreCase(ElementType.TASK.toString()))
+			throw new WrongElementTypeException("Task");
+		
+		Map<String,Object> elementDetails = element.getMoreAttributes();
+		String useremail="", useremail2="";
+		// Players of the task
+		if (elementDetails.containsKey("useremail"))
+			 useremail =  (String) elementDetails.get("useremail");
+		if (elementDetails.containsKey("useremail2"))
+			 useremail2 =  (String) elementDetails.get("useremail2");
+		
+		
+		//Check if the task belongs to the player
+		System.err.println(actionStatusChangeEntity.getPlayerEmail());			
 		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
 				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
-			throw new RuntimeException("this player type is not belong to this element!");
+			throw new PlayerNotRegisteredToTaskException();
+		
 		//need to get the status task
 		//Optional<ElementEntity> op = elementDao.readById(actionStatusChangeEntity.getKey());
 		
@@ -71,6 +85,7 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		String userKey= actionStatusChangeEntity.getPlayerSmartspace() + "#" + actionStatusChangeEntity.getPlayerEmail();
 		//(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
 		UserEntity updateUser =  userDao.readById(userKey).get();
+		
 		int deadline = (int) actionStatusChangeEntity.getMoreAttributes().get("deadline");
 		Date creationDate = elementDao.readById(taskKey).get().getCreationTimeDate();
 		long deadlineDay = creationDate.getTime()+deadline*24*60*60*1000;
@@ -86,7 +101,9 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		}else {
 			updateUser.setPoints(updateUser.getPoints()-decrement);
 		}
+		
 		userDao.update(updateUser);
+		
 		//updateElement is the new task with the current col
 		ElementEntity updateElement = new ElementEntity();
 		//updateElement = elementDao.readById(taskKey).get();

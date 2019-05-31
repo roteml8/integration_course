@@ -1,6 +1,7 @@
 package smartspace.plugin;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,44 +41,52 @@ public class MailToGetMoreInformationPlugin implements Plugin{
 	
 	@Override
 	public ActionEntity process(ActionEntity actionStatusChangeEntity) {
+		
 		String taskKey= actionStatusChangeEntity.getElementSmartspace() + "#" + actionStatusChangeEntity.getElementId();
 		
-		//check if the element is task
-		String useremail=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail");
-		String useremail2=(String) actionStatusChangeEntity.getMoreAttributes().get("useremail2");
-		if(!elementDao.readById(taskKey).get().getType().equals(ElementType.TASK))
-			throw new RuntimeException("this element type is not Task!");
+		//Check if the element is task
+		ElementEntity element = elementDao.readById(taskKey).get();
+		if(!element.getType().equalsIgnoreCase(ElementType.TASK.toString()))
+			throw new WrongElementTypeException("Task");
 		
-		//check if the player belong to this element
-		System.err.println(actionStatusChangeEntity.getPlayerEmail());
+		Map<String,Object> elementDetails = element.getMoreAttributes();
+		String useremail="", useremail2="";
+		// Players of the task
+		if (elementDetails.containsKey("useremail"))
+			 useremail =  (String) elementDetails.get("useremail");
+		if (elementDetails.containsKey("useremail2"))
+			 useremail2 =  (String) elementDetails.get("useremail2");
+			
+		//Check if the task belongs to the player
+		System.err.println(actionStatusChangeEntity.getPlayerEmail());			
 		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
 				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
-			throw new RuntimeException("this player type is not belong to this element!");
+			throw new PlayerNotRegisteredToTaskException();
 		
 		
-		String userKey= actionStatusChangeEntity.getPlayerSmartspace() + "#" + actionStatusChangeEntity.getPlayerEmail();
+		String userKey= actionStatusChangeEntity.getPlayerSmartspace() + "#" + actionStatusChangeEntity.getPlayerEmail(); // Player
 		UserEntity from =  userDao.readById(userKey).get();
 
-		String creatorEmail  = elementDao.readById(taskKey).get().getCreatorEmail();
-		String messageText=(String) actionStatusChangeEntity.getMoreAttributes().get("massage");
+		String creatorEmail  = elementDao.readById(taskKey).get().getCreatorEmail(); // Manager
+		String messageText=(String) actionStatusChangeEntity.getMoreAttributes().get("message");
 		if(messageText.isEmpty()) {
 			mailSender.sendMail(
 					creatorEmail ,
-					"This message send from: " + from.getUsername(),
+					"This message sent from: " + from.getUsername(),
 					"Maybe he's shy");
 		}else {
 			mailSender.sendMail(
 					creatorEmail ,
-					"This message send from: " + from.getUsername(),
+					"This message sent from: " + from.getUsername(),
 					messageText);
 		}		
 		
-		//updateElement is the new task with the current col
-		ElementEntity updateElement = new ElementEntity();
-		//updateElement = elementDao.readById(taskKey).get();
-		updateElement.setKey(taskKey);
-	 
-		this.elementDao.update(updateElement);
+//		//updateElement is the new task with the current col
+//		ElementEntity updateElement = new ElementEntity();
+//		//updateElement = elementDao.readById(taskKey).get();
+//		updateElement.setKey(taskKey);
+//	 
+//		this.elementDao.update(updateElement);
 		return actionStatusChangeEntity;	}
 
 }
