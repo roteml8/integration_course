@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import smartspace.aop.MyLogger;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
@@ -43,23 +44,24 @@ class ProgressReportForManagers {
 		this.elementDao = elementDao;
 	}
 	
-	 private static final Logger logger = LoggerFactory.getLogger(ProgressReportForManagers.class); //for testing
-	 private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //for testing
+	// private static final Logger logger = LoggerFactory.getLogger(ProgressReportForManagers.class); //for testing
+	 //private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //for testing
 	
+	@MyLogger
 	@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
-	//@Scheduled(cron = "0 * * * * ?") //executed every minute. for testing.
+	//@Scheduled(cron = "1 * * * * ?") //executed every minute. for testing.
 	public void informManagers()
 	{
 		
 		
 
-		int defaultSize = 10, defaultPage = 0;
+		int defaultSize = 100, defaultPage = 0; // We will start with 100 managers and 100 elements each,
+												// if the client will need more we will need to changed it here.
 		
-		logger.info("Cron Task :: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));//for testing
+		//logger.info("Cron Task :: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));//for testing
 		
 		List <UserEntity>  managers = userDao.readUserWithRole(UserRole.MANAGER, defaultSize, defaultPage);
-		List <ElementEntity>  elements = elementDao.readAll();
-				
+						
 		for(UserEntity manager : managers)
 		{
 			List <ElementEntity> managersElements = elementDao.readElementWithCreatorEmail(manager.getUserEmail(), defaultSize, defaultPage);

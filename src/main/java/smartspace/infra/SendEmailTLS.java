@@ -8,6 +8,8 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import smartspace.aop.MyLogger;
+
 import java.util.Properties;
 
 @Component
@@ -32,6 +34,7 @@ public class SendEmailTLS {
 		this.smartspace = smartspace;
 	}
 
+	@MyLogger
     public void sendMail(String recipientEmail , String messageSubject , String messageText ) {
 
         if(messageSubject == null)

@@ -140,12 +140,16 @@ public class ActionServicelmpl implements ActionService {
 			action.setCreationTimestamp(new Date());
 			action = plugin.process(action);
 			
-			//this.actionDao.create(action);
-		//	return action;
 			return this.actionDao.create(action);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		//	throw new UnsupportedActionTypeException(action.getActionType());
+			
+		} 
+		
+		catch (Exception e) 
+		{
+			if(e.getClass().getSimpleName().equals("ClassNotFoundException") || e.getClass().getSimpleName().equals("BeansException"))
+				throw new UnsupportedActionTypeException(action.getActionType() , e);
+			else
+				throw new PluginProcessingFailedException(e);
 		}
 	}
 	

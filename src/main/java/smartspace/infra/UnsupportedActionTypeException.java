@@ -5,7 +5,7 @@ public class UnsupportedActionTypeException extends RuntimeException{
 	private static final long serialVersionUID = -7743417468097606948L;
 	
 	private static String messagePart1 = "Unsupported action type! wtf is ";
-	private static String messagePart2 = "? consult the coockbook for a list of supported and inoffensive actions.";
+	private static String messagePart2 = "? consult the cookbook for a list of supported and inoffensive actions.";
 	
 	public UnsupportedActionTypeException() {
 	}
