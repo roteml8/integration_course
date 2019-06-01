@@ -23,6 +23,7 @@ import smartspace.infra.FailedValidationException;
 import smartspace.infra.ImportFromLocalException;
 import smartspace.infra.NotAPlayerException;
 import smartspace.infra.NotAnAdminException;
+import smartspace.infra.PluginProcessingFailedException;
 import smartspace.infra.UnsupportedActionTypeException;
 
 
@@ -123,6 +124,17 @@ public class ActionController {
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
 	public ErrorMessage handleException (UnsupportedActionTypeException e){
+		String message = e.getMessage();
+		if (message == null) {
+			message = "The name you have provided is invalid";
+		}
+		
+		return new ErrorMessage(message);
+	}
+	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS)
+	public ErrorMessage handleException (PluginProcessingFailedException e){
 		String message = e.getMessage();
 		if (message == null) {
 			message = "The name you have provided is invalid";
