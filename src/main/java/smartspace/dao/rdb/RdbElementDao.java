@@ -69,7 +69,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 		if(this.elementCrud.count() > 0) {
 			List<ElementEntity> allElements= this.elementCrud.
 					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
-			
+						
 			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
 			for(ElementEntity element : allElements) {
 				element.setKey(element.getKey());
@@ -78,7 +78,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 					filteredElementsBySmartspace.add(element);
 				}
 			}			
-			GeneratedId.setElementId(filteredElementsBySmartspace.size());
+			GeneratedId.setElementId(Long.parseLong(filteredElementsBySmartspace.get(0).getElementid()));
 		}
 	}
 	

@@ -79,7 +79,7 @@ public class RdbActionDao implements EnhancedActionDao,InitializingBean {
 				}
 			}
 			
-			GeneratedId.setActionId(filteredActionsBySmartspace.size());
+			GeneratedId.setActionId(Long.parseLong(filteredActionsBySmartspace.get(0).getActionId()));
 		}
 		
 	}
