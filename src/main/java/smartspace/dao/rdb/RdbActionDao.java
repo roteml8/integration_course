@@ -67,8 +67,7 @@ public class RdbActionDao implements EnhancedActionDao,InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(this.actionCrud.count() > 0) {
-			List<ActionEntity> allActions= this.actionCrud.
-					findAll(PageRequest.of(0, 5, Direction.DESC, "creationDate")).getContent();
+			List<ActionEntity> allActions= this.readAll();
 			
 			List<ActionEntity> filteredActionsBySmartspace = new ArrayList<>();
 			for(ActionEntity action : allActions) {
@@ -79,7 +78,7 @@ public class RdbActionDao implements EnhancedActionDao,InitializingBean {
 				}
 			}
 			
-			GeneratedId.setActionId(Long.parseLong(filteredActionsBySmartspace.get(0).getActionId()));
+			GeneratedId.setActionId(filteredActionsBySmartspace.size());
 		}
 		
 	}

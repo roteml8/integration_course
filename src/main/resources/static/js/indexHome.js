@@ -3,7 +3,6 @@ var drake=dragula([
 	document.getElementById('b2'),
     document.getElementById('b3'),
     document.getElementById('b4')
-  
 ])
 
 // Scrollable area
@@ -20,14 +19,17 @@ document.getElementById("elementselectType").disabled=false;
 
 window.onload=function (){
 	
+	 var but = document.getElementById("buttonsmannager");
+	 var but = document.getElementById("buttonsmannager");
 	 var archive = document.getElementById("board4");
 	 var add = document.getElementById("contact");
-
+	 var points = document.getElementById("board5");
 	 add.style.display = 'none'; 
 	 archive.style.display = 'none'; 
-       
+	 points.style.display = 'none';
+	 but.style.display = 'none';
 	 if(getQueryVariable('role')=="ADMIN"){
-		       
+	loadpoints();	       
 		 $.ajax({
 			  url: '/smartspace/admin/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail'),
 			  type: 'GET',
@@ -42,10 +44,13 @@ window.onload=function (){
 			  error: function(e) {  }
 			
 			});
-	}else {
+	}
+	 else {
 		if(getQueryVariable('role')=="MANAGER"){   
 		 archive.style.display = 'block';
+		 but.style.display = 'block';
 		}
+		else points.style.display = 'block';
 		
 		
 		 $.ajax({
@@ -54,6 +59,7 @@ window.onload=function (){
 			  data:'',
 			  success: function(data) {
 				//called when successful
+				  console.log(data);
 				  allelements=data;
 				  loadCards(data);
 		           loadElementsSelect(data);
@@ -68,6 +74,55 @@ window.onload=function (){
 
 }
 
+
+
+function loadplayerspoints(data){
+	var temp;
+	 var arrayVariable = [];
+	 var arrayVariable2 = []; 
+	 for(i=0;i<data.length;i++){
+		 arrayVariable.push(data[i].name);
+		 arrayVariable2.push(data[i].points);
+	 }
+	  var  arrayLength = arrayVariable.length;
+	
+
+	 for(i = 0; i < arrayLength; i++) {
+	   temp = document.createElement('div');
+	   temp.className = 'card';
+	   temp.id=data[i].key.id;
+	   temp.innerHTML += "<span class="+"cardtitle >"+ arrayVariable[i]+"points: "+arrayVariable2[i]+"</span>";
+	   document.getElementById('b5').appendChild(temp);
+	 }
+}
+
+
+function loadpoints(){
+	
+	 var person = { 
+		        type: "UpdateScoreBoard",
+		     element:{id:element.key.id,smartspace:element.key.smartspace},
+		        player: {smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
+		          properties:{}
+		    }
+	  
+	  
+	  $.ajax({
+	        url: '/smartspace/actions',
+	        type: 'post',
+	        dataType: 'json',
+	        contentType: 'application/json',
+	        success: function (data) {
+	        loadplayerspoints(data);	
+	            $('#target').html(data.msg);
+	        },
+	        data: JSON.stringify(person)
+	    });  
+	
+}
+
+
+
 function loadElementsSelectName(data){
 	var temp;
 	 var arrayVariable = [];
@@ -78,7 +133,7 @@ function loadElementsSelectName(data){
 	
 
 	 for (i = 0; i < arrayLength; i++) {
-		 console.log(arrayVariable[i]);
+		 
 	 
 		 document.getElementById('elementselectName').innerHTML += "<option class="+"delq id="+data[i].key.id+">"+arrayVariable[i]+"</option>";
 	  
@@ -136,6 +191,8 @@ function loadCards(data){
 			   document.getElementById('b4').appendChild(temp);
 	 }
 }
+
+
 function remove(myNode){
 	
 while (myNode.firstChild) {
@@ -344,6 +401,7 @@ drake.on('drop', function(el, target) {
 			element=allelements[i];
 		}
 	}
+	
   if(getQueryVariable('role')=="MANAGER"){
 var bool ;
 if(target.id=='b4')
@@ -378,13 +436,12 @@ $.ajax({
   
   }else if(getQueryVariable('role')=="PLAYER"){
 	 var x= (newStatus(target)).toFixed(2);
-         console.log(element.elementProperties);
          
 	  var person = { 
 		        type: "UpdateTaskStatus",
 		     element:{id:element.key.id,smartspace:element.key.smartspace},
 		        player: {smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
-		          properties:{location:x,useremail:element.elementProperties.useremail,useremail2:element.elementProperties.useremail2 }
+		          properties:{location:x,dealine:element.elementProperties.duration }
 		    }
 	  
 	  
