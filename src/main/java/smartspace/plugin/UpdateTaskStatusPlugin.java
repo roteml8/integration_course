@@ -86,7 +86,7 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		//(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
 		UserEntity updateUser =  userDao.readById(userKey).get();
 		
-		int deadline = (int) actionStatusChangeEntity.getMoreAttributes().get("deadline");
+		int deadline = (int) elementDetails.get("deadline");
 		Date creationDate = elementDao.readById(taskKey).get().getCreationTimeDate();
 		long deadlineDay = creationDate.getTime()+deadline*24*60*60*1000;
 		Date today = Calendar.getInstance().getTime();
