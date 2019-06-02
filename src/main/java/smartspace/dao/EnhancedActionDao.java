@@ -1,17 +1,21 @@
 package smartspace.dao;
 import java.util.Date;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort.Direction;
 import smartspace.data.ActionEntity;
-import smartspace.data.UserEntity;
+
 public interface EnhancedActionDao extends ActionDao{
 	
 	
 	public List<ActionEntity> readAll(int size, int page);
 	
 	public List<ActionEntity> readAll(String sortBy, int size, int page);
+	
+	public List<ActionEntity> readAll(String sortBy, Direction direction, int size, int page);
 
 	public List<ActionEntity> readElementWithCreationTimestamp(Date stamp, int size, int page);
 	

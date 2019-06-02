@@ -177,7 +177,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readAll(int size, int page) {
 		 List<ElementEntity> list = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		 
@@ -188,7 +188,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readAll(String sortBy, int size, int page) {
 		List<ElementEntity> list = this.elementCrud.findAll(PageRequest.of(page, size, Direction.ASC, sortBy)).getContent();
 		
@@ -197,9 +197,20 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 		}
 	return list;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ElementEntity> readAll(String sortBy, Direction direction , int size, int page) {
+		List<ElementEntity> list = this.elementCrud.findAll(PageRequest.of(page, size, direction, sortBy)).getContent();
+		
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setKey(list.get(i).getKey());
+		}
+	return list;
+	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithName(String text, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -218,7 +229,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithLocation(Location location, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -237,7 +248,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithType(String text, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -256,7 +267,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithExpired(boolean expired, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -272,7 +283,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithCreatorEmail(String text, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -290,7 +301,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithCreatorSmartspace(String text, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -309,7 +320,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithCreationTimeStamp(Date stamp, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		
@@ -328,7 +339,7 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ElementEntity> readElementWithMoreAttributes(Map<String, Object> moreAttributes, int size, int page) {
 		List<ElementEntity> allElements = this.elementCrud.findAll(PageRequest.of(page, size)).getContent();
 		

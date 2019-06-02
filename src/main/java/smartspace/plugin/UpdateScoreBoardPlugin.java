@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
@@ -36,13 +37,11 @@ public class UpdateScoreBoardPlugin implements Plugin {
 		String taskKey = actionEntity.getElementSmartspace() + "#" + actionEntity.getElementId();
 
 		// Check if the element is a score board
-		ElementEntity element = elementDao.readById(taskKey).get();
-		if (!element.getType().equalsIgnoreCase(ElementType.SCORE_BOARD.toString()))
+		ElementEntity scoreBoard = elementDao.readById(taskKey).get();
+		if (!scoreBoard.getType().equalsIgnoreCase(ElementType.SCORE_BOARD.toString()))
 			throw new WrongElementTypeException("Not a score board element");
 
-		ElementEntity scoreBoard = elementDao.readElementWithType(ElementType.SCORE_BOARD.toString() , 1, 0).get(0);
-		
-		List<UserEntity> bestUsers = userDao.readAll("points" ,10 ,0 ); // get the 10 users with the highest score.
+		List<UserEntity> bestUsers = userDao.readAll("points" , Direction.DESC, 5 ,0 ); // get the 5 users with the highest score.
 		
 		scoreBoard.getMoreAttributes().replace("users", bestUsers);
 		

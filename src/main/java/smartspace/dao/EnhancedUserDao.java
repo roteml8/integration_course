@@ -1,6 +1,9 @@
 package smartspace.dao;
 
 import java.util.List;
+
+import org.springframework.data.domain.Sort.Direction;
+
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 
@@ -8,6 +11,8 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	public List<UserEntity> readAll(int size, int page);
 
 	public List<UserEntity> readAll(String sortBy, int size, int page);
+	
+	public List<UserEntity> readAll(String sortBy, Direction direction, int size, int page);
 	
 	public List<UserEntity> readUserWithNameContaining(String text, int size, int page);
 	

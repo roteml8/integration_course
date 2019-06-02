@@ -144,6 +144,17 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		}
 		return list;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserEntity> readAll(String sortBy, Direction direction , int size, int page) {
+		List<UserEntity> list = this.userCrud.findAll(PageRequest.of(page, size, direction, sortBy)).getContent();
+		
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setKey(list.get(i).getKey());
+		}
+	return list;
+	}
 
 	@Override
 	@Transactional(readOnly = true)
