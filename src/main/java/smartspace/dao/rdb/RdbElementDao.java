@@ -2,6 +2,7 @@ package smartspace.dao.rdb;
 
 import java.util.ArrayList; 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,17 +17,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import smartspace.dao.EnhancedElementDao;
 import smartspace.data.ElementEntity;
+import smartspace.data.ElementType;
 import smartspace.data.Location;
+import smartspace.data.util.EntityFactory;
 
 @Repository
 public class RdbElementDao implements EnhancedElementDao<String> , InitializingBean {
 
 	private String smartspace;
 	private ElementCrud elementCrud;
+	private String smartspaceEmail;
+	private EntityFactory factory;
+	
+	@Autowired
+	public void setFactory(EntityFactory factory) {
+		this.factory = factory;
+	}
 
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
+	}
+	
+	@Value("${smartspace.emailUser:smartspace@gmail.com}")
+	public void setSmartspaceEmail(String smartspaceEmail) {
+		this.smartspaceEmail = smartspaceEmail;
 	}
 
 	
@@ -66,7 +81,8 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(this.elementCrud.count() > 0) {
+		if(this.elementCrud.count() > 0) 
+		{
 			List<ElementEntity> allElements= this.readAll();
 						
 			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
@@ -78,6 +94,14 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 				}
 			}			
 			GeneratedId.setElementId(filteredElementsBySmartspace.size());
+		}
+		
+		else
+		{
+			ElementEntity scoreBoardElement = factory.createNewElement("my scoreboard" , ElementType.SCORE_BOARD.toString(), new Location (-1, 0),  new Date()
+					, smartspaceEmail , this.smartspace , false , new HashMap<String , Object>());
+			scoreBoardElement.getMoreAttributes().put("users", null);
+			this.create(scoreBoardElement);
 		}
 	}
 	
