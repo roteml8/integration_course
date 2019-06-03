@@ -19,7 +19,6 @@ public class UserEntity implements SmartspaceEntity<String> {
 	private String avatar;
 	private UserRole role;
 	private long points = Long.MIN_VALUE;
-	private Map<String, Object> details;
 	private String key;
 
 	public UserEntity() {
@@ -102,14 +101,11 @@ public class UserEntity implements SmartspaceEntity<String> {
 		this.key = key;
 	}
 	
-	public void setDetails(Map<String, Object> details) {
-		this.details = details;
-	}
 
 	@Override
 	public String toString() {
 		return "UserEntity [userSmartspace=" + userSmartspace + ", userEmail=" + userEmail + ", username=" + username
-				+ ", avatar=" + avatar + ", role=" + role + ", points=" + points + ", details=" + details + "]";
+				+ ", avatar=" + avatar + ", role=" + role + ", points=" + points + "]";
 	}
 
 }
