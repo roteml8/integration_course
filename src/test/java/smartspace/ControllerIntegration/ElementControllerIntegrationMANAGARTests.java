@@ -501,9 +501,13 @@ public class ElementControllerIntegrationMANAGARTests {
 					arr[i] = response[i].convertToEntity();
 				}
 				
+				List<ElementEntity> elementsInDB = this.elementDao.readAll();
+				
+				assertThat(elementsInDB.size()).isEqualTo(size);
+				
 				assertThat(arr)
 					.usingElementComparatorOnFields("key")
-					.containsExactlyElementsOf(this.elementDao.readAll());
+					.containsAll(elementsInDB);
 	}
 	
 	
