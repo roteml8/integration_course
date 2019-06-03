@@ -2,9 +2,11 @@ package smartspace.infra;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -19,22 +21,38 @@ import smartspace.aop.UserCheck;
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ElementEntity;
+import smartspace.data.ElementType;
 import smartspace.data.Location;
 import smartspace.data.UserRole;
+import smartspace.data.util.EntityFactory;
 
 @Service
-public class ElementServiceImpl implements ElementService {
+public class ElementServiceImpl implements ElementService , InitializingBean {
 	private EnhancedUserDao<String> userDao;
 	private EnhancedElementDao<String> dao;
 	private String mySmartspace;
-//	private ApplicationContext ctx;
+	
+	private String smartspaceEmail;
+	private EntityFactory factory;
+	
+
 
 
 	@Autowired
 	public ElementServiceImpl(EnhancedElementDao<String> dao, ApplicationContext ctx) {
 		super();
 		this.dao = dao;
-//		this.ctx = ctx;
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(this.dao.readAll().size() == 0)
+		{
+			ElementEntity scoreBoardElement = factory.createNewElement("my scoreboard" , ElementType.SCORE_BOARD.toString(), new Location (-1, 0),  new Date()
+					, smartspaceEmail , mySmartspace , false , new HashMap<String , Object>());
+			scoreBoardElement.getMoreAttributes().put("users", null);
+			this.dao.create(scoreBoardElement);
+		}
 	}
 	
 	@Autowired
@@ -45,6 +63,16 @@ public class ElementServiceImpl implements ElementService {
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.mySmartspace = smartspace;
+	}
+	
+	@Autowired
+	public void setFactory(EntityFactory factory) {
+		this.factory = factory;
+	}
+	
+	@Value("${smartspace.emailUser:smartspace@gmail.com}")
+	public void setSmartspaceEmail(String smartspaceEmail) {
+		this.smartspaceEmail = smartspaceEmail;
 	}
 
 	@Override

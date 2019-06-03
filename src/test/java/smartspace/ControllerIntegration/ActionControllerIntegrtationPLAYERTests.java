@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +27,7 @@ import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
 import smartspace.data.ActionEntity;
 import smartspace.data.ElementEntity;
+import smartspace.data.ElementType;
 import smartspace.data.UserEntity;
 import smartspace.data.UserRole;
 import smartspace.data.util.FakeActionGenerator;
@@ -148,7 +150,54 @@ public class ActionControllerIntegrtationPLAYERTests {
 		
 	}
 	
+	/* if i want to run this test i need to run the tests without 
+	 * using deleteAll before and after every test (this deletes the score board element). 
+	 * this test's assert is not good, but using a breakpoint at the end you can see that UpdateScoreBoardPlugin does its job.
 	
+	@Test
+	public void testPostInvokeUpdateScoreBoard() throws Exception {
+		// GIVEN the element database has an element
+		// AND the user database has a user
+		UserEntity user = this.userGenerator.getUser();
+		user.setRole(UserRole.PLAYER);
+		ElementEntity element = this.elementGenerator.getElement();
+		
+		UserEntity userInDB = this.userDao.create(user);
+		
+		element.setCreatorEmail(user.getUserEmail());
+		element.setCreatorSmartSpace(user.getUserSmartspace());
+		
+		ElementEntity scoreBoardInDBbefore = this.elementDao.readElementWithType(ElementType.SCORE_BOARD.toString() , 1, 0).get(0);
+		
+		ActionEntity action = new ActionEntity();
+		action.setActionType("UpdateScoreBoard");
+		action.setElementId(scoreBoardInDBbefore.getElementid());
+		action.setElementSmartspace(scoreBoardInDBbefore.getElementSmartSpace());
+		action.setPlayerEmail(user.getUserEmail());
+		action.setPlayerSmartspace(user.getUserSmartspace());
+		action.setMoreAttributes(new HashMap<String,Object>());
+		ActionBoundary bound = new ActionBoundary(action);
+		
+		// WHEN invoke a new action of type SCORE_BOARD with POST
+		ActionBoundary recivedBoundary = 
+				this.restTemplate
+				.postForObject(
+						this.baseUrl,
+						bound,
+						ActionBoundary.class);
+		
+		//THEN the jason i receive is the same as the input boundary except for the key, creationTImeStamp and moreAttributes fields
+		//AND moreAtrributes got the echo signature
+		
+		ElementEntity scoreBoardInDBafter = this.elementDao.readElementWithType(ElementType.SCORE_BOARD.toString() , 1, 0).get(0);
+		
+		List<UserEntity> bestFiveUsersInDB = this.userDao.readAll("points" , Direction.DESC, 5 ,0 );
+		
+		assertThat(scoreBoardInDBafter.getMoreAttributes().get("users")).isEqualToComparingFieldByField(bestFiveUsersInDB);
+
+	}
+	
+	*/
 
 	
 	

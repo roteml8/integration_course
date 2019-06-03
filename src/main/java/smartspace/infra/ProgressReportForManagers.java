@@ -43,9 +43,7 @@ class ProgressReportForManagers {
 	public void setElementDao(EnhancedElementDao<String> elementDao) {
 		this.elementDao = elementDao;
 	}
-	
-	// private static final Logger logger = LoggerFactory.getLogger(ProgressReportForManagers.class); //for testing
-	 //private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //for testing
+
 	
 	@MyLogger
 	@Scheduled(cron = "0 0 9 * * ?") //executed at 9:00 am everyday
@@ -57,9 +55,7 @@ class ProgressReportForManagers {
 
 		int defaultSize = 100, defaultPage = 0; // We will start with 100 managers and 100 elements each,
 												// if the client will need more we will need to changed it here.
-		
-		//logger.info("Cron Task :: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));//for testing
-		
+				
 		List <UserEntity>  managers = userDao.readUserWithRole(UserRole.MANAGER, defaultSize, defaultPage);
 						
 		for(UserEntity manager : managers)
@@ -95,12 +91,6 @@ class ProgressReportForManagers {
 			}
 		}
 		
-		/*
-		for(ElementEntity element : elements)
-		{
-			
-		}
-		*/
 	}
 	
 	private String prepareElementsForEmail (List <ElementEntity>  elements)

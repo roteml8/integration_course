@@ -26,22 +26,11 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 
 	private String smartspace;
 	private ElementCrud elementCrud;
-	private String smartspaceEmail;
-	private EntityFactory factory;
-	
-	@Autowired
-	public void setFactory(EntityFactory factory) {
-		this.factory = factory;
-	}
+
 
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
-	}
-	
-	@Value("${smartspace.emailUser:smartspace@gmail.com}")
-	public void setSmartspaceEmail(String smartspaceEmail) {
-		this.smartspaceEmail = smartspaceEmail;
 	}
 
 	
@@ -50,7 +39,6 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 		super();
 		this.elementCrud = elementCrud;
 		
-//			System.err.println(filteredActionsBySmartspace.size());
 		
 	}
 
@@ -59,19 +47,12 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 	@Transactional
 	public ElementEntity create(ElementEntity elementEntity) {
 		// SQL: INSERT INTO MESSAGES (ID, NAME) VALUES (?,?);
-
-		// TODO replace this with id stored in db
-//		GenericIdGenerator nextId = 
-//				this.genericElementIdGeneratorCrud.save(new GenericIdGenerator());		
-//		elementEntity.setKey(smartspace + "#" + nextId.getId());
-//		this.genericElementIdGeneratorCrud.delete(nextId);
 		
 		long number = GeneratedId.getNextElementValue();
 		elementEntity.setKey(smartspace + "#" + number);
 		
 		if (!this.elementCrud.existsById(elementEntity.getKey())) {
 			ElementEntity rv = this.elementCrud.save(elementEntity);
-			System.err.println("rv = " + rv.getElementid());
 			return rv;	
 		}
 		else {
@@ -88,7 +69,6 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 			List<ElementEntity> filteredElementsBySmartspace = new ArrayList<>();
 			for(ElementEntity element : allElements) {
 				element.setKey(element.getKey());
-				System.err.println("1" + smartspace);
 				if(element.getElementSmartSpace().equals(smartspace)) {
 					filteredElementsBySmartspace.add(element);
 				}
@@ -96,13 +76,6 @@ public class RdbElementDao implements EnhancedElementDao<String> , InitializingB
 			GeneratedId.setElementId(filteredElementsBySmartspace.size());
 		}
 		
-		else
-		{
-			ElementEntity scoreBoardElement = factory.createNewElement("my scoreboard" , ElementType.SCORE_BOARD.toString(), new Location (-1, 0),  new Date()
-					, smartspaceEmail , this.smartspace , false , new HashMap<String , Object>());
-			scoreBoardElement.getMoreAttributes().put("users", null);
-			this.create(scoreBoardElement);
-		}
 	}
 	
 	
