@@ -40,7 +40,7 @@ public class UpdateScoreBoardPlugin implements Plugin {
 		// Check if the element is a score board
 		ElementEntity scoreBoard = elementDao.readById(taskKey).get();
 		if (!scoreBoard.getType().equalsIgnoreCase(ElementType.SCORE_BOARD.toString()))
-			throw new WrongElementTypeException("Not a score board element");
+			throw new WrongElementTypeException("Score Board");
 
 		List<UserEntity> bestUsers = userDao.readAll("points" , Direction.DESC, 5 ,0 ); // get the 5 users with the highest score.
 		
