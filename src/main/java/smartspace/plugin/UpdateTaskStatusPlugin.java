@@ -90,15 +90,20 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		Date creationDate = elementDao.readById(taskKey).get().getCreationTimeDate();
 		long deadlineDay = creationDate.getTime()+deadline*24*60*60*1000;
 		Date today = Calendar.getInstance().getTime();
-		long difference =  today.getTime() - deadlineDay;
+		long difference =   deadlineDay- today.getTime();
 	    float daysBetween = (difference / (1000*60*60*24));
-	    
+	    System.err.println(daysBetween);
 		if(daysBetween>=0) {
-			if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+			if(location.getX()>elementDao.readById(taskKey).get().getLocation().getX())
+			{
+				if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
 				updateUser.setPoints(updateUser.getPoints()+increment*2);
 			}else {
 				updateUser.setPoints(updateUser.getPoints()+increment);
+				
 			}
+				}  else updateUser.setPoints(updateUser.getPoints()-decrement);
+			
 		}else {
 			updateUser.setPoints(updateUser.getPoints()-decrement);
 		}

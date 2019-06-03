@@ -18,8 +18,8 @@ document.getElementById("elementselectType").disabled=false;
 
 
 window.onload=function (){
-	
-	 var but = document.getElementById("buttonsmannager");
+      	
+	 var butmessage = document.getElementById("buttonsmessage");
 	 var but = document.getElementById("buttonsmannager");
 	 var archive = document.getElementById("board4");
 	 var add = document.getElementById("contact");
@@ -28,6 +28,7 @@ window.onload=function (){
 	 archive.style.display = 'none'; 
 	 points.style.display = 'none';
 	 but.style.display = 'none';
+	 butmessage.style.display = 'none';
 	 if(getQueryVariable('role')=="ADMIN"){
 		       
 		 $.ajax({
@@ -52,6 +53,7 @@ window.onload=function (){
 		 but.style.display = 'block';
 		}
 		else {points.style.display = 'block';
+		butmessage.style.display = 'block';
 		loadpoints();
 		
 		}		
@@ -63,7 +65,7 @@ window.onload=function (){
 			  data:'',
 			  success: function(data) {
 				//called when successful
-				  console.log(data);
+				 
 				  allelements=data;
 				  loadCards(data);
 		           loadElementsSelect(data);
@@ -84,9 +86,11 @@ function loadplayerspoints(data){
 	var temp;
 	 var arrayVariable = [];
 	 var arrayVariable2 = []; 
-	 for(i=0;i<data.length;i++){
-		 arrayVariable.push(data[i].name);
-		 arrayVariable2.push(data[i].points);
+	 console.log(data[0]);
+	 var users=data[0].elementProperties.users;
+	 for(i=0;i<users.length;i++){
+		 arrayVariable.push(users[i].username);
+		 arrayVariable2.push(users[i].points);
 	 }
 	  var  arrayLength = arrayVariable.length;
 	
@@ -94,8 +98,8 @@ function loadplayerspoints(data){
 	 for(i = 0; i < arrayLength; i++) {
 	   temp = document.createElement('div');
 	   temp.className = 'card';
-	   temp.id=data[i].key.id;
-	   temp.innerHTML += "<span class="+"cardtitle >"+ arrayVariable[i]+"points: "+arrayVariable2[i]+"</span>";
+	   temp.id=users[i].key.id;
+	   temp.innerHTML += "<span class="+"cardtitle >"+ arrayVariable[i]+"  points: "+arrayVariable2[i]+"</span>";
 	   document.getElementById('b5').appendChild(temp);
 	 }
 }
@@ -103,26 +107,10 @@ function loadplayerspoints(data){
 
 function loadpoints(){
 	
-	var element;
-	 $.ajax({
-		  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+'/'+ 
-		  "?search=type"+'&value='+"SCORE_BOARD"+'&page='+0+'&size='+ 5,
-		  type: 'GET',
-		  data:'',
-		  success: function(data) {
-			//called when successful
-				console.log(data);
-		    element=data[0];
-		  },
-			  error: function(e) {			  
-			  }
-		
-		});
 	
-
-	 var person = { 
+	  var person = { 
 		        type: "UpdateScoreBoard",
-		     element:{id:element.key.id,smartspace:element.key.smartspace},
+		     element:{id:1,smartspace:"2019B.Amitz4.SmartSpace"},
 		        player: {smartspace:getQueryVariable('usersmartspace'),email:getQueryVariable('useremail')},
 		          properties:{}
 		    }
@@ -134,17 +122,47 @@ function loadpoints(){
 	        dataType: 'json',
 	        contentType: 'application/json',
 	        success: function (data) {
-	        	console.log('dd');
+	        		
 	        	console.log(data);
-	        loadplayerspoints(data);	
 	            $('#target').html(data.msg);
 	        },
 	        data: JSON.stringify(person)
-	    });  
+	    });
+	
+	var element,data2;
+	 $.ajax({
+		  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+'/'+ 
+		  "?search=type"+'&value='+"SCORE_BOARD"+'&page='+0+'&size='+ 5,
+		  type: 'GET',
+		  data:'',
+		  success: function(data) {
+			//called when successful
+			
+		    
+			  loadplayerspoints(data);
+		    
+		  },
+			  error: function(e) {			  
+			  }
+		
+		});
+	
+	 
+	 
+	    
+	
 	
 }
 
-
+function message(){
+	if(getQueryVariable('role')=="PLAYER")
+	{
+	 document.location.href="http://localhost:8089/indexMessage.html?"+"usersmartspace="
+	 +getQueryVariable('usersmartspace')+"&username="+getQueryVariable('username')+
+	 "&useremail="+getQueryVariable('useremail');
+	
+	}
+}
 
 function loadElementsSelectName(data){
 	var temp;
@@ -190,7 +208,6 @@ function loadElementsSelect(data){
 		
 
 		 for (i = 0; i < arrayLength; i++) {
-			 console.log(arrayVariable[i]);
 		 
 			 document.getElementById('elementselectType').innerHTML += "<option class="+"delq id="+data[i].key.id+">"+arrayVariable[i]+"</option>";
 		  
@@ -269,7 +286,6 @@ function startSelect(){
 					//called when successful
 	   				 
 					  var temp;
-						console.log(data);
 					 
 					
 
@@ -333,7 +349,6 @@ function startSelectName(){
 					//called when successful
 	   				 
 					  var temp;
-						console.log(data);
 					 
 					
 
