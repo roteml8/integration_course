@@ -7,9 +7,9 @@ function addelement(){
             created:new Date(),
             creator: {email:getQueryVariable('manageremail'),smartspace:getQueryVariable('managersmartspace')},
             latlng:{lat:0.0,lng:$("#y").val()},
-              elementProperties:{useremail:$("#user1").val(),deadline:$("#duration").val(),useremail2:$("#user2").val()}
+     elementProperties:{useremail:$("#user1").val(),useremail2:$("#user2").val(),deadline:$("#durtaion").val()}
         }
- 
+ console.log(person)
 $.ajax({
     url: '/smartspace/elements'+'/'+getQueryVariable('managersmartspace')+'/'+ getQueryVariable('manageremail'),
     type: 'post',
@@ -19,7 +19,7 @@ $.ajax({
     	console.log(data);
         $('#target').html(data.msg);
         document.location.href="http://localhost:8089/indexHome.html?"+"username="+data.username+"&usersmartspace="
-   	 +getQueryVariable('managersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('manageremail');
+    +getQueryVariable('managersmartspace')+"&role="+"MANAGER"+"&useremail="+getQueryVariable('manageremail');
     },
     data: JSON.stringify(person)
 });

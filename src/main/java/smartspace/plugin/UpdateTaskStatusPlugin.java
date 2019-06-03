@@ -66,7 +66,7 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		
 		
 		//Check if the task belongs to the player
-		System.err.println(actionStatusChangeEntity.getPlayerEmail());			
+			
 		if(!useremail.equals(actionStatusChangeEntity.getPlayerEmail())&&
 				!useremail2.equals(actionStatusChangeEntity.getPlayerEmail()))
 			throw new PlayerNotRegisteredToTaskException();
@@ -86,12 +86,13 @@ public class UpdateTaskStatusPlugin implements Plugin{
 		//(String) actionStatusChangeEntity.getMoreAttributes().get("userKey");
 		UserEntity updateUser =  userDao.readById(userKey).get();
 		
-		int deadline = (int) elementDetails.get("deadline");
+		int deadline = Integer.parseInt((String) elementDetails.get("deadline"));
 		Date creationDate = elementDao.readById(taskKey).get().getCreationTimeDate();
 		long deadlineDay = creationDate.getTime()+deadline*24*60*60*1000;
 		Date today = Calendar.getInstance().getTime();
 		long difference =  today.getTime() - deadlineDay;
 	    float daysBetween = (difference / (1000*60*60*24));
+	    
 		if(daysBetween>=0) {
 			if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
 				updateUser.setPoints(updateUser.getPoints()+increment*2);

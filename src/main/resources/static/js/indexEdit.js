@@ -22,14 +22,13 @@ window.onload=function (){
 
 
 function loadinputbyelement(data){
-	console.log('ff');
 	document.getElementById('elementname').value=data.name;
 
 	document.getElementById('elementtype').value=data.elementType;
 
 	document.getElementById('x').value=data.latlng.lat;
 
-	document.getElementById('y').value=data.latlng.lng;
+	document.getElementById('duration').value=data.elementProperties.deadline;
 
 	document.getElementById('expired').value=data.expired;
 	document.getElementById('useremail').value=data.elementProperties.useremail;
@@ -71,11 +70,11 @@ function edit(){
             elementType: $("#elementtype").val(),
             name:$("#elementname").val(),
             expired:bool,
-            created:new Date(),
+            created:allelements[elementId].created,
             creator: {email:getQueryVariable('manageremail'),smartspace:getQueryVariable('managersmartspace')},
-            latlng:{lat:x,lng:$("#y").val()},
+            latlng:{lat:x,lng:allelements[elementId].latlng.lng},
               elementProperties:{location:allelements[elementId].elementProperties.location
-            ,useremail:$("#useremail").val(),useremail2:$("#useremail2").val()}
+            ,deadline:$("#durtaion").val()}
         }
  var user;
 	$.ajax({

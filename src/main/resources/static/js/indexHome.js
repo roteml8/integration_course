@@ -29,9 +29,10 @@ window.onload=function (){
 	 points.style.display = 'none';
 	 but.style.display = 'none';
 	 if(getQueryVariable('role')=="ADMIN"){
-	loadpoints();	       
+		       
 		 $.ajax({
-			  url: '/smartspace/admin/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail'),
+			  url: '/smartspace/admin/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+
+			  "?"+'page='+0+'&size='+ 20,
 			  type: 'GET',
 			  data:'',
 			  success: function(data) {
@@ -50,11 +51,14 @@ window.onload=function (){
 		 archive.style.display = 'block';
 		 but.style.display = 'block';
 		}
-		else points.style.display = 'block';
+		else {points.style.display = 'block';
+		loadpoints();
 		
+		}		
 		
 		 $.ajax({
-			  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail'),
+			  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+
+			  "?"+'page='+0+'&size='+ 20,
 			  type: 'GET',
 			  data:'',
 			  success: function(data) {
@@ -99,6 +103,23 @@ function loadplayerspoints(data){
 
 function loadpoints(){
 	
+	var element;
+	 $.ajax({
+		  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+'/'+ 
+		  "?search=type"+'&value='+"SCORE_BOARD"+'&page='+0+'&size='+ 5,
+		  type: 'GET',
+		  data:'',
+		  success: function(data) {
+			//called when successful
+				console.log(data);
+		    element=data[0];
+		  },
+			  error: function(e) {			  
+			  }
+		
+		});
+	
+
 	 var person = { 
 		        type: "UpdateScoreBoard",
 		     element:{id:element.key.id,smartspace:element.key.smartspace},
@@ -113,6 +134,8 @@ function loadpoints(){
 	        dataType: 'json',
 	        contentType: 'application/json',
 	        success: function (data) {
+	        	console.log('dd');
+	        	console.log(data);
 	        loadplayerspoints(data);	
 	            $('#target').html(data.msg);
 	        },
@@ -129,13 +152,18 @@ function loadElementsSelectName(data){
 	 for(i=0;i<data.length;i++){
 		 arrayVariable.push(data[i].name);
 	 }
-	  var  arrayLength = arrayVariable.length;
+	  
 	
 
-	 for (i = 0; i < arrayLength; i++) {
+	  var arrayVariable2 = [];
+	  $.each(arrayVariable, function(i, el){
+	      if($.inArray(el, arrayVariable2) === -1) arrayVariable2.push(el);
+	  });
+	  var  arrayLength = arrayVariable2.length;
+	  for (i = 0; i < arrayLength; i++) {
 		 
 	 
-		 document.getElementById('elementselectName').innerHTML += "<option class="+"delq id="+data[i].key.id+">"+arrayVariable[i]+"</option>";
+		 document.getElementById('elementselectName').innerHTML += "<option class="+"delq id="+data[i].key.id+">"+arrayVariable2[i]+"</option>";
 	  
 	  
 	 }
@@ -151,7 +179,14 @@ function loadElementsSelect(data){
 			 arrayVariable.push(data[i].elementType);
 		 }
 		 
-		  var  arrayLength = arrayVariable.length;
+		 
+		 
+		 var arrayVariable2 = [];
+		  $.each(arrayVariable, function(i, el){
+		      if($.inArray(el, arrayVariable2) === -1) arrayVariable2.push(el);
+		  });
+		  var  arrayLength = arrayVariable2.length;
+		 
 		
 
 		 for (i = 0; i < arrayLength; i++) {
@@ -164,6 +199,8 @@ function loadElementsSelect(data){
 			
 	
 }
+
+
 
 function loadCards(data){
 	var temp;
@@ -225,7 +262,7 @@ function startSelect(){
 	    }else{
 			 $.ajax({
 				  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+'/'+ 
-				  "?search=type"+'&value='+value+'&page='+0+'&size='+ 10,
+				  "?search=type"+'&value='+value+'&page='+0+'&size='+ 20,
 				  type: 'GET',
 				  data:'',
 				  success: function(data) {
@@ -289,7 +326,7 @@ function startSelectName(){
 	    }else{
 			 $.ajax({
 				  url: '/smartspace/elements/'+getQueryVariable('usersmartspace')+'/'+getQueryVariable('useremail')+'/'+ 
-				  "?search=name"+'&value='+value+'&page='+0+'&size='+ 10,
+				  "?search=name"+'&value='+value+'&page='+0+'&size='+ 20,
 				  type: 'GET',
 				  data:'',
 				  success: function(data) {
