@@ -102,7 +102,7 @@ public class UpdateTaskStatusPlugin implements Plugin{
 			updateUser.setPoints(updateUser.getPoints()-decrement);
 		}
 		
-		userDao.update(updateUser);
+		userDao.updatePoints(updateUser);
 		
 		//updateElement is the new task with the current col
 		ElementEntity updateElement = new ElementEntity();

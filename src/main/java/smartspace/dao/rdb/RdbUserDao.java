@@ -23,6 +23,7 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 
 	private String smartspace;
 	private UserCrud userCrud;
+	private long defualtStartingPoints;
 
 	@Autowired
 	public RdbUserDao(UserCrud userCrud) {
@@ -35,6 +36,11 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 	@Value("${smartspace.name:smartspace}")
 	public void setSmartspace(String smartspace) {
 		this.smartspace = smartspace;
+	}
+	
+	@Value("${defualt.starting.points:100}")
+	public void setdefualtStartingPoints(String points) {
+		this.defualtStartingPoints = Long.parseLong(points);
 	}
 
 	public String getSmartspace() {
@@ -113,6 +119,20 @@ public class RdbUserDao implements EnhancedUserDao<String> {
 		
 		if (userEntity.getUserSmartspace() != null) {
 			existing.setUserSmartspace(userEntity.getUserSmartspace());
+		}
+		
+		// SQL: UPDATE
+		this.userCrud.save(existing);
+	}
+	
+	@Override
+	@Transactional
+	public void updatePoints(UserEntity userEntity) {
+		UserEntity existing = this.readById(userEntity.getKey())
+				.orElseThrow(() -> new RuntimeException("no userEntity to update"));
+		
+		if (userEntity.getPoints() != defualtStartingPoints) {
+			existing.setPoints(userEntity.getPoints());
 		}
 		
 		// SQL: UPDATE

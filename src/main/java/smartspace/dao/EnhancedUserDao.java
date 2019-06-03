@@ -42,5 +42,7 @@ public interface EnhancedUserDao<Key> extends UserDao<Key> {
 	boolean isManager(String key);
 
 	boolean isPlayer(String key);
+
+	void updatePoints(UserEntity userEntity);
 	
 }
