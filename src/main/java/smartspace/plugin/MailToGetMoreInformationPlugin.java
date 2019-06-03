@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
@@ -16,6 +17,7 @@ import smartspace.data.UserRole;
 import smartspace.infra.SendEmailTLS;
 import smartspace.infra.UnsupportedActionTypeException;
 
+@Component
 public class MailToGetMoreInformationPlugin implements Plugin{
 
 	private EnhancedElementDao<String> elementDao;

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Component;
 
 import smartspace.dao.EnhancedElementDao;
 import smartspace.dao.EnhancedUserDao;
@@ -15,7 +16,7 @@ import smartspace.data.ElementEntity;
 import smartspace.data.ElementType;
 import smartspace.data.UserEntity;
 
-
+@Component
 public class UpdateScoreBoardPlugin implements Plugin {
 
 	private EnhancedElementDao<String> elementDao;
@@ -44,6 +45,8 @@ public class UpdateScoreBoardPlugin implements Plugin {
 		List<UserEntity> bestUsers = userDao.readAll("points" , Direction.DESC, 5 ,0 ); // get the 5 users with the highest score.
 		
 		scoreBoard.getMoreAttributes().replace("users", bestUsers);
+		
+		this.elementDao.update(scoreBoard);
 		
 		return actionEntity;
 	}
